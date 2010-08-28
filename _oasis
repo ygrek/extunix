@@ -14,11 +14,15 @@ Description:
   Thin bindings to various low-level system APIs (often non-portable)
   which are not covered by Unix module.
 
+PostConfCommand: ocaml src/discover.ml
+PostConfCommand: mkdir -p _build/src && cp src/config.ml _build/src/
+
 Library extunix
   Path: src/
   Modules: ExtUnix
-#  InternalModules: 
-  CSources: extunix_stubs.c
+#  InternalModules: Config
+  CCOpt: -Isrc
+  CSources: eventfd.c, dirfd.c, fsync.c, statvfs.c, config.h
   BuildDepends: unix
 
 Executable test

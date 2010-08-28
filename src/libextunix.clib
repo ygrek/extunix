@@ -1,4 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: ee98504709a1440dce7f9e7e9fea506e)
-extunix_stubs.o
+# DO NOT EDIT (digest: 0fe5ba7f0b87c0b64d5e56542e208335)
+eventfd.o
+dirfd.o
+fsync.o
+statvfs.o
 # OASIS_STOP

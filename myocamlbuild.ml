@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 80d82b5044e2087b2bff036870d44cc4) *)
+(* DO NOT EDIT (digest: 0d2caafe7274573762e8704658e27fb6) *)
 module BaseEnvLight = struct
 # 21 "/home/ygrek/work/contrib/oasis/src/base/BaseEnvLight.ml"
   
@@ -329,8 +329,12 @@ open Ocamlbuild_plugin;;
 let package_default =
   {
      MyOCamlbuildBase.lib_ocaml = [("src/extunix", ["src"])];
-     lib_c = [("extunix", "src/", [])];
-     flags = [];
+     lib_c = [("extunix", "src/", ["src/config.h"])];
+     flags =
+       [
+          (["oasis_library_extunix_ccopt"; "compile"],
+            S [A "-ccopt"; A "-Isrc"])
+       ];
      }
   ;;
 

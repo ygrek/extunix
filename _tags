@@ -1,10 +1,18 @@
 # OASIS_START
-# DO NOT EDIT (digest: 0473b7ad9cecaf522c17ad4bec7da0c2)
+# DO NOT EDIT (digest: ad7082c5bd9653c95d16bcc10c060001)
 # Library extunix
 "src": include
+<src/*.ml{,i}>: oasis_library_extunix_ccopt
+"src/eventfd.c": oasis_library_extunix_ccopt
+"src/dirfd.c": oasis_library_extunix_ccopt
+"src/fsync.c": oasis_library_extunix_ccopt
+"src/statvfs.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
-"src/extunix_stubs.c": pkg_unix
+"src/eventfd.c": pkg_unix
+"src/dirfd.c": pkg_unix
+"src/fsync.c": pkg_unix
+"src/statvfs.c": pkg_unix
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix
@@ -13,3 +21,4 @@
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
+<src/{extUnix,config}.ml>: pp(camlp4o -I src Camlp4MacroParser.cmo)
