@@ -1,0 +1,15 @@
+# OASIS_START
+# DO NOT EDIT (digest: 0473b7ad9cecaf522c17ad4bec7da0c2)
+# Library extunix
+"src": include
+<src/extunix.{cma,cmxa}>: use_libextunix
+<src/*.ml{,i}>: pkg_unix
+"src/extunix_stubs.c": pkg_unix
+# Executable test
+<test/test.{native,byte}>: use_extunix
+<test/test.{native,byte}>: pkg_unix
+<test/test.{native,byte}>: pkg_oUnit
+<test/*.ml{,i}>: use_extunix
+<test/*.ml{,i}>: pkg_unix
+<test/*.ml{,i}>: pkg_oUnit
+# OASIS_STOP

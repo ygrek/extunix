@@ -1,0 +1,34 @@
+OASISFormat:  0.1
+Name:         extunix
+Version:      0.0.1
+#LicenseFile:  ?
+License:      LGPL-2.1 with OCaml linking exception
+Authors:      ygrek
+Copyrights:   (C) 2010 ygrek
+Homepage:     http://extunix.forge.ocamlcore.org/
+BuildTools:   ocamlbuild
+Plugins:      DevFiles (0.1.0), META (0.1.0)
+
+Synopsis:     extunix
+Description:
+  Thin bindings to various low-level system APIs (often non-portable)
+  which are not covered by Unix module.
+
+Library extunix
+  Path: src/
+  Modules: ExtUnix
+#  InternalModules: 
+  CSources: extunix_stubs.c
+  BuildDepends: unix
+
+Executable test
+  Path: test/
+  Install: false
+  CompiledObject: best
+  MainIs: test.ml
+  BuildDepends: extunix, oUnit (>= 1.0.2)
+
+Test main
+  Command: $test 
+  TestTools: test
+

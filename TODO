@@ -1,0 +1,3 @@
+* configure step
+* provide two modules - one with only implemented functions and one with unimplemented functions raising invalid_arg
+* write guidelines (and follow them)
