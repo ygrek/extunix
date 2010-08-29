@@ -20,3 +20,9 @@ external statvfs : string -> statvfs = "caml_extunix_statvfs"
 external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
 END
 
+HAVE ATFILE
+external fstatat : Unix.file_descr -> string -> Unix.stats = "caml_extunix_fstatat"
+external unlinkat : Unix.file_descr -> string -> unit = "caml_extunix_unlinkat"
+external openat : Unix.file_descr -> string -> Unix.open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
+END
+
