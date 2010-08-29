@@ -4,6 +4,9 @@
 
 #if defined(HAVE_ATFILE)
 
+#include <string.h>
+#include <errno.h>
+
 /* otherlibs/unix/cst2constr.h */
 extern value cst_to_constr(int n, int * tbl, int size, int deflt);
 
@@ -16,11 +19,11 @@ static value stat_aux(/*int use_64,*/ struct stat *buf)
   CAMLparam0();
   CAMLlocal5(atime, mtime, ctime, offset, v);
 
-  atime = copy_double((double) buf->st_atime);
-  mtime = copy_double((double) buf->st_mtime);
-  ctime = copy_double((double) buf->st_ctime);
+  atime = caml_copy_double((double) buf->st_atime);
+  mtime = caml_copy_double((double) buf->st_mtime);
+  ctime = caml_copy_double((double) buf->st_ctime);
   offset = /*use_64 ? Val_file_offset(buf->st_size) :*/ Val_int (buf->st_size);
-  v = alloc_small(12, 0);
+  v = caml_alloc_small(12, 0);
   Field (v, 0) = Val_int (buf->st_dev);
   Field (v, 1) = Val_int (buf->st_ino);
   Field (v, 2) = cst_to_constr(buf->st_mode & S_IFMT, file_kind_table,
@@ -42,12 +45,12 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name)
   CAMLparam2(v_dirfd, v_name);
   int ret;
   struct stat buf;
-  char const* p = stat_alloc(string_length(v_name) + 1);
+  char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
   ret = fstatat(Int_val(v_dirfd), p, &buf, 0);
   caml_leave_blocking_section();
-  stat_free(p);
+  caml_stat_free(p);
   if (ret != 0) uerror("fstatat", Nothing);
   if (buf.st_size > Max_long && (buf.st_mode & S_IFMT) == S_IFREG)
     unix_error(EOVERFLOW, "fstat", Nothing);
@@ -57,12 +60,12 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name)
 CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name)
 {
   CAMLparam2(v_dirfd, v_name);
-  char const* p = stat_alloc(string_length(v_name) + 1);
+  char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
-  int ret = unlinkat(Int_val(v_dirfd), name, 0);
+  int ret = unlinkat(Int_val(v_dirfd), p, 0);
   caml_leave_blocking_section();
-  stat_free(p);
+  caml_stat_free(p);
   if (ret != 0) uerror("unlinkat", Nothing);
   CAMLreturn(Val_unit);
 }
@@ -80,13 +83,13 @@ CAMLprim value caml_extunix_openat(value v_dirfd, value path, value flags, value
   char * p;
 
   cv_flags = caml_convert_flag_list(flags, open_flag_table);
-  p = stat_alloc(string_length(path) + 1);
+  p = caml_stat_alloc(caml_string_length(path) + 1);
   strcpy(p, String_val(path));
   /* open on a named FIFO can block (PR#1533) */
-  enter_blocking_section();
+  caml_enter_blocking_section();
   ret = openat(Int_val(v_dirfd), p, cv_flags, Int_val(perm));
-  leave_blocking_section();
-  stat_free(p);
+  caml_leave_blocking_section();
+  caml_stat_free(p);
   if (ret == -1) uerror("openat", path);
   CAMLreturn (Val_int(ret));
 }
