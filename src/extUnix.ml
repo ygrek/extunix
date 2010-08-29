@@ -17,5 +17,6 @@ ENDIF
 IFDEF HAVE_STATVFS THEN
 type statvfs = { vfs_bsize : int; vfs_blocks : int64; vfs_bfree : int64; vfs_inodes : int64; vfs_ifree : int64; }
 external statvfs : string -> statvfs = "caml_extunix_statvfs"
+external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
 ENDIF
 
