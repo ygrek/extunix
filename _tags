@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 4ac4443655d098a77a162dffd46607fd)
+# DO NOT EDIT (digest: 90bf03e5655cc49329e7dbdb84b502a7)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -8,6 +8,7 @@
 "src/fsync.c": oasis_library_extunix_ccopt
 "src/statvfs.c": oasis_library_extunix_ccopt
 "src/atfile.c": oasis_library_extunix_ccopt
+"src/ioctl_siocgifconf.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
@@ -15,6 +16,7 @@
 "src/fsync.c": pkg_unix
 "src/statvfs.c": pkg_unix
 "src/atfile.c": pkg_unix
+"src/ioctl_siocgifconf.c": pkg_unix
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix

@@ -22,7 +22,8 @@ Library extunix
   InternalModules: ExtUnixAll, ExtUnixSpecific
   CCOpt: -Isrc # to find config.h
   CSources: config.h,
-            eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c
+            eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
+            ioctl_siocgifconf.c
   BuildDepends: unix
 
 Executable test

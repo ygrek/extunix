@@ -2,7 +2,13 @@
 
 open Printf
 
-type arg = I of string | T of string | D of string | S of string
+type arg = 
+  | I of string (* check #include available *)
+  | T of string (* check type available *)
+  | D of string (* define *)
+  | S of string (* check symbol available *)
+  | IFDEF of string (* check #ifdef *)
+
 type t = YES of (string * arg list) | NO of string
 
 let cc = ref "gcc -Wall -o /dev/null"
@@ -10,11 +16,12 @@ let null = ref "/dev/null"
 
 let build_code args =
   let b = Buffer.create 10 in
-  let fresh () = Oo.id (object end) in
+  let fresh = let n = ref 0 in fun () -> incr n; !n in
   List.iter begin function
     | I s -> bprintf b "#include <%s>\n" s
     | T s -> bprintf b "%s var_%d;\n" s (fresh ())
     | D s -> bprintf b "#define %s\n" s
+    | IFDEF s -> bprintf b "#ifndef %s\nabort, %s not defined\n#endif\n" s s
     | S s -> bprintf b "void* var_%d = &%s;\n" (fresh ()) s
     end args;
   bprintf b "int main() { return 0; }\n";
@@ -43,7 +50,7 @@ let show_c file result =
         List.iter (function
           | I s -> pr "#include <%s>" s
           | D s -> pr "#define %s" s
-          | S _ | T _ -> ()) args;
+          | S _ | T _ | IFDEF _ -> ()) args;
         pr "#endif";
         pr "";
     | NO name ->
@@ -100,6 +107,19 @@ let () =
       I "sys/statvfs.h";
       T "struct statvfs";
       S "statvfs"; S "fstatvfs";
+    ];
+    "SIOCGIFCONF", [
+      I "sys/ioctl.h";
+      I "net/if.h";
+      IFDEF "SIOCGIFCONF";
+      S "ioctl";
+      T "struct ifconf"; T "struct ifreq";
+    ];
+    "INET_NTOA", [
+      I "sys/socket.h";
+      I "netinet/in.h";
+      I "arpa/inet.h";
+      S "inet_ntoa";
     ];
   ]
 
