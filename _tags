@@ -21,4 +21,5 @@
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
-<src/{extUnix,config}.ml>: pp(camlp4o -I src Camlp4MacroParser.cmo)
+"src/extUnix.mlpp": pa_have, use_config
+"src/pa_have.ml": camlp4of

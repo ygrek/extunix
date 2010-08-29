@@ -1,3 +1,3 @@
-* configure step
-* provide two modules - one with only implemented functions and one with unimplemented functions raising invalid_arg
+* describe configure step
 * write guidelines (and follow them)
+* build system is too complex, use simple Makefile?

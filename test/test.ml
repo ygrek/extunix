@@ -1,6 +1,6 @@
 
 open OUnit
-open ExtUnix
+open ExtUnix.Specific
 
 let test_eventfd () =
   let e = eventfd 2 in

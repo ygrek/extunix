@@ -15,13 +15,12 @@ Description:
   which are not covered by Unix module.
 
 PostConfCommand: ocaml src/discover.ml
-PostConfCommand: mkdir -p _build/src && cp src/config.ml _build/src/
 
 Library extunix
   Path: src/
   Modules: ExtUnix
-#  InternalModules: Config
-  CCOpt: -Isrc
+  InternalModules: ExtUnixAll, ExtUnixSpecific
+  CCOpt: -Isrc # to find config.h
   CSources: eventfd.c, dirfd.c, fsync.c, statvfs.c, config.h
   BuildDepends: unix
 
@@ -35,4 +34,12 @@ Executable test
 Test main
   Command: $test 
   TestTools: test
+
+Document api
+  Title: API
+  Type: ocamlbuild
+  BuildTools: ocamldoc
+  XOCamlbuildPath:      src/
+  XOCamlbuildLibraries: extunix
+  XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific
 

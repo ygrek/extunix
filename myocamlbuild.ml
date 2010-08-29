@@ -341,4 +341,33 @@ let package_default =
 let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 
 (* OASIS_STOP *)
-Ocamlbuild_plugin.dispatch dispatch_default;;
+
+let my_dispatch = MyOCamlbuildBase.dispatch_combine 
+      [
+        MyOCamlbuildBase.dispatch package_default;
+        MyOCamlbuildFindlib.dispatch;
+        begin function
+        | After_rules ->
+            flag ["ocaml"; "pp"; "pa_have"] (A"src/pa_have.cmo");
+            flag ["ocaml"; "compile"; "camlp4of"] (S[A"-I"; A"+camlp4"]);
+            dep ["ocaml"; "ocamldep"; "pa_have"] ["src/pa_have.cmo"];
+            dep ["ocaml"; "use_config"] ["src/config.ml"];
+(*             flag ["doc"] (S[A"-sort"; A"-hide"; A"ExtUnixAll,ExtUnixSpecific"]); *)
+            let gen extra prod =
+              rule ("gen "^extra) ~deps:["src/extUnix.mlpp";"src/pa_have.cmo"] ~prod
+              (fun _ _ -> Cmd 
+                (S[P"camlp4of"; 
+                  T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
+                  A extra;
+                  A"pr_o.cmo";
+                  A"-impl"; A"src/extUnix.mlpp";
+                  A"-o"; A prod;
+                  ]))
+            in
+            gen "-D NOTUSED" "src/extUnixAll.ml";
+            gen "-D ONLY_VALID" "src/extUnixSpecific.ml";
+        | _ -> ()
+        end;
+      ]
+;;
+Ocamlbuild_plugin.dispatch my_dispatch;;
