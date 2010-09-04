@@ -1,0 +1,6 @@
+# TODO: copyright
+
+version = "0.0.1"
+description = "binding for uname POSIX syscall"
+archive(byte) = "uname.cma"
+archive(native) = "uname.cmxa"
