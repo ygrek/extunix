@@ -15,3 +15,9 @@
 
   Better have exception or have_eventfd: unit -> bool. This way the changing
   part are the C library and we avoid signature change of extunix.ml
+
+* INRIA request for extended UNIX:
+  http://caml.inria.fr/mantis/view.php?id=5063
+  http://caml.inria.fr/mantis/view.php?id=2533 (<- very interesting)
+  http://caml.inria.fr/mantis/view.php?id=3851
+  http://caml.inria.fr/mantis/view.php?id=480
