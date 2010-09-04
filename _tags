@@ -25,5 +25,5 @@
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
-"src/extUnix.mlpp": pa_have, use_config
+"src/extUnix.mlpp": pa_have
 "src/pa_have.ml": camlp4of

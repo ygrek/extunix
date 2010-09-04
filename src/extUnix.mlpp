@@ -1,7 +1,5 @@
 (** ExtUnix *)
 
-INCLUDE "src/config.ml"
-
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 
 HAVE EVENTFD
@@ -27,9 +25,8 @@ external openat : Unix.file_descr -> string -> Unix.open_flag list -> Unix.file_
 END
 
 HAVE SIOCGIFCONF
-(** [siocgifconf sock]
-  @param sock any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
+(** [siocgifconf sock], where [sock] is any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
   @return the list of interfaces and corresponfing addresses *)
-external siocgifconf : Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
+external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
 END
 

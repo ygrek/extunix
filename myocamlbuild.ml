@@ -348,11 +348,8 @@ let my_dispatch = MyOCamlbuildBase.dispatch_combine
         MyOCamlbuildFindlib.dispatch;
         begin function
         | After_rules ->
-            flag ["ocaml"; "pp"; "pa_have"] (A"src/pa_have.cmo");
+            flag ["ocaml"; "pp"; "pa_have"] (S[A"src/config.cmo";A"src/pa_have.cmo"]);
             flag ["ocaml"; "compile"; "camlp4of"] (S[A"-I"; A"+camlp4"]);
-            dep ["ocaml"; "ocamldep"; "pa_have"] ["src/pa_have.cmo"];
-            dep ["ocaml"; "use_config"] ["src/config.ml"];
-(*             flag ["doc"] (S[A"-sort"; A"-hide"; A"ExtUnixAll,ExtUnixSpecific"]); *)
             let gen extra prod =
               rule ("gen "^extra) ~deps:["src/extUnix.mlpp";"src/pa_have.cmo"] ~prod
               (fun _ _ -> Cmd 
@@ -364,8 +361,8 @@ let my_dispatch = MyOCamlbuildBase.dispatch_combine
                   A"-o"; A prod;
                   ]))
             in
-            gen "-D NOTUSED" "src/extUnixAll.ml";
-            gen "-D ONLY_VALID" "src/extUnixSpecific.ml";
+            gen "-gen-all" "src/extUnixAll.ml";
+            gen "-D NOT_USED" "src/extUnixSpecific.ml";
         | _ -> ()
         end;
       ]

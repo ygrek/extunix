@@ -71,10 +71,11 @@ let show_c file result =
 let show_ml file result =
   let ch = open_out file in
   let pr fmt = ksprintf (fun s -> output_string ch (s^"\n")) fmt in
+  pr "let have = function";
   List.iter (function
-    | YES (name,_) -> pr "DEFINE HAVE_%s" name
-    | NO name -> pr "UNDEF HAVE_%s" name)
-  result;
+  | YES (name,_) -> pr "| %S -> Some true" name
+  | NO name -> pr "| %S -> Some false" name) result;
+  pr "| _ -> None";
   close_out ch
 
 let main config =

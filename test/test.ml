@@ -1,6 +1,6 @@
 
 open OUnit
-open ExtUnix.Specific
+open ExtUnix.All
 
 let test_eventfd () =
   let e = eventfd 2 in
@@ -10,7 +10,7 @@ let test_eventfd () =
 
 let () =
   let _ = run_test_tt ("tests" >::: [
-    "eventf" >:: test_eventfd
+    "eventfd" >:: test_eventfd
   ]) in
   ()
 

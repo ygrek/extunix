@@ -1,25 +1,18 @@
 (**
   New toplevel statement (structure item): HAVE <uident> <structure_items> END
-  If HAVE_<uident> is defined then enclosed structure items are left as is,
+  if (Config.have "<uident>") is true then enclosed structure items are left as is,
   otherwise:
-    if ONLY_VALID is defined they are dropped altogether,
-    if ONLY_VALID is not defined then external structure items are rewritten to raise Invalid_argument when called
+    if -gen-all was specified then external structure items are rewritten to raise Invalid_argument when called,
+    otherwise they are dropped altogether
 *)
 
 module Have(Syntax : Camlp4.Sig.Camlp4Syntax) =
 struct
-  open Camlp4.PreCast
+  open Camlp4.PreCast 
 
   include Syntax
 
-  module PP = Camlp4.Printers.OCaml.Make(Syntax)
-  let pp = new PP.printer ()
-  let print_str_items l =
-    let b = Buffer.create 10 in 
-    let f = Format.formatter_of_buffer b in
-    List.iter (pp#str_item f) l;
-    Format.pp_print_flush f ();
-    Buffer.contents b
+  let all = ref false
 
   let rec make_dummy_f body = function
   | <:ctyp@loc< $t$ -> $tl$ >> -> <:expr@loc< fun (_:$t$) -> $make_dummy_f body tl$ >>
@@ -37,12 +30,14 @@ struct
   EXTEND Gram
     GLOBAL: implem;
     implem:
-      [ [ "HAVE"; name=UIDENT; s1=str_items; (tail,x)=SELF ->
-        let si = Gram.parse_string str_item Loc.ghost
-          ("IFDEF HAVE_"^name^" THEN "^print_str_items s1^" ELSE " ^
-           "IFNDEF ONLY_VALID THEN " ^ print_str_items (List.map invalid_external s1)^" ENDIF ENDIF")
+      [ [ "HAVE"; name=UIDENT; si=str_items; (tail,x)=SELF ->
+        let si = match Config.have name, !all with
+        | Some true, _ -> si
+        | Some false, true -> List.map invalid_external si
+        | Some false, false -> []
+        | None, _ -> failwith ("Unregistered feature : " ^ name)
         in
-        si :: tail, x 
+        si @ tail, x
       ] ]
     ;
     str_items:
@@ -51,6 +46,10 @@ struct
       ] ]
     ;
   END
+
+  ;;
+
+  Camlp4.Options.add "-gen-all" (Arg.Set all) " generate values from all HAVE sections";;
 
 end
 
