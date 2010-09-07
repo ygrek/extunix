@@ -1,9 +1,10 @@
 # OASIS_START
-# DO NOT EDIT (digest: 3c342de62586763a7c7dc42ce3a4ff6c)
+# DO NOT EDIT (digest: 01d3500869173975fc4cae0bd19ef136)
 eventfd.o
 dirfd.o
 fsync.o
 statvfs.o
 atfile.o
 ioctl_siocgifconf.o
+uname.o
 # OASIS_STOP

@@ -1,14 +1,12 @@
-#include <caml/fail.h>
-#include <caml/mlvalues.h>
-#include <caml/memory.h>
-#include <caml/callback.h>
-#include <caml/alloc.h>
 
-#include <sys/utsname.h>
+#define WANT_UNAME
+#include "config.h"
+
+#if defined(HAVE_UNAME)
+
 #include <string.h>
-#include <errno.h>
 
-CAMLprim value caml_uname (value u)
+CAMLprim value caml_extunix_uname(value u)
 {
   struct utsname uname_data;
 
@@ -28,8 +26,11 @@ CAMLprim value caml_uname (value u)
   }
   else
   {
-    caml_failwith(strerror(errno));
+    uerror("uname",Nothing);
   }
 
   CAMLreturn(result);
 }
+
+#endif
+

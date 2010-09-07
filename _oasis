@@ -15,6 +15,8 @@ Description:
   which are not covered by Unix module.
 
 PostConfCommand: ocaml src/discover.ml
+PreDistCleanCommand: $rm src/config.h
+PostDistCleanCommand: $rm src/config.ml # workaround bug in oasis 0.2.0~alpha1
 
 Library extunix
   Path: src/
@@ -23,7 +25,7 @@ Library extunix
   CCOpt: -Isrc # to find config.h
   CSources: config.h,
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
-            ioctl_siocgifconf.c
+            ioctl_siocgifconf.c, uname.c
   BuildDepends: unix
 
 Executable test

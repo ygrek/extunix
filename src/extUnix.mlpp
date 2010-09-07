@@ -30,3 +30,26 @@ HAVE SIOCGIFCONF
 external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
 END
 
+HAVE UNAME
+
+(** uname
+    @author Sylvain Le Gall <sylvain@le-gall.net>
+  *)
+module Uname = struct
+type t =
+    {
+      sysname:    string;
+      nodename:   string;
+      release:    string;
+      version:    string;
+      machine:    string;
+    }
+
+let to_string t =
+  String.concat " " [ t.sysname; t.nodename; t.release; t.version; t.machine ]
+end
+
+external uname : unit -> Uname.t = "caml_extunix_uname"
+
+END
+

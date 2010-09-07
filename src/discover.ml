@@ -128,5 +128,10 @@ let () =
       I "arpa/inet.h";
       S "inet_ntoa";
     ];
+    "UNAME", [
+      I "sys/utsname.h";
+      T "struct utsname";
+      S "uname";
+    ];
   ]
 
