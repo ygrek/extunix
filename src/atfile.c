@@ -46,6 +46,7 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name)
   int ret;
   struct stat buf;
   char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
+
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
   ret = fstatat(Int_val(v_dirfd), p, &buf, 0);
@@ -61,9 +62,11 @@ CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name)
 {
   CAMLparam2(v_dirfd, v_name);
   char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
+  int ret;
+
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
-  int ret = unlinkat(Int_val(v_dirfd), p, 0);
+  ret = unlinkat(Int_val(v_dirfd), p, 0);
   caml_leave_blocking_section();
   caml_stat_free(p);
   if (ret != 0) uerror("unlinkat", Nothing);

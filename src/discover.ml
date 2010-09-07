@@ -11,18 +11,21 @@ type arg =
 
 type t = YES of (string * arg list) | NO of string
 
-let cc = ref "gcc -Wall -o /dev/null"
-let null = ref "/dev/null"
+let cc = ref "ocamlc -c -ccopt \"-Wall -Wextra -std=c89 -pedantic -o /dev/null\""
 
 let build_code args =
   let b = Buffer.create 10 in
+  let pr fmt = ksprintf (fun s -> Buffer.add_string b (s^"\n")) fmt in
   let fresh = let n = ref 0 in fun () -> incr n; !n in
+  pr "#define _POSIX_C_SOURCE 200112L";
+  pr "#define _BSD_SOURCE";
+  pr "#include <stddef.h>"; (* size_t *)
   List.iter begin function
-    | I s -> bprintf b "#include <%s>\n" s
-    | T s -> bprintf b "%s var_%d;\n" s (fresh ())
-    | D s -> bprintf b "#define %s\n" s
-    | IFDEF s -> bprintf b "#ifndef %s\nabort, %s not defined\n#endif\n" s s
-    | S s -> bprintf b "void* var_%d = &%s;\n" (fresh ()) s
+    | I s -> pr "#include <%s>" s
+    | T s -> pr "%s var_%d;" s (fresh ())
+    | D s -> pr "#define %s" s
+    | IFDEF s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
+    | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     end args;
   bprintf b "int main() { return 0; }\n";
   Buffer.contents b
@@ -32,7 +35,7 @@ let discover (name,args) =
   let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
   output_string ch code;
   flush ch;
-  let cmd = sprintf "%s %s > %s" !cc (Filename.quote tmp) !null in
+  let cmd = sprintf "%s %s" !cc (Filename.quote tmp) in
   let ret = Sys.command cmd in
   close_out ch;
   Sys.remove tmp;
@@ -42,6 +45,8 @@ let show_c file result =
   let ch = open_out file in
   let pr fmt = ksprintf (fun s -> output_string ch (s^"\n")) fmt in
   pr "/* start discover */";
+  pr "#define _POSIX_C_SOURCE 200112L";
+  pr "#define _BSD_SOURCE";
   pr "";
   List.iter begin function
     | YES (name,args) ->
@@ -94,12 +99,13 @@ let () =
     "ATFILE", [
       D "_ATFILE_SOURCE";
       I "fcntl.h";
+      I "sys/types.h";
       I "sys/stat.h";
       I "unistd.h";
+      IFDEF "S_IFREG"; IFDEF "O_DSYNC";
       S "fstatat"; S "openat"; S "unlinkat";
     ];
     "DIRFD", [
-      D "_BSD_SOURCE";
       I "sys/types.h";
       I "dirent.h";
       S "dirfd";
