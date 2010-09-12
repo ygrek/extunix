@@ -18,7 +18,9 @@ let build_code args =
   let pr fmt = ksprintf (fun s -> Buffer.add_string b (s^"\n")) fmt in
   let fresh = let n = ref 0 in fun () -> incr n; !n in
   pr "#define _POSIX_C_SOURCE 200112L";
+  pr "#define _XOPEN_SOURCE 600";
   pr "#define _BSD_SOURCE";
+  pr "#define _LARGEFILE64_SOURCE";
   pr "#include <stddef.h>"; (* size_t *)
   List.iter begin function
     | I s -> pr "#include <%s>" s
@@ -46,7 +48,9 @@ let show_c file result =
   let pr fmt = ksprintf (fun s -> output_string ch (s^"\n")) fmt in
   pr "/* start discover */";
   pr "#define _POSIX_C_SOURCE 200112L";
+  pr "#define _XOPEN_SOURCE 600";
   pr "#define _BSD_SOURCE";
+  pr "#define _LARGEFILE64_SOURCE";
   pr "";
   List.iter begin function
     | YES (name,args) ->
@@ -132,6 +136,11 @@ let () =
       I "sys/utsname.h";
       T "struct utsname";
       S "uname";
+    ];
+    "FADVISE", [
+      I "fcntl.h";
+      S "posix_fadvise"; S "posix_fadvise64";
+      IFDEF "POSIX_FADV_NORMAL";
     ];
   ]
 

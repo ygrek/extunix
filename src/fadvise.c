@@ -1,4 +1,3 @@
-
 /*
  * Binding to posix_fadvise
  *
@@ -6,28 +5,11 @@
  *
  */
 
-#include <caml/mlvalues.h>
-#include <caml/memory.h>
+#define WANT_FADVISE
+#include "config.h"
 
-#ifdef WINDOWS
-CAMLprim value caml_filescale_fadvise (value vfd, value voff, value vlen, value vadvise)
-{
-  CAMLparam0();
-  CAMLreturn(Val_unit);
-};
+#if defined(HAVE_FADVISE)
 
-CAMLprim value caml_filescale_fadvise64 (value vfd, value voff, value vlen, value vadvise)
-{
-  CAMLparam0();
-  CAMLreturn(Val_unit);
-};
-
-#else
-
-#define _XOPEN_SOURCE 600
-#define _LARGEFILE64_SOURCE 1
-
-#include <caml/alloc.h>
 #include <fcntl.h>
 
 static int caml_advises[] =
@@ -40,7 +22,7 @@ static int caml_advises[] =
     POSIX_FADV_DONTNEED
   };
 
-CAMLprim value caml_filescale_fadvise64 (value vfd, value voff, value vlen, value vadvise)
+CAMLprim value caml_extunix_fadvise64(value vfd, value voff, value vlen, value vadvise)
 {
   int     errcode = 0;
   int     fd = -1;
@@ -59,13 +41,13 @@ CAMLprim value caml_filescale_fadvise64 (value vfd, value voff, value vlen, valu
 
   if (errcode != 0)
   {
-    unix_error(errcode, "fadvise", Nothing);
+    unix_error(errcode, "fadvise64", Nothing);
   };
 
   CAMLreturn(Val_unit);
-};
+}
 
-CAMLprim value caml_filescale_fadvise (value vfd, value voff, value vlen, value vadvise)
+CAMLprim value caml_extunix_fadvise(value vfd, value voff, value vlen, value vadvise)
 {
   int   errcode = 0;
   int   fd = -1;
@@ -88,5 +70,7 @@ CAMLprim value caml_filescale_fadvise (value vfd, value voff, value vlen, value 
   };
 
   CAMLreturn(Val_unit);
-};
+}
+
 #endif
+
