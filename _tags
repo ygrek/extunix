@@ -27,5 +27,4 @@
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
-"src/extUnix.mlpp": pa_have
-"src/pa_have.ml": camlp4of
+"src/pa_have.ml": pkg_camlp4.quotations.o, pkg_camlp4.extend, syntax_camlp4o

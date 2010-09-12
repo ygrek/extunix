@@ -469,13 +469,12 @@ let my_dispatch = MyOCamlbuildBase.dispatch_combine
         MyOCamlbuildFindlib.dispatch;
         begin function
         | After_rules ->
-            flag ["ocaml"; "pp"; "pa_have"] (S[A"src/config.cmo";A"src/pa_have.cmo"]);
-            flag ["ocaml"; "compile"; "camlp4of"] (S[A"-I"; A"+camlp4"]);
             let gen extra prod =
-              rule ("gen "^extra) ~deps:["src/extUnix.mlpp";"src/pa_have.cmo"] ~prod
+              rule ("gen "^extra) ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/config.cmo"] ~prod
               (fun _ _ -> Cmd 
                 (S[P"camlp4of"; 
                   T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
+                  A "src/config.cmo"; A"src/pa_have.cmo";
                   A extra;
                   A"pr_o.cmo";
                   A"-impl"; A"src/extUnix.mlpp";

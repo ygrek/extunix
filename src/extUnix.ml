@@ -4,6 +4,7 @@
 module Specific = ExtUnixSpecific
 
 (** All functions,
-  those not available on this platform will raise [Invalid_argument] *)
+    those not available on this platform will raise [Not_available] 
+    with function name as an argument *)
 module All = ExtUnixAll
 

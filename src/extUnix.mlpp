@@ -1,5 +1,9 @@
 (** ExtUnix *)
 
+(** [Not_available "func"] may be raised by [ExtUnix.All.func]
+    if the wrapped C function is not available on this platform *)
+exception Not_available of string
+
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 
 HAVE EVENTFD
@@ -33,7 +37,7 @@ END
 HAVE UNAME
 
 (** uname
-    @author Sylvain Le Gall <sylvain@le-gall.net>
+    @author Sylvain Le Gall [sylvain\@le-gall.net]
   *)
 module Uname = struct
 type t =

@@ -24,13 +24,13 @@ Bindings for other APIs (libacl, libattr) - separate modules/archives (but with 
 Follow Unix modules style: 
   * values and types should be named by the name of the underlying C function
   * raise Unix_error on runtime errors
-  * raise single defined (FIXME) exception for functions not available on the current platform
+  * uniformly raise Not_available exception for functions not available on the current platform
   * implement winapi variant if it closely matches semantics
   * be MT friendly by default - i.e. release runtime lock for blocking operations, optionally provide ST variants
 
 Minimize (eliminate) shell scripting during build (think windows :) )
 Write portable C code (use compiler options to catch compatibility issues), NB: msvc doesn't support C99.
-Provide module with only functions available on the platform where library is built (experiment, separate archive?).
+Provide module (ExtUnix.Specific) exposing only functions available on the platform where library is built - i.e. guaranteed to not throw Not_available exception (experimental, separate archive?).
 
 Build infrastructure:
 src/discover.ml is used to discover available functions during configure step.
