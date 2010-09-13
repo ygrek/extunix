@@ -1,23 +1,11 @@
-* describe configure step
-* write guidelines (and follow them)
-* build system is too complex, use simple Makefile?
-
 [SLG]
-* write some guideline about what can enter extunix and what not:
-  - POSIX only funcall?
-  - POSIX + Linux/BSD with reasonnable behavior if they are missing?
-  - POSIX + Win32 (unlikely)?
-  - Should not add extra dependencies on external library?
-  - Can add extra deps if reasonnable (libacl, libattr) wrt to POSIX?
-
-* avoid using pa_def: the signature of extunix depends on what is available ->
-  the signature is almost never the same from one computer to another.
-
-  Better have exception or have_eventfd: unit -> bool. This way the changing
-  part are the C library and we avoid signature change of extunix.ml
 
 * INRIA request for extended UNIX:
   http://caml.inria.fr/mantis/view.php?id=5063
   http://caml.inria.fr/mantis/view.php?id=2533 (<- very interesting)
   http://caml.inria.fr/mantis/view.php?id=3851
   http://caml.inria.fr/mantis/view.php?id=480
+
+Wanted functions:
+* sysconf: get system configuration constants. In particular, PAGESIZE,
+  _SC_PHYS_PAGES, _SC_AVPHYS_PAGES, _SC_NPROCESSORS_CONF, _SC_NPROCESSORS_ONLN 
