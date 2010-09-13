@@ -1,5 +1,9 @@
 (** ExtUnix *)
 
+(** [Not_available "func"] may be raised by [ExtUnix.All.func]
+    if the wrapped C function is not available on this platform *)
+exception Not_available of string
+
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 
 HAVE EVENTFD
@@ -33,7 +37,7 @@ END
 HAVE UNAME
 
 (** uname
-    @author Sylvain Le Gall <sylvain@le-gall.net>
+    @author Sylvain Le Gall [sylvain\@le-gall.net]
   *)
 module Uname = struct
 type t =
@@ -50,6 +54,36 @@ let to_string t =
 end
 
 external uname : unit -> Uname.t = "caml_extunix_uname"
+
+END
+
+HAVE FADVISE
+
+(** {2 posix_fadvise} *)
+(** @author Sylvain Le Gall *)
+
+type advice =
+  | POSIX_FADV_NORMAL     (** Indicates that the application has no advice to
+                              give about its access pattern for the specified
+                              data.  *)
+  | POSIX_FADV_SEQUENTIAL (** The application expects to access the specified
+                              data sequentially.  *)
+  | POSIX_FADV_RANDOM     (** The specified data will be accessed in random
+                              order.  *)
+  | POSIX_FADV_NOREUSE    (** The specified data will be accessed only once.  *)
+  | POSIX_FADV_WILLNEED   (** The specified data will be accessed in the near
+                              future.  *) 
+  | POSIX_FADV_DONTNEED   (** The specified data will not be accessed in the
+                              near future.  *)
+
+(**/**) (*camlp4 misplaces comments*) (**/**)
+
+external fadvise: Unix.file_descr -> int -> int -> advice -> unit = "caml_extunix_fadvise"
+
+module LargeFile =
+struct
+  external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
+end
 
 END
 

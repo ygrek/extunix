@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 901082cf8a8796a0a432feaeb7fae412)
+# DO NOT EDIT (digest: 81ee36185cb094863d183b1bb069d802)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -10,6 +10,7 @@
 "src/atfile.c": oasis_library_extunix_ccopt
 "src/ioctl_siocgifconf.c": oasis_library_extunix_ccopt
 "src/uname.c": oasis_library_extunix_ccopt
+"src/fadvise.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
@@ -19,6 +20,7 @@
 "src/atfile.c": pkg_unix
 "src/ioctl_siocgifconf.c": pkg_unix
 "src/uname.c": pkg_unix
+"src/fadvise.c": pkg_unix
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix
@@ -27,5 +29,4 @@
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
 # OASIS_STOP
-"src/extUnix.mlpp": pa_have
-"src/pa_have.ml": camlp4of
+"src/pa_have.ml": pkg_camlp4.quotations.o, pkg_camlp4.extend, syntax_camlp4o

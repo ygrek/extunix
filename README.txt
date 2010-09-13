@@ -27,7 +27,7 @@ Guidelines
 For OCaml programming style, we follow Unix module:
   * Values and types should be named by the name of the underlying C function
   * Raise Unix_error on runtime errors
-  * Raise single defined (FIXME) exception for functions not available on the
+  * Uniformly raise Not_available exception for functions not available on the
     current platform
   * Be MT friendly by default - i.e. release runtime lock for blocking
     operations, (FIXME) optionally provide ST variants
@@ -36,8 +36,9 @@ Portability:
   * Minimize (eliminate) shell scripting during build (think windows :) )
   * Write portable C code (use compiler options to catch compatibility issues),
     NB: msvc doesn't support C99.
-  * Provide module with only functions available on the platform where library
-    is built (experiment, separate archive?).
+  * Provide module (ExtUnix.Specific) exposing only functions available on the
+    platform where library is built - i.e. guaranteed to not throw
+    Not_available exception (experimental, separate archive).
 
 Build infrastructure:
   * src/discover.ml is used to discover available functions during configure
