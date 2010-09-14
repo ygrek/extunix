@@ -5,6 +5,7 @@
 exception Not_available of string
 
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
+external fdatasync : Unix.file_descr -> unit = "caml_extunix_fdatasync"
 
 HAVE EVENTFD
 external eventfd : int -> Unix.file_descr = "caml_extunix_eventfd"

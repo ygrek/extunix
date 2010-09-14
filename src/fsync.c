@@ -19,6 +19,11 @@ CAMLprim value caml_extunix_fsync(value v)
    CAMLreturn(Val_unit); 
 }
 
+CAMLprim value caml_extunix_fdatasync(value v)
+{
+  return caml_extunix_fsync(v);
+}
+
 #else
 
 #include <unistd.h>
@@ -32,6 +37,18 @@ CAMLprim value caml_extunix_fsync(value v_fd)
     caml_leave_blocking_section();
     if (0 != r)
       uerror("fsync",Nothing);
+    CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_fdatasync(value v_fd)
+{
+    CAMLparam1(v_fd);
+    int r = 0;
+    caml_enter_blocking_section();
+    r = fdatasync(Int_val(v_fd));
+    caml_leave_blocking_section();
+    if (0 != r)
+      uerror("fdatasync",Nothing);
     CAMLreturn(Val_unit);
 }
 
