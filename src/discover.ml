@@ -9,8 +9,13 @@ type arg =
   | S of string (* check symbol available *)
   | IFDEF of string (* check #ifdef *)
 
+type test =
+  | L of arg list
+  | ANY of arg list list
+
 type t = YES of (string * arg list) | NO of string
 
+(* FIXME *)
 let cc = ref "ocamlc -c -ccopt \"-Wall -Wextra -std=c89 -pedantic -o /dev/null\""
 
 let build_code args =
@@ -32,8 +37,7 @@ let build_code args =
   bprintf b "int main() { return 0; }\n";
   Buffer.contents b
 
-let discover (name,args) =
-  let code = build_code args in
+let execute code =
   let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
   output_string ch code;
   flush ch;
@@ -41,7 +45,20 @@ let discover (name,args) =
   let ret = Sys.command cmd in
   close_out ch;
   Sys.remove tmp;
-  if ret = 0 then YES (name,args) else (prerr_endline code; NO name)
+  ret = 0
+
+let discover (name,test) =
+  let rec loop args other =
+    let code = build_code args in
+    match execute code, other with
+    | false, [] -> prerr_endline code; NO name
+    | false, (x::xs) -> loop x xs
+    | true, _ -> YES (name,args)
+  in
+  match test with
+  | L l -> loop l []
+  | ANY (x::xs) -> loop x xs
+  | ANY [] -> assert false
 
 let show_c file result =
   let ch = open_out file in
@@ -95,12 +112,12 @@ let main config =
 let () = 
   main 
   [
-    "EVENTFD", [
+    "EVENTFD", L[
       I "sys/eventfd.h";
       T "eventfd_t";
       S "eventfd"; S "eventfd_read"; S "eventfd_write";
     ];
-    "ATFILE", [
+    "ATFILE", L[
       D "_ATFILE_SOURCE";
       I "fcntl.h";
       I "sys/types.h";
@@ -109,38 +126,42 @@ let () =
       IFDEF "S_IFREG"; IFDEF "O_DSYNC";
       S "fstatat"; S "openat"; S "unlinkat";
     ];
-    "DIRFD", [
+    "DIRFD", L[
       I "sys/types.h";
       I "dirent.h";
       S "dirfd";
     ];
-    "STATVFS", [
+    "STATVFS", L[
       I "sys/statvfs.h";
       T "struct statvfs";
       S "statvfs"; S "fstatvfs";
     ];
-    "SIOCGIFCONF", [
+    "SIOCGIFCONF", L[
       I "sys/ioctl.h";
       I "net/if.h";
       IFDEF "SIOCGIFCONF";
       S "ioctl";
       T "struct ifconf"; T "struct ifreq";
     ];
-    "INET_NTOA", [
+    "INET_NTOA", L[
       I "sys/socket.h";
       I "netinet/in.h";
       I "arpa/inet.h";
       S "inet_ntoa";
     ];
-    "UNAME", [
+    "UNAME", L[
       I "sys/utsname.h";
       T "struct utsname";
       S "uname";
     ];
-    "FADVISE", [
+    "FADVISE", L[
       I "fcntl.h";
       S "posix_fadvise"; S "posix_fadvise64";
       IFDEF "POSIX_FADV_NORMAL";
+    ];
+    "FALLOCATE", ANY[
+      [I "fcntl.h"; S "posix_fallocate"; S" posix_fallocate64"; ];
+      [IFDEF "WINDOWS"];
     ];
   ]
 

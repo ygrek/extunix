@@ -10,8 +10,6 @@
 
 #if defined(HAVE_FADVISE)
 
-#include <fcntl.h>
-
 static int caml_advises[] =
   {
     POSIX_FADV_NORMAL,

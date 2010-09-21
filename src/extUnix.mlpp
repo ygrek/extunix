@@ -81,10 +81,34 @@ type advice =
 
 external fadvise: Unix.file_descr -> int -> int -> advice -> unit = "caml_extunix_fadvise"
 
-module LargeFile =
-struct
-  external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
-end
+END
+
+HAVE FALLOCATE
+
+(** {2 posix_fallocate} *)
+(** Allocate disk space for file
+    @author Sylvain Le Gall
+  *)
+
+(** [fallocate fd off len] allocates disk space to ensure that subsequent writes
+    between [off] and [off + len] in [fd] will not fail because of lack of disk 
+    space. The file size is modified if [off + len] is bigger than the current size.
+  *)
+external fallocate: Unix.file_descr -> int -> int -> unit = "caml_extunix_fallocate"
 
 END
+
+(** File operations on large files *)
+module LargeFile =
+struct
+
+HAVE FADVISE
+  external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
+END
+
+HAVE FALLOCATE
+  external fallocate: Unix.file_descr -> int64 -> int64 -> unit = "caml_extunix_fallocate64"
+END
+
+end
 

@@ -1,22 +1,14 @@
-
 /*
- * fallocate C binding
+ * posix_fallocate binding
  *
  * author: Sylvain Le Gall
  *
  */
 
-#define _XOPEN_SOURCE 600
-#define _LARGEFILE64_SOURCE 1
+#define WANT_FALLOCATE
+#include "config.h"
 
-#include <caml/mlvalues.h>
-#include <caml/fail.h>
-#include <caml/callback.h>
-#include <caml/memory.h>
-#include <caml/alloc.h>
-#include <errno.h>
-
-#ifdef WINDOWS
+#if defined(WINDOWS)
 
 static void caml_fallocate_error (void)
 {
@@ -72,7 +64,7 @@ static void caml_fallocate_do (HANDLE hFile, __int64 i64Off, __int64 i64Len)
   caml_fallocate_lseek(hFile, i64Cur, FILE_BEGIN);
 };
 
-CAMLprim value caml_fallocate64 (value vfd, value voff, value vlen)
+CAMLprim value caml_extunix_fallocate64(value vfd, value voff, value vlen)
 {
   CAMLparam3(vfd, voff, vlen);
 
@@ -81,7 +73,7 @@ CAMLprim value caml_fallocate64 (value vfd, value voff, value vlen)
   CAMLreturn(Val_unit);
 };
 
-CAMLprim value caml_fallocate (value vfd, value voff, value vlen)
+CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
 {
   CAMLparam3(vfd, voff, vlen);
 
@@ -90,26 +82,21 @@ CAMLprim value caml_fallocate (value vfd, value voff, value vlen)
   CAMLreturn(Val_unit);
 };
 
-#else 
-#ifdef HAS_POSIX_FALLOCATE
+#else
 
-#include <fcntl.h>
+#if defined(HAVE_FALLOCATE)
 
 static void caml_fallocate_error (int errcode)
 {
-  if (errcode == ENOSYS)
+  if (errcode != 0)
   {
-    caml_raise_constant(*caml_named_value("Fallocate.NotSupported"));
-  }
-  else if (errcode != 0)
-  {
-    unix_error(errcode, "fallocate", Val_unit);
+    unix_error(errcode, "fallocate", Nothing);
   };
 };
 
-CAMLprim value caml_fallocate64 (value vfd, value voff, value vlen)
+CAMLprim value caml_extunix_fallocate64(value vfd, value voff, value vlen)
 {
-  int   errcode = ENOSYS;
+  int   errcode = 0;
   int   fd = -1;
   off64_t off = 0;
   off64_t len = 0;
@@ -127,7 +114,7 @@ CAMLprim value caml_fallocate64 (value vfd, value voff, value vlen)
   CAMLreturn(Val_unit);
 };
 
-CAMLprim value caml_fallocate (value vfd, value voff, value vlen)
+CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
 {
   int   errcode = 0;
   int   fd = -1;
@@ -147,21 +134,5 @@ CAMLprim value caml_fallocate (value vfd, value voff, value vlen)
   CAMLreturn(Val_unit);
 };
 
-#else
-
-CAMLprim value caml_fallocate64 (value vfd, value voff, value vlen)
-{
-  CAMLparam3(vfd, voff, vlen);
-  caml_raise_constant(*caml_named_value("Fallocate.NotSupported"));
-  CAMLreturn(Val_unit);
-};
-
-CAMLprim value caml_fallocate (value vfd, value voff, value vlen)
-{
-  CAMLparam3(vfd, voff, vlen);
-  caml_raise_constant(*caml_named_value("Fallocate.NotSupported"));
-  CAMLreturn(Val_unit);
-};
-
-#endif /* HAS_POSIX_FALLOCATE */
+#endif /* HAVE_FALLOCATE */
 #endif /* WINDOWS */
