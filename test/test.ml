@@ -18,11 +18,27 @@ let test_fadvise () =
   LargeFile.fadvise (Unix.descr_of_out_channel stdout) 0L 0L POSIX_FADV_SEQUENTIAL;
   ()
 
+let test_fallocate () =
+  let (name,ch) = Filename.open_temp_file "extunix" "test" in
+  try
+    let fd = Unix.descr_of_out_channel ch in
+    fallocate fd 0 1;
+    LargeFile.fallocate fd 1L 1L;
+    assert_equal (Unix.fstat fd).Unix.st_size 2;
+    close_out_noerr ch;
+    Unix.unlink name
+  with exn -> close_out_noerr ch; Unix.unlink name; raise exn
+
+let with_unix_error f () =
+  try f ()
+  with Unix.Unix_error(e,f,a) -> assert_failure (Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e))
+
 let () =
-  let _ = run_test_tt ("tests" >::: [
+  let tests = ("tests" >::: [
     "eventfd" >:: test_eventfd;
     "uname" >:: test_uname;
     "fadvise" >:: test_fadvise;
+    "fallocate" >:: test_fallocate;
   ]) in
-  ()
+  ignore (run_test_tt_main (test_decorate with_unix_error tests))
 

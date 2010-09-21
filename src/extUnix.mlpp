@@ -29,12 +29,6 @@ external unlinkat : Unix.file_descr -> string -> unit = "caml_extunix_unlinkat"
 external openat : Unix.file_descr -> string -> Unix.open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
 END
 
-HAVE SIOCGIFCONF
-(** [siocgifconf sock], where [sock] is any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
-  @return the list of interfaces and corresponfing addresses *)
-external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
-END
-
 HAVE UNAME
 
 (** uname
@@ -111,4 +105,36 @@ HAVE FALLOCATE
 END
 
 end
+
+(** {2 ioctl} *)
+
+(** Control the underlying device parameters of special files *)
+module Ioctl = struct
+
+HAVE SIOCGIFCONF
+(** [siocgifconf sock], where [sock] is any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
+  @return the list of interfaces and corresponfing addresses *)
+external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
+END
+
+HAVE TTY_IOCTL
+
+(** Enable RTS/CTS (hardware) flow control. See CRTSCTS in tcsetattr(3). FIXME use [Unix.tcsetattr] *)
+external crtscts : Unix.file_descr -> int = "caml_extunix_crtscts"
+
+(** Get the status of modem bits. See TIOCMGET in tty_ioctl(4). *)
+external tiocmget : Unix.file_descr -> int = "caml_extunix_ioctl_TIOCMGET"
+
+(** Set the status of modem bits. See TIOCMSET in tty_ioctl(4). *)
+external tiocmset : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMSET"
+
+(** Clear the indicated modem bits. See TIOCMBIC in tty_ioctl(4). *)
+external tiocmbic : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBIC"
+
+(** Set the indicated modem bits. See TIOCMBIS in tty_ioctl(4). *)
+external tiocmbis : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBIS"
+
+END
+
+end (* module Ioctl *)
 

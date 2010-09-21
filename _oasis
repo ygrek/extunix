@@ -25,7 +25,8 @@ Library extunix
   CCOpt: -Isrc # to find config.h
   CSources: config.h,
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
-            ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c
+            ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
+            tty_ioctl.c
   BuildDepends: unix
 
 Executable test

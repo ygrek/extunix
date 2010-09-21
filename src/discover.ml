@@ -163,5 +163,10 @@ let () =
       [I "fcntl.h"; S "posix_fallocate"; S" posix_fallocate64"; ];
       [IFDEF "WINDOWS"];
     ];
+    "TTY_IOCTL", L[
+      I "termios.h"; I "sys/ioctl.h";
+      S "ioctl"; S "tcsetattr"; S "tcgetattr";
+      IFDEF "CRTSCTS"; IFDEF "TCSANOW"; IFDEF "TIOCMGET"; IFDEF "TIOCMSET"; IFDEF "TIOCMBIC"; IFDEF "TIOCMBIS";
+    ];
   ]
 
