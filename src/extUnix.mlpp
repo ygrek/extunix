@@ -119,7 +119,8 @@ END
 
 HAVE TTY_IOCTL
 
-(** Enable RTS/CTS (hardware) flow control. See CRTSCTS in tcsetattr(3). FIXME use [Unix.tcsetattr] *)
+(** Enable RTS/CTS (hardware) flow control. See CRTSCTS in tcsetattr(3). 
+    {b FIXME this is likely to disappear when separate interface for [tcsetattr] and [tcgetattr] gets implemented} *)
 external crtscts : Unix.file_descr -> int = "caml_extunix_crtscts"
 
 (** Get the status of modem bits. See TIOCMGET in tty_ioctl(4). *)
@@ -137,4 +138,8 @@ external tiocmbis : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBI
 END
 
 end (* module Ioctl *)
+
+HAVE TTYNAME
+external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
+END
 

@@ -29,6 +29,10 @@ let test_fallocate () =
     Unix.unlink name
   with exn -> close_out_noerr ch; Unix.unlink name; raise exn
 
+let test_unistd () =
+  ignore (ttyname Unix.stdin);
+  ignore (ttyname Unix.stdout)
+
 let with_unix_error f () =
   try f ()
   with Unix.Unix_error(e,f,a) -> assert_failure (Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e))
@@ -39,6 +43,7 @@ let () =
     "uname" >:: test_uname;
     "fadvise" >:: test_fadvise;
     "fallocate" >:: test_fallocate;
+    "unistd" >:: test_unistd;
   ]) in
   ignore (run_test_tt_main (test_decorate with_unix_error tests))
 

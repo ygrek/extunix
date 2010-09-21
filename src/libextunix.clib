@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8137da974c6d24ac792e596439f0b7cd)
+# DO NOT EDIT (digest: cf7f0dec8b9cc1e9a033c1f3b598afeb)
 eventfd.o
 dirfd.o
 fsync.o
@@ -10,4 +10,5 @@ uname.o
 fadvise.o
 fallocate.o
 tty_ioctl.o
+unistd.o
 # OASIS_STOP

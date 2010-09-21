@@ -1,8 +1,5 @@
 /*
- * rx64.c
- * ------
  * Copyright : (c) 2010, Stéphane Glondu <steph@glondu.net>
- * Licence   : BSD3
  */
 
 #define WANT_TTY_IOCTL
@@ -10,7 +7,7 @@
 
 #if defined(HAVE_TTY_IOCTL)
 
-/* FIXME use Unix.tcsetattr */
+/* FIXME implement separate interface for tcsetattr/tcgetattr */
 CAMLprim value caml_extunix_crtscts(value mlfd)
 {
   CAMLparam1(mlfd);
