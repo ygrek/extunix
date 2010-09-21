@@ -24,26 +24,17 @@ struct
       <:str_item< let $lid:i$ = $make_dummy_f <:expr< raise (Not_available $str:i$) >> t$ >>
   | e -> e
 
-  let invalid_external e =
-    (* extra StSem wrap to match with <:str_item< >> *)
-    (Ast.map_str_item invalid_external)#str_item (Ast.StSem (Loc.ghost,e,(Ast.StNil Loc.ghost)))
+  let invalid_external e = (Ast.map_str_item invalid_external)#str_item e
 
   EXTEND Gram
-    GLOBAL: implem;
-    implem:
-      [ [ "HAVE"; name=UIDENT; si=str_items; (tail,x)=SELF ->
-        let si = match Config.have name, !all with
-        | Some true, _ -> si
-        | Some false, true -> List.map invalid_external si
-        | Some false, false -> []
-        | None, _ -> failwith ("Unregistered feature : " ^ name)
-        in
-        si @ tail, x
-      ] ]
-    ;
-    str_items:
-      [ [ si=str_item; semi; sil=SELF -> si::sil
-        | "END" -> []
+    GLOBAL: str_item;
+    str_item:
+      [ [ "HAVE"; name=UIDENT; si=str_items; "END" ->
+          match Config.have name, !all with
+          | Some true, _ -> si
+          | Some false, true -> invalid_external <:str_item< $si$ >>
+          | Some false, false -> <:str_item<>>
+          | None, _ -> failwith ("Unregistered feature : " ^ name)
       ] ]
     ;
   END
