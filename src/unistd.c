@@ -1,5 +1,6 @@
 
 #define WANT_TTYNAME
+#define WANT_PGID
 #include "config.h"
 
 #if defined(HAVE_TTYNAME)
@@ -15,6 +16,27 @@ CAMLprim value caml_extunix_ttyname(value v_fd)
   } else {
     uerror("ttyname", Nothing);
   }
+}
+
+#endif
+
+#if defined(HAVE_PGID)
+
+CAMLprim value caml_extunix_setpgid(value v_pid, value v_pgid)
+{
+  CAMLparam2(v_pid, v_pgid);
+  if (0 != setpgid(Int_val(v_pid), Int_val(v_pgid)))
+    uerror("setpgid",Nothing);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_getpgid(value v_pid)
+{
+  CAMLparam1(v_pid);
+  int pgid = getpgid(Int_val(v_pid));
+  if (pgid < 0)
+    uerror("getpgid",Nothing);
+  CAMLreturn(Val_int(pgid));
 }
 
 #endif

@@ -143,3 +143,16 @@ HAVE TTYNAME
 external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
 END
 
+HAVE PGID
+
+(** [setpgid pid pgid] sets the process group of the process specified by [pid] to [pgid].
+    If [pid] is zero, then the process ID of the calling process is used. If
+    [pgid] is zero, then the PGID of the process specified by [pid] is made the same as its process ID. *)
+external setpgid : int -> int -> unit = "caml_extunix_setpgid"
+
+(** [getpgid pid] returns the PGID of the process specified by [pid].
+    If [pid] is zero, the process ID of the calling process is used. *)
+external getpgid : int -> int = "caml_extunix_getpgid"
+
+END
+

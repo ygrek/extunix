@@ -168,9 +168,7 @@ let () =
       S "ioctl"; S "tcsetattr"; S "tcgetattr";
       IFDEF "CRTSCTS"; IFDEF "TCSANOW"; IFDEF "TIOCMGET"; IFDEF "TIOCMSET"; IFDEF "TIOCMBIC"; IFDEF "TIOCMBIS";
     ];
-    "TTYNAME", L[
-      I "unistd.h";
-      S "ttyname";
-    ];
+    "TTYNAME", L[ I "unistd.h"; S "ttyname"; ];
+    "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid" ];
   ]
 
