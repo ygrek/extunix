@@ -156,3 +156,17 @@ external getpgid : int -> int = "caml_extunix_getpgid"
 
 END
 
+HAVE SETREUID
+
+(** [setreuid ruid euid] sets real and effective user IDs of the calling process.
+    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
+    @see "setreuid(2)" manual *)
+external setreuid : int -> int -> unit = "caml_extunix_setreuid"
+
+(** [setregid rgid egid] sets real and effective group IDs of the calling process.
+    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged. 
+    @see "setregid(2)" manual *)
+external setregid : int -> int -> unit = "caml_extunix_setregid"
+
+END
+

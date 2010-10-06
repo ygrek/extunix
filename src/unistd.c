@@ -1,6 +1,7 @@
 
 #define WANT_TTYNAME
 #define WANT_PGID
+#define WANT_SETREUID
 #include "config.h"
 
 #if defined(HAVE_TTYNAME)
@@ -37,6 +38,28 @@ CAMLprim value caml_extunix_getpgid(value v_pid)
   if (pgid < 0)
     uerror("getpgid",Nothing);
   CAMLreturn(Val_int(pgid));
+}
+
+#endif
+
+#if defined(HAVE_SETREUID)
+
+CAMLprim value caml_extunix_setreuid(value v_ruid, value v_euid)
+{
+  CAMLparam2(v_ruid,v_euid);
+  int r = setreuid(Int_val(v_ruid), Int_val(v_euid));
+  if (r < 0)
+    uerror("setreuid", Nothing);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_setregid(value v_rgid, value v_egid)
+{
+  CAMLparam2(v_rgid,v_egid);
+  int r = setregid(Int_val(v_rgid), Int_val(v_egid));
+  if (r < 0)
+    uerror("setregid", Nothing);
+  CAMLreturn(Val_unit);
 }
 
 #endif
