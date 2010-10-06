@@ -1,6 +1,6 @@
 
-ExtUnix
-=======
+ExtUnix OCaml library
+=====================
 
 A collection of thin bindings to various low-level system API.
 
@@ -18,8 +18,41 @@ Why?
 Currently, everybody writes his own bindings to fulfil particular needs. Most
 of the system API don't deserve fully fledged library.
 
-The ExtUnix project allow to collect them in one place. Read the "ExtUnix
+The ExtUnix project aims to collect these in one place. Read the "ExtUnix
 integration requirements" to know what kind of system API we can integrate.
+
+Installation
+------------
+
+Dependencies :
+  * ocaml and ocamlfind for build and installation
+  * oUnit for tests
+
+Build and install :
+
+  ./configure
+  make
+  make install
+
+Alternatively use the underlying OASIS build system directly (plain ocaml,
+no sh and make needed) :
+
+  ocaml setup.ml -configure
+  ocaml setup.ml -build
+  ocaml setup.ml -install
+
+See other available targets :
+
+  ocaml setup.ml -help
+
+Usage example :
+
+  $ ocaml
+  # #use "topfind";;
+  # #require "extunix";;
+  # module U = ExtUnix.Specific;;
+  # U.ttyname Unix.stdout;;
+  - : string = "/dev/pts/8"
 
 Guidelines
 ----------
@@ -33,19 +66,18 @@ For OCaml programming style, we follow Unix module:
     operations, (FIXME) optionally provide ST variants
 
 Portability: 
-  * Minimize (eliminate) shell scripting during build (think windows :) )
+  * No shell scripting for build and install (think windows :) )
   * Write portable C code (use compiler options to catch compatibility issues),
     NB: msvc doesn't support C99.
   * Provide module (ExtUnix.Specific) exposing only functions available on the
     platform where library is built - i.e. guaranteed to not throw
-    Not_available exception (experimental, separate archive).
+    Not_available exception (experimental).
 
 Build infrastructure:
   * src/discover.ml is used to discover available functions during configure
     step.
   * Generated config.h describes "features" discovered - it is responsible for
-    inclusion of system-specific headers (currently it provides only "AND"
-    check, implement "OR" check - say when C header names differ) - this
+    inclusion of system-specific headers - this
     ensures coherent result at configure and build steps.
   * Generated config.ml describes the same features for the ocaml syntax
     extension src/pa_have.ml, which preprocesses src/extUnix.mlpp and generates
