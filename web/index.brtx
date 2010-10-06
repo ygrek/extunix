@@ -1,0 +1,33 @@
+{bypass end}
+<link rel="alternate" title="project activity" href="https://forge.ocamlcore.org/export/rss20_activity.php?group_id=175" type="application/rss+xml"/>
+<link rel="alternate" title="commits" href="http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=rss" type="application/rss+xml"/>
+{end}
+
+{section 1|ExtUnix}
+
+{p}Thin bindings to various low-level system APIs which are not covered by Unix module.
+
+{begin list}
+{*}{link https://forge.ocamlcore.org/projects/extunix/|OCamlCore project page}
+#{*}{link https://forge.ocamlcore.org/frs/?group_id=175|Download}
+{*}{link https://forge.ocamlcore.org/tracker/?group_id=175|Bug tracker}
+{*}Code
+{begin list}
+  {*}{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=summary|gitweb}
+  {*}http://git.ocamlcore.org/extunix/extunix.git/
+  {*}git+ssh://forge.ocamlcore.org/gitroot/extunix/extunix.git
+{end}
+{*}{link api/index.html|Online API documentation}
+{*}{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=blob_plain;f=README.txt;hb=HEAD|README}
+{end}
+
+{bypass end}<hr/>{end}
+{p}2010-09-14
+{bypass end}
+<a href="http://oasis.forge.ocamlcore.org/">
+  <img
+  src="http://oasis.forge.ocamlcore.org/powered-by-oasis.png"
+  alt="OASIS" style="border: none; float: right;" />
+</a>
+{end}
+
