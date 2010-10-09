@@ -2,6 +2,10 @@
 open OUnit
 open ExtUnix.All
 
+let with_unix_error f () =
+  try f ()
+  with Unix.Unix_error(e,f,a) -> assert_failure (Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e))
+
 let test_eventfd () =
   let e = eventfd 2 in
   assert_equal 2L (eventfd_read e);
@@ -29,6 +33,17 @@ let test_fallocate () =
     Unix.unlink name
   with exn -> close_out_noerr ch; Unix.unlink name; raise exn
 
+(* Copied from oUnit.ml *)
+(* Utility function to manipulate test *)
+let rec test_decorate g tst =
+  match tst with
+    | TestCase f -> 
+        TestCase (g f)
+    | TestList tst_lst ->
+        TestList (List.map (test_decorate g) tst_lst)
+    | TestLabel (str, tst) ->
+        TestLabel (str, test_decorate g tst)
+
 let test_unistd =
   [
   "ttyname" >:: begin fun () ->
@@ -43,10 +58,6 @@ let test_unistd =
     assert_equal (getpgid 0) pgid;
   end;
   ]
-
-let with_unix_error f () =
-  try f ()
-  with Unix.Unix_error(e,f,a) -> assert_failure (Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e))
 
 let () =
   let tests = ("tests" >::: [
