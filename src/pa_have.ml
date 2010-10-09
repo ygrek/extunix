@@ -13,27 +13,30 @@ struct
   include Syntax
 
   let all = ref false
+  let verbose = ref false
 
   let rec make_dummy_f body = function
-  | <:ctyp@loc< $Ast.TyLab (_,s,t)$ -> $tl$ >> -> <:expr@loc< fun ~($s$:$t$) -> $make_dummy_f body tl$ >>
+  | <:ctyp@loc< $Ast.TyLab (_,s,t)$ -> $tl$ >> -> <:expr@loc< fun ~ $s$:(_:$t$) -> $make_dummy_f body tl$ >>
   | <:ctyp@loc< $t$ -> $tl$ >> -> <:expr@loc< fun (_:$t$) -> $make_dummy_f body tl$ >>
   | <:ctyp< $t$ >> -> let loc = Loc.ghost in <:expr@loc< ($body$ : $t$) >>
 
   let invalid_external = function
-  | <:str_item@_loc< external $i$ : $t$ = $sl$ >> -> 
-      <:str_item< let $lid:i$ = $make_dummy_f <:expr< raise (Not_available $str:i$) >> t$ >>
+  | <:str_item@_loc< external $i$ : $t$ = $sl$ >> ->
+      <:str_item< value $lid:i$ = $make_dummy_f <:expr< raise (Not_available $str:i$) >> t$; >>
   | e -> e
 
   let invalid_external e = (Ast.map_str_item invalid_external)#str_item e
+
+  let show name s = if !verbose then Printf.eprintf "%-20s %s\n%!" name s
 
   EXTEND Gram
     GLOBAL: str_item;
     str_item:
       [ [ "HAVE"; name=UIDENT; si=str_items; "END" ->
           match Config.have name, !all with
-          | Some true, _ -> si
-          | Some false, true -> invalid_external <:str_item< $si$ >>
-          | Some false, false -> <:str_item<>>
+          | Some true, _ -> show name "ok"; si
+          | Some false, true -> show name "rewrite"; invalid_external <:str_item< $si$ >>
+          | Some false, false -> show name "drop"; <:str_item<>>
           | None, _ -> failwith ("Unregistered feature : " ^ name)
       ] ]
     ;
@@ -42,6 +45,7 @@ struct
   ;;
 
   Camlp4.Options.add "-gen-all" (Arg.Set all) " generate values from all HAVE sections";;
+  Camlp4.Options.add "-gen-verbose" (Arg.Set verbose) " verbose mode";;
 
 end
 
