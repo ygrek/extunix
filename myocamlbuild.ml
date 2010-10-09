@@ -469,20 +469,21 @@ let my_dispatch = MyOCamlbuildBase.dispatch_combine
         MyOCamlbuildFindlib.dispatch;
         begin function
         | After_rules ->
-            let gen extra prod =
-              rule ("gen "^extra) ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/config.cmo"] ~prod
+            let gen gen_all prod =
+              rule ("generate " ^ if gen_all then "all" else "specific")
+              ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/config.cmo"] 
+              ~prod
               (fun _ _ -> Cmd 
-                (S[P"camlp4of"; 
+                (S([P"camlp4o";
                   T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
                   A "src/config.cmo"; A"src/pa_have.cmo";
-                  A extra;
                   A"pr_o.cmo";
                   A"-impl"; A"src/extUnix.mlpp";
                   A"-o"; A prod;
-                  ]))
+                  ] @ if gen_all then [A"-gen-all"] else [])))
             in
-            gen "-gen-all" "src/extUnixAll.ml";
-            gen "-D NOT_USED" "src/extUnixSpecific.ml";
+            gen true "src/extUnixAll.ml";
+            gen false "src/extUnixSpecific.ml";
         | _ -> ()
         end;
       ]
