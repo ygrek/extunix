@@ -175,5 +175,6 @@ let () =
       [I "unistd.h"; S "fsync"; S "fdatasync"; ];
       [IFDEF "WINDOWS"];
     ];
+    "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
   ]
 

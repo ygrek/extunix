@@ -172,3 +172,10 @@ external setregid : int -> int -> unit = "caml_extunix_setregid"
 
 END
 
+HAVE REALPATH
+(** [realpath path]
+    @return the canonicalized absolute pathname of [path]
+    @see "realpath(2)" manual *)
+external realpath : string -> string = "caml_extunix_realpath"
+END
+

@@ -59,6 +59,14 @@ let test_unistd =
   end;
   ]
 
+let test_realpath () =
+  let printer x = x in
+  assert_equal ~printer (Unix.getcwd ()) (realpath ".");
+  assert_equal ~printer (Unix.getcwd ()) (realpath "./././/./");
+  assert_equal ~printer "/" (realpath "///");
+  assert_equal ~printer "/" (realpath "/../../");
+  ()
+
 let () =
   let tests = ("tests" >::: [
     "eventfd" >:: test_eventfd;
@@ -66,6 +74,7 @@ let () =
     "fadvise" >:: test_fadvise;
     "fallocate" >:: test_fallocate;
     "unistd" >::: test_unistd;
+    "realpath" >:: test_realpath;
   ]) in
   ignore (run_test_tt_main (test_decorate with_unix_error tests))
 
