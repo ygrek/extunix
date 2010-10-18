@@ -171,5 +171,9 @@ let () =
     "TTYNAME", L[ I "unistd.h"; S "ttyname"; ];
     "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid" ];
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
+    "FSYNC", ANY[
+      [I "unistd.h"; S "fsync"; S "fdatasync"; ];
+      [IFDEF "WINDOWS"];
+    ];
   ]
 
