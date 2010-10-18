@@ -161,7 +161,7 @@ let () =
     ];
     "FALLOCATE", ANY[
       [I "fcntl.h"; S "posix_fallocate"; S" posix_fallocate64"; ];
-      [IFDEF "WINDOWS"];
+      [IFDEF "WIN32"];
     ];
     "TTY_IOCTL", L[
       I "termios.h"; I "sys/ioctl.h";
@@ -173,7 +173,7 @@ let () =
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[
       [I "unistd.h"; S "fsync"; S "fdatasync"; ];
-      [IFDEF "WINDOWS"];
+      [IFDEF "WIN32"];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
   ]
