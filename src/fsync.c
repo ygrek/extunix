@@ -2,6 +2,8 @@
 #define WANT_FSYNC
 #include "config.h"
 
+#if defined(HAVE_FSYNC)
+
 #if defined(WIN32)
 
 CAMLprim value caml_extunix_fsync(value v)
@@ -27,8 +29,6 @@ CAMLprim value caml_extunix_fdatasync(value v)
 
 #else
 
-#if defined(HAVE_FSYNC)
-
 CAMLprim value caml_extunix_fsync(value v_fd)
 {
     CAMLparam1(v_fd);
@@ -53,6 +53,6 @@ CAMLprim value caml_extunix_fdatasync(value v_fd)
     CAMLreturn(Val_unit);
 }
 
-#endif /* HAVE_FSYNC */
 #endif /* WIN32 */
+#endif /* HAVE_FSYNC */
 

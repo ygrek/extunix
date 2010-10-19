@@ -15,45 +15,82 @@ type test =
 
 type t = YES of (string * arg list) | NO of string
 
-(* FIXME *)
-let cc = ref "ocamlc -c -ccopt \"-Wall -Wextra -std=c89 -pedantic -o /dev/null\""
+let ocamlc = ref "ocamlc"
+let ext_obj = ref ".o"
+
+let () =
+  let args = [
+    "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
+    "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
+  ] in
+  Arg.parse args (failwith) ("Options are:")
+
+let print_define b s = bprintf b "#define %s\n" s
+let print_include b s = bprintf b "#include <%s>\n" s
+let filter_map f l = List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l
+let get_defines = filter_map (function D s -> Some s | _ -> None)
+let get_includes = filter_map (function I s -> Some s | _ -> None)
+
+let config_defines = [
+  "_POSIX_C_SOURCE 200112L";
+  "_XOPEN_SOURCE 600";
+  "_BSD_SOURCE";
+  "_LARGEFILE64_SOURCE";
+  "WIN32_LEAN_AND_MEAN";
+  "_WIN32_WINNT 0x500";
+  "CAML_NAME_SPACE";
+  ]
+
+let config_includes = [
+  "caml/memory.h";
+  "caml/fail.h";
+  "caml/unixsupport.h";
+  "caml/signals.h";
+  "caml/alloc.h";
+  ]
 
 let build_code args =
   let b = Buffer.create 10 in
   let pr fmt = ksprintf (fun s -> Buffer.add_string b (s^"\n")) fmt in
   let fresh = let n = ref 0 in fun () -> incr n; !n in
-  pr "#define _POSIX_C_SOURCE 200112L";
-  pr "#define _XOPEN_SOURCE 600";
-  pr "#define _BSD_SOURCE";
-  pr "#define _LARGEFILE64_SOURCE";
-  pr "#include <stddef.h>"; (* size_t *)
+  List.iter (print_define b) config_defines;
+  List.iter (print_define b) (get_defines args);
+  List.iter (print_include b) config_includes;
+  List.iter (print_include b) (get_includes args);
+(*  pr "#include <stddef.h>"; (* size_t *)*)
   List.iter begin function
-    | I s -> pr "#include <%s>" s
+    | I s -> ()
     | T s -> pr "%s var_%d;" s (fresh ())
-    | D s -> pr "#define %s" s
+    | D s -> ()
     | IFDEF s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     end args;
-  bprintf b "int main() { return 0; }\n";
+  pr "int main() { return 0; }";
   Buffer.contents b
 
 let execute code =
   let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
   output_string ch code;
   flush ch;
-  let cmd = sprintf "%s %s" !cc (Filename.quote tmp) in
+  let cmd = sprintf "%s -c %s" !ocamlc (Filename.quote tmp) in
   let ret = Sys.command cmd in
   close_out ch;
   Sys.remove tmp;
+  (* assumption: C compiler puts object file in current directory *)
+  let base = Filename.chop_extension (Filename.basename tmp) in
+  begin try Sys.remove (base ^ !ext_obj) with Sys_error _ -> () end;
   ret = 0
 
 let discover (name,test) =
+  print_string ("checking " ^ name ^ (String.make (20 - String.length name) '.'));
   let rec loop args other =
     let code = build_code args in
     match execute code, other with
-    | false, [] -> prerr_endline code; NO name
+    | false, [] -> 
+(*         prerr_endline code;  *)
+        print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
-    | true, _ -> YES (name,args)
+    | true, _ -> print_endline "ok"; YES (name,args)
   in
   match test with
   | L l -> loop l []
@@ -61,37 +98,40 @@ let discover (name,test) =
   | ANY [] -> assert false
 
 let show_c file result =
-  let ch = open_out file in
-  let pr fmt = ksprintf (fun s -> output_string ch (s^"\n")) fmt in
-  pr "/* start discover */";
-  pr "#define _POSIX_C_SOURCE 200112L";
-  pr "#define _XOPEN_SOURCE 600";
-  pr "#define _BSD_SOURCE";
-  pr "#define _LARGEFILE64_SOURCE";
+  let b = Buffer.create 10 in
+  let pr fmt = ksprintf (fun s -> Buffer.add_string b (s^"\n")) fmt in
   pr "";
+  List.iter (print_define b) config_defines;
   List.iter begin function
+    | NO _ -> ();
     | YES (name,args) ->
-        pr "#define HAVE_%s" name;
-        pr "#if defined(WANT_%s)" name;
-        List.iter (function
-          | I s -> pr "#include <%s>" s
-          | D s -> pr "#define %s" s
-          | S _ | T _ | IFDEF _ -> ()) args;
-        pr "#endif";
-        pr "";
-    | NO name ->
-      pr "#undef HAVE_%s" name;
-      pr "";
+        match get_defines args with
+        | [] -> ()
+        | l ->
+          pr "";
+          pr "#if defined(WANT_%s)" name;
+          List.iter (print_define b) l;
+          pr "#endif";
   end result;
-  pr "/* discover done */";
   pr "";
-  pr "#define CAML_NAME_SPACE";
-  pr "#include <caml/memory.h>";
-  pr "#include <caml/fail.h>";
-  pr "#include <caml/unixsupport.h>";
-  pr "#include <caml/signals.h>";
-  pr "#include <caml/alloc.h>";
+  List.iter (print_include b) config_includes;
+  List.iter begin function
+    | NO name ->
+      pr "";
+      pr "#undef HAVE_%s" name;
+    | YES (name,args) ->
+        pr "";
+        pr "#define HAVE_%s" name;
+        match get_includes args with
+        | [] -> ()
+        | l ->
+          pr "#if defined(WANT_%s)" name;
+          List.iter (print_include b) l;
+          pr "#endif";
+  end result;
   pr "";
+  let ch = open_out file in
+  Buffer.output_buffer ch b;
   close_out ch
 
 let show_ml file result =
@@ -161,7 +201,7 @@ let () =
     ];
     "FALLOCATE", ANY[
       [I "fcntl.h"; S "posix_fallocate"; S" posix_fallocate64"; ];
-      [IFDEF "WIN32"];
+      [IFDEF "WIN32"; S "GetFileSizeEx"; ];
     ];
     "TTY_IOCTL", L[
       I "termios.h"; I "sys/ioctl.h";
@@ -173,7 +213,7 @@ let () =
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[
       [I "unistd.h"; S "fsync"; S "fdatasync"; ];
-      [IFDEF "WIN32"];
+      [IFDEF "WIN32"; S "FlushFileBuffers"; ];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
   ]

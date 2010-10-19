@@ -8,6 +8,8 @@
 #define WANT_FALLOCATE
 #include "config.h"
 
+#if defined(HAVE_FALLOCATE)
+
 #if defined(WIN32)
 
 static void caml_fallocate_error (void)
@@ -84,8 +86,6 @@ CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
 
 #else
 
-#if defined(HAVE_FALLOCATE)
-
 static void caml_fallocate_error (int errcode)
 {
   if (errcode != 0)
@@ -134,5 +134,5 @@ CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
   CAMLreturn(Val_unit);
 };
 
-#endif /* HAVE_FALLOCATE */
 #endif /* WIN32 */
+#endif /* HAVE_FALLOCATE */

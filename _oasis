@@ -14,7 +14,7 @@ Description:
   Thin bindings to various low-level system APIs (often non-portable)
   which are not covered by Unix module.
 
-PostConfCommand: ocaml src/discover.ml
+PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
 PreDistCleanCommand: $rm src/config.h
 PostDistCleanCommand: $rm src/config.ml # workaround bug in oasis 0.2.0~alpha1
 
