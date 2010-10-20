@@ -56,8 +56,9 @@ END
 
 HAVE FADVISE
 
-(** {2 posix_fadvise} *)
-(** @author Sylvain Le Gall *)
+(** {2 posix_fadvise}
+
+{b Author:} Sylvain Le Gall *)
 
 type advice =
   | POSIX_FADV_NORMAL     (** Indicates that the application has no advice to
@@ -83,7 +84,8 @@ HAVE FALLOCATE
 
 (** {2 posix_fallocate} *)
 (** Allocate disk space for file
-    @author Sylvain Le Gall
+
+    {b Author:} Sylvain Le Gall
   *)
 
 (** [fallocate fd off len] allocates disk space to ensure that subsequent writes
@@ -141,6 +143,8 @@ END
 
 end (* module Ioctl *)
 
+(** {2 Miscellaneous} *)
+
 HAVE TTYNAME
 external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
 END
@@ -177,5 +181,69 @@ HAVE REALPATH
     @return the canonicalized absolute pathname of [path]
     @see "realpath(2)" manual *)
 external realpath : string -> string = "caml_extunix_realpath"
+END
+
+HAVE SIGNALFD
+
+(** {2 signalfd} *)
+
+(** OCaml bindings for signalfd(2) and related functions
+
+    {b Author:} Kaustuv Chaudhuri <kaustuv.chaudhuri\@inria.fr>
+*)
+
+(******************************************************************************)
+(* signalfd bindings                                                          *)
+(*                                                                            *)
+(* NO COPYRIGHT -- RELEASED INTO THE PUBLIC DOMAIN                            *)
+(*                                                                            *)
+(* Author: Kaustuv Chaudhuri <kaustuv.chaudhuri@inria.fr>                     *)
+(******************************************************************************)
+
+(** [signalfd ?fd sigs flags ()]
+    If the first optional argument is omitted, then a new file descriptor is allocated.
+    Otherwise, the given file descriptor is modified (in which case it
+    must have been created with [signalfd] previously). When you are
+    done with the fd, remember to {!Unix.close} it. Do not forget
+    to block [sigs] with {!Unix.sigprocmask} to prevent signal handling
+    according to default dispositions.
+    @see "signalfd(2)" manual
+    *)
+external signalfd : ?fd:Unix.file_descr -> sigs:int list -> flags:int list -> unit -> Unix.file_descr ="caml_extunix_signalfd"
+
+(** This type represents signal information that is read(2) from the
+    signalfd. *)
+type ssi
+
+(** Blocking read(2) on a signalfd. Has undefined behaviour on
+    non-signalfds. Every successful read consumes a pending signal. *)
+external signalfd_read    : Unix.file_descr -> ssi = "caml_extunix_signalfd_read"
+
+(** {6 Functions to query the signal information structure.} *)
+
+(** Get the signal value. This form is compatible with the signal
+    values defined in the standard {!Sys} module.
+
+    See signalfd(2) for the details of the remaining functions. Most
+    of these integers are actually unsigned. *)
+external ssi_signo_sys    : ssi -> int   = "caml_extunix_ssi_signo_sys"
+
+external ssi_signo        : ssi -> int32 = "caml_extunix_ssi_signo"
+external ssi_errno        : ssi -> int32 = "caml_extunix_ssi_errno"
+external ssi_code         : ssi -> int32 = "caml_extunix_ssi_code"
+external ssi_pid          : ssi -> int32 = "caml_extunix_ssi_pid"
+external ssi_uid          : ssi -> int32 = "caml_extunix_ssi_uid"
+external ssi_fd           : ssi -> Unix.file_descr = "caml_extunix_ssi_fd"
+external ssi_tid          : ssi -> int32 = "caml_extunix_ssi_tid"
+external ssi_band         : ssi -> int32 = "caml_extunix_ssi_band"
+external ssi_overrun      : ssi -> int32 = "caml_extunix_ssi_overrun"
+external ssi_trapno       : ssi -> int32 = "caml_extunix_ssi_trapno"
+external ssi_status       : ssi -> int32 = "caml_extunix_ssi_status"
+external ssi_int          : ssi -> int32 = "caml_extunix_ssi_int"
+external ssi_ptr          : ssi -> int64 = "caml_extunix_ssi_ptr"
+external ssi_utime        : ssi -> int64 = "caml_extunix_ssi_utime"
+external ssi_stime        : ssi -> int64 = "caml_extunix_ssi_stime"
+external ssi_addr         : ssi -> int64 = "caml_extunix_ssi_addr"
+
 END
 

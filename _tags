@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 4f800207afd9c052a1f391ffef10f052)
+# DO NOT EDIT (digest: 1040cb3dc2490fb8f19a7cc5a837cfd0)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -15,6 +15,7 @@
 "src/tty_ioctl.c": oasis_library_extunix_ccopt
 "src/unistd.c": oasis_library_extunix_ccopt
 "src/stdlib.c": oasis_library_extunix_ccopt
+"src/signalfd.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
@@ -29,6 +30,7 @@
 "src/tty_ioctl.c": pkg_unix
 "src/unistd.c": pkg_unix
 "src/stdlib.c": pkg_unix
+"src/signalfd.c": pkg_unix
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix
