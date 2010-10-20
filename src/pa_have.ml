@@ -16,7 +16,8 @@ struct
   let verbose = ref false
 
   let rec make_dummy_f body = function
-  | <:ctyp@loc< $Ast.TyLab (_,s,t)$ -> $tl$ >> -> <:expr@loc< fun ~ $s$:(_:$t$) -> $make_dummy_f body tl$ >>
+  | <:ctyp@loc< ~ $s$ : $t$ -> $tl$ >> -> <:expr@loc< fun ~ $s$:(_:$t$) -> $make_dummy_f body tl$ >>
+  | <:ctyp@loc< ? $s$ : $t$ -> $tl$ >> -> <:expr@loc< fun ? $s$:(_:option $t$) -> $make_dummy_f body tl$ >>
   | <:ctyp@loc< $t$ -> $tl$ >> -> <:expr@loc< fun (_:$t$) -> $make_dummy_f body tl$ >>
   | <:ctyp< $t$ >> -> let loc = Loc.ghost in <:expr@loc< ($body$ : $t$) >>
 
