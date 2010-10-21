@@ -18,11 +18,16 @@ PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
 PreDistCleanCommand: $rm src/config.h
 PostDistCleanCommand: $rm src/config.ml # workaround bug in oasis 0.2.0~alpha1
 
+Flag strict
+  Description: Strict compile-time checks
+  Default: true
+
 Library extunix
   Path: src/
   Modules: ExtUnix
   InternalModules: ExtUnixAll, ExtUnixSpecific
-  CCOpt: -Isrc # to find config.h
+  if flag(strict) && ccomp_type(cc)
+    CCOpt: -std=c89 -pedantic
   CSources: config.h,
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,

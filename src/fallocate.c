@@ -92,7 +92,7 @@ static void caml_fallocate_error (int errcode)
   {
     unix_error(errcode, "fallocate", Nothing);
   };
-};
+}
 
 CAMLprim value caml_extunix_fallocate64(value vfd, value voff, value vlen)
 {
@@ -112,7 +112,7 @@ CAMLprim value caml_extunix_fallocate64(value vfd, value voff, value vlen)
   caml_fallocate_error(errcode);
 
   CAMLreturn(Val_unit);
-};
+}
 
 CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
 {
@@ -132,7 +132,7 @@ CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
   caml_fallocate_error(errcode);
 
   CAMLreturn(Val_unit);
-};
+}
 
 #endif /* WIN32 */
 #endif /* HAVE_FALLOCATE */

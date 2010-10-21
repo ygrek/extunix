@@ -24,6 +24,8 @@ value caml_extunix_signalfd(value vfd, value vsigs, value vflags, value v_unit)
 {
   CAMLparam4(vfd, vsigs, vflags, v_unit);
   int fd = ((Val_none == vfd) ? -1 : Int_val(Some_val(vfd)));
+  int flags = 0;
+  int ret = 0;
   sigset_t ss;
   sigemptyset (&ss);
   while (!Is_long (vsigs)) {
@@ -31,14 +33,13 @@ value caml_extunix_signalfd(value vfd, value vsigs, value vflags, value v_unit)
     if (sigaddset (&ss, sig) < 0) uerror ("sigaddset", Nothing);
     vsigs = Field (vsigs, 1);
   }
-  int flags = 0;
   while (!Is_long (vflags)) {
     int f = Int_val (Field (vflags, 0));
     if (SFD_NONBLOCK == f) flags |= SFD_NONBLOCK;
     if (SFD_CLOEXEC == f)  flags |= SFD_CLOEXEC;
     vflags = Field (vflags, 1);
   }
-  int ret = signalfd (fd, &ss, flags);
+  ret = signalfd (fd, &ss, flags);
   if (ret < 0) uerror ("signalfd", Nothing);
   CAMLreturn (Val_int (ret));
 }
@@ -59,8 +60,9 @@ value caml_extunix_signalfd_read(value vfd)
   CAMLparam1(vfd);
   CAMLlocal1(vret);
   struct signalfd_siginfo ssi;
+  ssize_t nread = 0;
   caml_enter_blocking_section();
-  ssize_t nread = read(Int_val(vfd), &ssi, SSI_SIZE);
+  nread = read(Int_val(vfd), &ssi, SSI_SIZE);
   caml_leave_blocking_section();
   if (nread != SSI_SIZE)
     unix_error(EINVAL,"signalfd_read",Nothing);
