@@ -74,9 +74,9 @@ let test_signalfd () =
   Unix.kill pid Sys.sigusr1;
   let fd = signalfd ~fd ~sigs:[Sys.sigusr1; Sys.sigusr2] ~flags:[] () in
   Unix.set_nonblock fd;
-  Unix.kill pid Sys.sigusr2;
   let printer = string_of_int in
   assert_equal ~printer Sys.sigusr1 (ssi_signo_sys (signalfd_read fd));
+  Unix.kill pid Sys.sigusr2;
   assert_equal ~printer Sys.sigusr2 (ssi_signo_sys (signalfd_read fd));
   Unix.close fd
 
