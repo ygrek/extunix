@@ -14,6 +14,8 @@
 
 #if defined(HAVE_SIGNALFD)
 
+#include <string.h>
+
 extern int caml_convert_signal_number(int signo);
 extern int caml_rev_convert_signal_number(int signo);
 
@@ -56,10 +58,14 @@ value caml_extunix_signalfd_read(value vfd)
 {
   CAMLparam1(vfd);
   CAMLlocal1(vret);
+  struct signalfd_siginfo ssi;
+  caml_enter_blocking_section();
+  ssize_t nread = read(Int_val(vfd), &ssi, SSI_SIZE);
+  caml_leave_blocking_section();
+  if (nread != SSI_SIZE)
+    unix_error(EINVAL,"signalfd_read",Nothing);
   vret = caml_alloc_custom(&ssi_ops, SSI_SIZE, 0, 1);
-  ssize_t nread = read(Int_val(vfd), Data_custom_val(vret), SSI_SIZE);
-  if (nread < SSI_SIZE)
-    caml_failwith("signalfd: read(2) failed on a signalfd");
+  memcpy(Data_custom_val(vret),&ssi,SSI_SIZE);
   CAMLreturn(vret);
 }
 

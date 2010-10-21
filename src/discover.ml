@@ -217,6 +217,6 @@ let () =
       [IFDEF "WIN32"; S "FlushFileBuffers"; ];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
-    "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; ];
+    "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; I "errno.h"; IFDEF "EINVAL"; ];
   ]
 
