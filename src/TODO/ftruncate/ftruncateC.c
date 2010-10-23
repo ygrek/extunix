@@ -2,6 +2,12 @@
 /*
  * ftruncate C binding
  *
+ * Copyright 2008-2009 Talend, Inc. 
+ *
+ * License LGPL-2.1 with OCaml linking static exception
+ *
+ * For more information go to: www.talend.com
+ *
  * author: Sylvain Le Gall
  *
  */
