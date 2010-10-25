@@ -22,7 +22,7 @@ static void caml_fallocate_error (void)
 {
   win32_maperr(GetLastError());
   uerror("fallocate", Val_unit);
-};
+}
 
 static __int64 caml_fallocate_lseek (HANDLE hFile, __int64 i64Pos, DWORD dwMoveMethod)
 {
@@ -37,7 +37,7 @@ static __int64 caml_fallocate_lseek (HANDLE hFile, __int64 i64Pos, DWORD dwMoveM
   };
 
   return liRes.QuadPart;
-};
+}
 
 static void caml_fallocate_do (HANDLE hFile, __int64 i64Off, __int64 i64Len)
 {
@@ -70,7 +70,7 @@ static void caml_fallocate_do (HANDLE hFile, __int64 i64Off, __int64 i64Len)
 
   /* Restore initial file pointer position */
   caml_fallocate_lseek(hFile, i64Cur, FILE_BEGIN);
-};
+}
 
 CAMLprim value caml_extunix_fallocate64(value vfd, value voff, value vlen)
 {
@@ -79,7 +79,7 @@ CAMLprim value caml_extunix_fallocate64(value vfd, value voff, value vlen)
   caml_fallocate_do(Handle_val(vfd), Int64_val(voff), Int64_val(vlen));
 
   CAMLreturn(Val_unit);
-};
+}
 
 CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
 {
@@ -88,7 +88,7 @@ CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
   caml_fallocate_do(Handle_val(vfd), Long_val(voff), Long_val(vlen));
 
   CAMLreturn(Val_unit);
-};
+}
 
 #else
 
