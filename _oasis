@@ -3,8 +3,12 @@ Name:         extunix
 Version:      0.0.1
 #LicenseFile:  ?
 License:      LGPL-2.1 with OCaml linking exception
-Authors:      ygrek
-Copyrights:   (C) 2010 ygrek
+Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri
+Copyrights:
+              (C) 2010 ygrek,
+              (C) 2009 Sylvain Le Gall,
+              (C) 2008-2009 Talend Inc.,
+              (C) 2010 Stéphane Glondu
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild
 Plugins:      DevFiles (0.1.0), META (0.1.0)
