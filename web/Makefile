@@ -10,7 +10,7 @@ html: $(GEN)
 upload: index.html
 	rsync -avhz $< $(WEB)/
 	make -C .. doc
-	rsync -avhz ../_build/src/api.docdir/ $(WEB)/api
+	rsync -avihz ../_build/src/api.docdir/ $(WEB)/api
 
 clean:
 	rm -f $(GEN)

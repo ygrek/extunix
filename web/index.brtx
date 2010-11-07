@@ -9,8 +9,9 @@
 
 {begin list}
 {*}{link https://forge.ocamlcore.org/projects/extunix/|OCamlCore project page}
-#{*}{link https://forge.ocamlcore.org/frs/?group_id=175|Download}
+{*}{link https://forge.ocamlcore.org/frs/?group_id=175|Download}
 {*}{link https://forge.ocamlcore.org/tracker/?group_id=175|Bug tracker}
+{*}{link http://build.ygrek.org.ua/hudson/job/extunix/|Hudson CI builds}
 {*}Code
 {begin list}
   {*}{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=summary|gitweb}
@@ -18,11 +19,12 @@
   {*}git+ssh://forge.ocamlcore.org/gitroot/extunix/extunix.git
 {end}
 {*}{link api/index.html|Online API documentation}
-{*}{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=blob_plain;f=README.txt;hb=HEAD|README}
+{*}{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=blob_plain;f=README.txt;hb=HEAD|README},
+{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=blob_plain;f=CHANGES.txt;hb=HEAD|CHANGES}
 {end}
 
 {bypass end}<hr/>{end}
-{p}2010-09-14
+{p}2010-11-07
 {bypass end}
 <a href="http://oasis.forge.ocamlcore.org/">
   <img
