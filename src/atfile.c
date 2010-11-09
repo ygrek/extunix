@@ -52,24 +52,40 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name)
   ret = fstatat(Int_val(v_dirfd), p, &buf, 0);
   caml_leave_blocking_section();
   caml_stat_free(p);
-  if (ret != 0) uerror("fstatat", Nothing);
+  if (ret != 0) uerror("fstatat", v_name);
   if (buf.st_size > Max_long && (buf.st_mode & S_IFMT) == S_IFREG)
-    unix_error(EOVERFLOW, "fstat", Nothing);
+    unix_error(EOVERFLOW, "fstatat", v_name);
   CAMLreturn(stat_aux(/*0,*/ &buf));
 }
 
-CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name)
+CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_rmdir)
 {
-  CAMLparam2(v_dirfd, v_name);
+  CAMLparam3(v_dirfd, v_name, v_rmdir);
   char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
   int ret;
 
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
-  ret = unlinkat(Int_val(v_dirfd), p, 0);
+  ret = unlinkat(Int_val(v_dirfd), p, (Bool_val(v_rmdir) ? AT_REMOVEDIR : 0));
   caml_leave_blocking_section();
   caml_stat_free(p);
-  if (ret != 0) uerror("unlinkat", Nothing);
+  if (ret != 0) uerror("unlinkat", v_name);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_renameat(value v_oldfd, value v_oldname, value v_newfd, value v_newname)
+{
+  CAMLparam4(v_oldfd, v_oldname, v_newfd, v_newname);
+  int ret = renameat(Int_val(v_oldfd), String_val(v_oldname), Int_val(v_newfd), String_val(v_newname));
+  if (ret != 0) uerror("renameat", v_oldname);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_mkdirat(value v_dirfd, value v_name, value v_mode)
+{
+  CAMLparam3(v_dirfd, v_name, v_mode);
+  int ret = mkdirat(Int_val(v_dirfd), String_val(v_name), Int_val(v_mode));
+  if (ret != 0) uerror("mkdirat", v_name);
   CAMLreturn(Val_unit);
 }
 

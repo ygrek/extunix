@@ -161,11 +161,10 @@ let () =
     "ATFILE", L[
       D "_ATFILE_SOURCE";
       I "fcntl.h";
-      I "sys/types.h";
-      I "sys/stat.h";
-      I "unistd.h";
+      I "sys/types.h"; I "sys/stat.h";
+      I "unistd.h"; I "stdio.h";
       IFDEF "S_IFREG"; IFDEF "O_DSYNC";
-      S "fstatat"; S "openat"; S "unlinkat";
+      S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat";
     ];
     "DIRFD", L[
       I "sys/types.h";

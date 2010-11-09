@@ -26,9 +26,12 @@ external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
 END
 
 HAVE ATFILE
-external fstatat : Unix.file_descr -> string -> Unix.stats = "caml_extunix_fstatat"
-external unlinkat : Unix.file_descr -> string -> unit = "caml_extunix_unlinkat"
 external openat : Unix.file_descr -> string -> Unix.open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
+external fstatat : Unix.file_descr -> string -> Unix.stats = "caml_extunix_fstatat"
+external unlinkat : Unix.file_descr -> string -> bool -> unit = "caml_extunix_unlinkat"
+let unlinkat dirfd ?(rmdir=false) name = unlinkat dirfd name rmdir
+external renameat : Unix.file_descr -> string -> Unix.file_descr -> string -> unit = "caml_extunix_renameat"
+external mkdirat : Unix.file_descr -> string -> int -> unit = "caml_extunix_mkdirat"
 END
 
 HAVE UNAME
