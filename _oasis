@@ -1,6 +1,6 @@
 OASISFormat:  0.1
 Name:         extunix
-Version:      0.0.1
+Version:      0.0.2-dev
 #LicenseFile:  ?
 License:      LGPL-2.1 with OCaml linking exception
 Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri
@@ -31,11 +31,11 @@ Library extunix
   Modules: ExtUnix
   InternalModules: ExtUnixAll, ExtUnixSpecific
   if flag(strict) && ccomp_type(cc)
-    CCOpt: -std=c89 -pedantic
+    CCOpt: -std=c89 -pedantic -Wno-long-long
   CSources: config.h,
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
-            tty_ioctl.c, unistd.c, stdlib.c, signalfd.c
+            tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c
   BuildDepends: unix
 
 Executable test

@@ -250,3 +250,17 @@ external ssi_addr         : ssi -> int64 = "caml_extunix_ssi_addr"
 
 END
 
+HAVE PTRACE
+
+external ptrace_traceme : unit -> unit = "caml_extunix_ptrace_traceme"
+external ptrace_peekdata : int -> nativeint -> nativeint = "caml_extunix_ptrace_peekdata"
+external ptrace_peektext : int -> nativeint -> nativeint = "caml_extunix_ptrace_peektext"
+
+type ptrace_request =
+  | PTRACE_ATTACH
+  | PTRACE_DETACH
+
+external ptrace : int -> ptrace_request -> unit = "caml_extunix_ptrace"
+
+END
+

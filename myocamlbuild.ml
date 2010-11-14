@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: c40b13918e8f97f8caf295875e7544d7) *)
+(* DO NOT EDIT (digest: 2642a0211230085a7dd75e039756036d) *)
 module OASISGettext = struct
 # 21 "/home/ygrek/work/contrib/oasis/src/oasis/OASISGettext.ml"
   
@@ -459,7 +459,15 @@ let package_default =
                (OASISExpr.EAnd
                   (OASISExpr.EFlag "strict",
                     OASISExpr.ETest ("ccomp_type", "cc")),
-                 S [A "-ccopt"; A "-std=c89"; A "-ccopt"; A "-pedantic"])
+                 S
+                   [
+                      A "-ccopt";
+                      A "-std=c89";
+                      A "-ccopt";
+                      A "-pedantic";
+                      A "-ccopt";
+                      A "-Wno-long-long"
+                   ])
             ])
        ];
      }
