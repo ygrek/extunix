@@ -1,8 +1,8 @@
 
-#define WANT_REALPATH
+#define EXTUNIX_WANT_REALPATH
 #include "config.h"
 
-#if defined(HAVE_REALPATH)
+#if defined(EXTUNIX_HAVE_REALPATH)
 
 CAMLprim value caml_extunix_realpath(value v_path) 
 {

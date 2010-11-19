@@ -1,8 +1,8 @@
 
-#define WANT_PTRACE
+#define EXTUNIX_WANT_PTRACE
 #include "config.h"
 
-#if defined(HAVE_PTRACE)
+#if defined(EXTUNIX_HAVE_PTRACE)
 
 #include <errno.h>
 

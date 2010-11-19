@@ -11,10 +11,10 @@
  *
  */
 
-#define WANT_FADVISE
+#define EXTUNIX_WANT_FADVISE
 #include "config.h"
 
-#if defined(HAVE_FADVISE)
+#if defined(EXTUNIX_HAVE_FADVISE)
 
 static int caml_advises[] =
   {

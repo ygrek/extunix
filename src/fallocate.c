@@ -11,10 +11,10 @@
  *
  */
 
-#define WANT_FALLOCATE
+#define EXTUNIX_WANT_FALLOCATE
 #include "config.h"
 
-#if defined(HAVE_FALLOCATE)
+#if defined(EXTUNIX_HAVE_FALLOCATE)
 
 #if defined(WIN32)
 
@@ -141,4 +141,4 @@ CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
 }
 
 #endif /* WIN32 */
-#endif /* HAVE_FALLOCATE */
+#endif /* EXTUNIX_HAVE_FALLOCATE */

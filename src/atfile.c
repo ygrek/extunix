@@ -1,8 +1,8 @@
 
-#define WANT_ATFILE
+#define EXTUNIX_WANT_ATFILE
 #include "config.h"
 
-#if defined(HAVE_ATFILE)
+#if defined(EXTUNIX_HAVE_ATFILE)
 
 #include <string.h>
 #include <errno.h>

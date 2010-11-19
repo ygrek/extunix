@@ -1,9 +1,9 @@
 
-#define WANT_SIOCGIFCONF
-#define WANT_INET_NTOA
+#define EXTUNIX_WANT_SIOCGIFCONF
+#define EXTUNIX_WANT_INET_NTOA
 #include "config.h"
 
-#if defined(HAVE_SIOCGIFCONF)
+#if defined(EXTUNIX_HAVE_SIOCGIFCONF)
 
 #include <string.h>
 

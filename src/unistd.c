@@ -1,10 +1,10 @@
 
-#define WANT_TTYNAME
-#define WANT_PGID
-#define WANT_SETREUID
+#define EXTUNIX_WANT_TTYNAME
+#define EXTUNIX_WANT_PGID
+#define EXTUNIX_WANT_SETREUID
 #include "config.h"
 
-#if defined(HAVE_TTYNAME)
+#if defined(EXTUNIX_HAVE_TTYNAME)
 
 /*  Copyright © 2010 Stéphane Glondu <steph@glondu.net>                   */
 
@@ -21,7 +21,7 @@ CAMLprim value caml_extunix_ttyname(value v_fd)
 
 #endif
 
-#if defined(HAVE_PGID)
+#if defined(EXTUNIX_HAVE_PGID)
 
 CAMLprim value caml_extunix_setpgid(value v_pid, value v_pgid)
 {
@@ -42,7 +42,7 @@ CAMLprim value caml_extunix_getpgid(value v_pid)
 
 #endif
 
-#if defined(HAVE_SETREUID)
+#if defined(EXTUNIX_HAVE_SETREUID)
 
 CAMLprim value caml_extunix_setreuid(value v_ruid, value v_euid)
 {

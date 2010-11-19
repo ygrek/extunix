@@ -6,13 +6,13 @@
 /* Author: Kaustuv Chaudhuri <kaustuv.chaudhuri@inria.fr>                     */
 /******************************************************************************/
 
-#define WANT_SIGNALFD
+#define EXTUNIX_WANT_SIGNALFD
 #include "config.h"
 
 #define Some_val(v) Field(v,0)
 #define Val_none Val_int(0)
 
-#if defined(HAVE_SIGNALFD)
+#if defined(EXTUNIX_HAVE_SIGNALFD)
 
 #include <string.h>
 
@@ -105,5 +105,5 @@ SSI_GET_FIELD( utime   , caml_copy_int64 )
 SSI_GET_FIELD( stime   , caml_copy_int64 )
 SSI_GET_FIELD( addr    , caml_copy_int64 )
 
-#endif /* HAVE_SIGNALFD */
+#endif /* EXTUNIX_HAVE_SIGNALFD */
 

@@ -1,8 +1,8 @@
 
-#define WANT_UNAME
+#define EXTUNIX_WANT_UNAME
 #include "config.h"
 
-#if defined(HAVE_UNAME)
+#if defined(EXTUNIX_HAVE_UNAME)
 
 #include <string.h>
 

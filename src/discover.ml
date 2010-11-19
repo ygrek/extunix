@@ -114,7 +114,7 @@ let show_c file result =
         | [] -> ()
         | l ->
           pr "";
-          pr "#if defined(WANT_%s)" name;
+          pr "#if defined(EXTUNIX_WANT_%s)" name;
           List.iter (print_define b) l;
           pr "#endif";
   end result;
@@ -123,14 +123,14 @@ let show_c file result =
   List.iter begin function
     | NO name ->
       pr "";
-      pr "#undef HAVE_%s" name;
+      pr "#undef EXTUNIX_HAVE_%s" name;
     | YES (name,args) ->
         pr "";
-        pr "#define HAVE_%s" name;
+        pr "#define EXTUNIX_HAVE_%s" name;
         match get_includes args with
         | [] -> ()
         | l ->
-          pr "#if defined(WANT_%s)" name;
+          pr "#if defined(EXTUNIX_WANT_%s)" name;
           List.iter (print_include b) l;
           pr "#endif";
   end result;

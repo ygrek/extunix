@@ -1,8 +1,8 @@
 
-#define WANT_EVENTFD
+#define EXTUNIX_WANT_EVENTFD
 #include "config.h"
 
-#if defined(HAVE_EVENTFD)
+#if defined(EXTUNIX_HAVE_EVENTFD)
 
 CAMLprim value caml_extunix_eventfd(value v_init)
 {

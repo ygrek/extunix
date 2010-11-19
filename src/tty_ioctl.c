@@ -2,10 +2,10 @@
  * Copyright : (c) 2010, Stéphane Glondu <steph@glondu.net>
  */
 
-#define WANT_TTY_IOCTL
+#define EXTUNIX_WANT_TTY_IOCTL
 #include "config.h"
 
-#if defined(HAVE_TTY_IOCTL)
+#if defined(EXTUNIX_HAVE_TTY_IOCTL)
 
 /* FIXME implement separate interface for tcsetattr/tcgetattr */
 CAMLprim value caml_extunix_crtscts(value mlfd)

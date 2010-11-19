@@ -1,8 +1,8 @@
 
-#define WANT_STATVFS
+#define EXTUNIX_WANT_STATVFS
 #include "config.h"
 
-#if defined(HAVE_STATVFS)
+#if defined(EXTUNIX_HAVE_STATVFS)
 
 static value convert(struct statvfs* s)
 {
