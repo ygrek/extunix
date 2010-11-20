@@ -1,0 +1,12 @@
+
+0.0.1 - 7 Nov 2010
+* First release, implemented bindings :
+  * fsync fdatasync
+  * eventfd signalfd
+  * statvfs fstatvfs
+  * dirfd openat unlinkat fstatat
+  * uname
+  * fadvise fallocate
+  * ttyname setpgid getpgid setreuid setregid
+  * realpath
+

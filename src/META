@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: b0d9c927fb0fa201d8fe1503c8e7c1d0)
-version = "0.0.1"
+# DO NOT EDIT (digest: 8fa26fb726b607fc3db0652bf1320757)
+version = "0.0.2-dev"
 description = "extunix"
 requires = "unix"
 archive(byte) = "extunix.cma"

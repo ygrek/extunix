@@ -5,9 +5,10 @@ open Printf
 type arg = 
   | I of string (* check #include available *)
   | T of string (* check type available *)
-  | D of string (* define *)
+  | DEFINE of string (* define *)
   | S of string (* check symbol available *)
-  | IFDEF of string (* check #ifdef *)
+  | V of string (* check value available (enum) *)
+  | D of string (* check symbol defined *)
 
 type test =
   | L of arg list
@@ -17,18 +18,20 @@ type t = YES of (string * arg list) | NO of string
 
 let ocamlc = ref "ocamlc"
 let ext_obj = ref ".o"
+let verbose = ref false
 
 let () =
   let args = [
     "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
     "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
+    "-v", Arg.Set verbose, " Show code for failed tests";
   ] in
   Arg.parse args (failwith) ("Options are:")
 
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
 let filter_map f l = List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l
-let get_defines = filter_map (function D s -> Some s | _ -> None)
+let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
 
 let config_defines = [
@@ -62,9 +65,10 @@ let build_code args =
   List.iter begin function
     | I s -> ()
     | T s -> pr "%s var_%d;" s (fresh ())
-    | D s -> ()
-    | IFDEF s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
+    | DEFINE s -> ()
+    | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
+    | V s -> pr "size_t var_%d = %s;" (fresh ()) s
     end args;
   pr "int main() { return 0; }";
   Buffer.contents b
@@ -88,7 +92,7 @@ let discover (name,test) =
     let code = build_code args in
     match execute code, other with
     | false, [] -> 
-(*         prerr_endline code;  *)
+        if !verbose then prerr_endline code;
         print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
     | true, _ -> print_endline "ok"; YES (name,args)
@@ -159,13 +163,12 @@ let () =
       S "eventfd"; S "eventfd_read"; S "eventfd_write";
     ];
     "ATFILE", L[
-      D "_ATFILE_SOURCE";
+      DEFINE "_ATFILE_SOURCE";
       I "fcntl.h";
-      I "sys/types.h";
-      I "sys/stat.h";
-      I "unistd.h";
-      IFDEF "S_IFREG"; IFDEF "O_DSYNC";
-      S "fstatat"; S "openat"; S "unlinkat";
+      I "sys/types.h"; I "sys/stat.h";
+      I "unistd.h"; I "stdio.h";
+      D "S_IFREG"; D "O_DSYNC";
+      S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat";
     ];
     "DIRFD", L[
       I "sys/types.h";
@@ -180,7 +183,7 @@ let () =
     "SIOCGIFCONF", L[
       I "sys/ioctl.h";
       I "net/if.h";
-      IFDEF "SIOCGIFCONF";
+      D "SIOCGIFCONF";
       S "ioctl";
       T "struct ifconf"; T "struct ifreq";
     ];
@@ -198,25 +201,26 @@ let () =
     "FADVISE", L[
       I "fcntl.h";
       S "posix_fadvise"; S "posix_fadvise64";
-      IFDEF "POSIX_FADV_NORMAL";
+      D "POSIX_FADV_NORMAL";
     ];
     "FALLOCATE", ANY[
       [I "fcntl.h"; S "posix_fallocate"; S" posix_fallocate64"; ];
-      [IFDEF "WIN32"; S "GetFileSizeEx"; ];
+      [D "WIN32"; S "GetFileSizeEx"; ];
     ];
     "TTY_IOCTL", L[
       I "termios.h"; I "sys/ioctl.h";
       S "ioctl"; S "tcsetattr"; S "tcgetattr";
-      IFDEF "CRTSCTS"; IFDEF "TCSANOW"; IFDEF "TIOCMGET"; IFDEF "TIOCMSET"; IFDEF "TIOCMBIC"; IFDEF "TIOCMBIS";
+      D "CRTSCTS"; D "TCSANOW"; D "TIOCMGET"; D "TIOCMSET"; D "TIOCMBIC"; D "TIOCMBIS";
     ];
     "TTYNAME", L[ I "unistd.h"; S "ttyname"; ];
     "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid" ];
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[
       [I "unistd.h"; S "fsync"; S "fdatasync"; ];
-      [IFDEF "WIN32"; S "FlushFileBuffers"; ];
+      [D "WIN32"; S "FlushFileBuffers"; ];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
-    "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; I "errno.h"; IFDEF "EINVAL"; ];
+    "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; I "errno.h"; D "EINVAL"; ];
+    "PTRACE", L[ I "sys/ptrace.h"; S "ptrace"; V "PTRACE_TRACEME"; V "PTRACE_ATTACH"; ];
   ]
 

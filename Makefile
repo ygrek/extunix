@@ -36,3 +36,11 @@ setup.data:
 .PHONY: build doc test all install uninstall reinstall clean distclean configure
 
 # OASIS_STOP
+
+VERSION=$(shell OASIS query version)
+NAME=ocaml-extunix-$(VERSION)
+
+.PHONY: release
+release:
+	git archive --prefix=$(NAME)/ v$(VERSION) | tar --delete $(NAME)/web | gzip > $(NAME).tar.gz
+
