@@ -6,13 +6,25 @@ License:      LGPL-2.1 with OCaml linking exception
 Authors:      ygrek
 Copyrights:   (C) 2010 ygrek
 Homepage:     http://extunix.forge.ocamlcore.org/
-BuildTools:   ocamlbuild
+BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.1.0), META (0.1.0)
 
-Synopsis:     extunix
+Synopsis: Extended functions for OCaml Unix module 
 Description:
   Thin bindings to various low-level system APIs (often non-portable)
   which are not covered by Unix module.
+  .
+  Example functions:
+   * uname
+   * statvfs
+   * fsync
+   * fadvise
+   * fallocate
+   * atfile
+   * dirfd
+   * eventfd
+   * signalfd
+   * ...
 
 PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
 PreDistCleanCommand: $rm src/config.h
@@ -46,10 +58,12 @@ Test main
   TestTools: test
 
 Document api
-  Title: API
+  Title: API reference for extunix
   Type: ocamlbuild
+  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri
   BuildTools: ocamldoc
+  Format: HTML
+  Index: index.html
   XOCamlbuildPath:      src/
   XOCamlbuildLibraries: extunix
   XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific
-
