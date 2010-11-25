@@ -1,9 +1,0 @@
-# OASIS_START
-# DO NOT EDIT (digest: c1f19052ba5b1830ad7648bc6bd10cd0)
-version = "0.0.1"
-description = "POSIX resource operations bindings"
-requires = "unix"
-archive(byte) = "posix_resource.cma"
-archive(native) = "posix_resource.cmxa"
-# OASIS_STOP
-

@@ -222,5 +222,10 @@ let () =
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
     "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; I "errno.h"; D "EINVAL"; ];
     "PTRACE", L[ I "sys/ptrace.h"; S "ptrace"; V "PTRACE_TRACEME"; V "PTRACE_ATTACH"; ];
+    "RESOURCE", L[
+      I "sys/time.h"; I "sys/resource.h";
+      S "getpriority"; S "setpriority"; S "getrlimit"; S "setrlimit";
+      V "PRIO_PROCESS"; V "RLIMIT_NOFILE"; V "RLIM_INFINITY";
+      ];
   ]
 

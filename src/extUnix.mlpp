@@ -37,7 +37,7 @@ END
 HAVE UNAME
 
 (** uname
-    @author Sylvain Le Gall [sylvain\@le-gall.net]
+    {b Author:} Sylvain Le Gall [sylvain\@le-gall.net]
   *)
 module Uname = struct
 type t =
@@ -261,6 +261,105 @@ type ptrace_request =
   | PTRACE_DETACH
 
 external ptrace : int -> ptrace_request -> unit = "caml_extunix_ptrace"
+
+END
+
+HAVE RESOURCE
+
+(** 
+  {2 POSIX resource operations}
+
+  {b Author:} Sylvain Le Gall <sylvain\@le-gall.net>
+*)
+
+type which_prio_t =
+  | PRIO_PROCESS of int (** Priority for a process id *)
+  | PRIO_PGRP of int    (** Priority for a process group id *)
+  | PRIO_USER of int    (** Priority for a user id *)
+
+type priority = int
+
+type resource =
+  | RLIMIT_CORE   (** Limit on size of core dump file. *)
+  | RLIMIT_CPU    (** Limit on CPU time per process. *)
+  | RLIMIT_DATA   (** Limit on data segment size. *)
+  | RLIMIT_FSIZE  (** Limit on file size. *)
+  | RLIMIT_NOFILE (** Limit on number of open files. *)
+  | RLIMIT_STACK  (** Limit on stack size. *)
+  | RLIMIT_AS     (** Limit on address space size. *)
+
+let string_of_resource = function
+  | RLIMIT_CORE   -> "RLIMIT_CORE"
+  | RLIMIT_CPU    -> "RLIMIT_CPU"
+  | RLIMIT_DATA   -> "RLIMIT_DATA"
+  | RLIMIT_FSIZE  -> "RLIMIT_FSIZE"
+  | RLIMIT_NOFILE -> "RLIMIT_NOFILE"
+  | RLIMIT_STACK  -> "RLIMIT_STACK"
+  | RLIMIT_AS     -> "RLIMIT_AS"
+
+(** Limits *)
+module Rlimit = struct
+
+  type t = int64 option (** [Some limit] is fixed limit, [None] is RLIM_INFINITY *)
+
+  let string_of_bytes n =
+    let sz, acc = List.fold_left (fun (sz, acc) e ->
+      let q = Int64.div sz 1024L in
+      let r = Int64.rem sz 1024L in
+      let acc = if r <> 0L then Printf.sprintf "%Ld %s" r e :: acc else acc in
+      (q, acc)) (n, []) ["B"; "KB"; "MB"; "GB"] 
+    in
+    let acc = if sz <> 0L then Printf.sprintf "%Ld TB" sz :: acc else acc in
+    match acc with
+    | [] -> "0 B"
+    | _ -> String.concat " " acc
+
+  let to_string ?r = function
+  | None -> "infinity"
+  | Some l ->
+    match r with 
+    | None -> Int64.to_string l
+    | Some RLIMIT_CORE
+    | Some RLIMIT_DATA 
+    | Some RLIMIT_FSIZE
+    | Some RLIMIT_STACK
+    | Some RLIMIT_AS -> string_of_bytes l
+    | Some RLIMIT_NOFILE -> Int64.to_string l
+    | Some RLIMIT_CPU -> Printf.sprintf "%Ld s" l
+
+  let compare l1 l2 =
+    match l1, l2 with
+    | Some l1, Some l2 -> Int64.compare l1 l2
+    | None, None -> 0
+    | Some _, None -> -1
+    | None, Some _ -> 1
+
+  let eq l1 l2 = compare l1 l2 = 0
+  let gt l1 l2 = compare l1 l2 > 0
+  let ge l1 l2 = compare l1 l2 >= 0
+  let lt l1 l2 = compare l1 l2 < 0
+  let le l1 l2 = compare l1 l2 <= 0
+
+end (* Rlimit *)
+
+(** Get nice value *)
+external getpriority : which_prio_t -> priority = "caml_extunix_getpriority" 
+
+(** Set nice value *)
+external setpriority : which_prio_t -> priority -> unit = "caml_extunix_setpriority"
+
+(** Get maximum resource consumption. @return [(soft,hard)] limits *)
+external getrlimit : resource -> Rlimit.t * Rlimit.t = "caml_extunix_getrlimit"
+
+(** Set maximum resource consumption *)
+external setrlimit : resource -> soft:Rlimit.t -> hard:Rlimit.t -> unit = "caml_extunix_setrlimit"
+
+(* let unlimit_soft r = let (_,hard) = getrlimit r in setrlimit r ~soft:hard ~hard *)
+
+(** [getrusage] is not implemented because the only meaningful information it
+    provides are [ru_utime] and [ru_stime] which can be accessed through 
+    [Unix.times].
+  *)
 
 END
 

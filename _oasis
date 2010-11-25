@@ -18,17 +18,8 @@ Description:
   Thin bindings to various low-level system APIs (often non-portable)
   which are not covered by Unix module.
   .
-  Example functions:
-   * uname
-   * statvfs
-   * fsync
-   * fadvise
-   * fallocate
-   * atfile
-   * dirfd
-   * eventfd
-   * signalfd
-   * ...
+  Some of the implemented functions : uname, statvfs, fsync, fadvise,
+    fallocate, openat, dirfd, eventfd, signalfd, setrlimit, etc
 
 PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
 PreDistCleanCommand: $rm src/config.h
@@ -47,7 +38,8 @@ Library extunix
   CSources: config.h,
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
-            tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c
+            tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
+            resource.c
   BuildDepends: unix
 
 Executable test
@@ -71,3 +63,8 @@ Document api
   XOCamlbuildPath:      src/
   XOCamlbuildLibraries: extunix
   XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific
+
+#Document changelog
+#  Title: Changelog
+#  Path: CHANGES.txt
+

@@ -80,6 +80,47 @@ let test_signalfd () =
   assert_equal ~printer Sys.sigusr2 (ssi_signo_sys (signalfd_read fd));
   Unix.close fd
 
+let test_resource =
+  let all_resources = 
+  [
+    RLIMIT_CORE;
+    RLIMIT_CPU;
+    RLIMIT_DATA;
+    RLIMIT_FSIZE;
+    RLIMIT_NOFILE;
+    RLIMIT_STACK;
+    RLIMIT_AS;
+  ]
+  in
+  let test_setrlimit r =
+    let test soft hard =
+      setrlimit r ~soft ~hard;
+      let (soft',hard') = getrlimit r in
+      assert_equal ~printer:Rlimit.to_string ~msg:"soft limit" ~cmp:Rlimit.eq soft soft';
+      assert_equal ~printer:Rlimit.to_string ~msg:"hard limit" ~cmp:Rlimit.eq hard hard';
+    in
+    let (soft,hard) = getrlimit r in
+    assert_bool "soft <= hard" (Rlimit.le soft hard);
+    test hard hard;
+    test soft hard;
+    match hard with
+    | Some 0L -> ()
+    | None -> test soft soft
+    | Some n -> test soft (Some (Int64.pred n))
+  in
+  let test_setrlimit r =
+    (string_of_resource r) >:: (fun () -> test_setrlimit r)
+  in
+  [
+    "setrlimit" >::: (List.rev_map test_setrlimit all_resources);
+    "getpriority" >:: (fun () -> let (_:int) = getpriority (PRIO_PROCESS (Unix.getpid ())) in ());
+    "setpriority" >:: (fun () ->
+       let me = PRIO_PROCESS (Unix.getpid ()) in
+       let prio = getpriority me in
+       setpriority me (prio + 1);
+       assert_equal ~printer:string_of_int (prio + 1) (getpriority me));
+  ]
+
 let () =
   let tests = ("tests" >::: [
     "eventfd" >:: test_eventfd;
@@ -89,6 +130,7 @@ let () =
     "unistd" >::: test_unistd;
     "realpath" >:: test_realpath;
     "signalfd" >:: test_signalfd;
+    "resource" >::: test_resource;
   ]) in
   ignore (run_test_tt_main (test_decorate with_unix_error tests))
 
