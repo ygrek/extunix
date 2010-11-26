@@ -1,11 +1,11 @@
 
 #define EXTUNIX_WANT_FSYNC
+#define EXTUNIX_WANT_FDATASYNC
 #include "config.h"
-
-#if defined(EXTUNIX_HAVE_FSYNC)
 
 #if defined(WIN32)
 
+#if defined(EXTUNIX_HAVE_FSYNC)
 CAMLprim value caml_extunix_fsync(value v)
 {
    CAMLparam1(v);
@@ -22,13 +22,18 @@ CAMLprim value caml_extunix_fsync(value v)
    CAMLreturn(Val_unit); 
 }
 
+#if defined(EXTUNIX_HAVE_FDATASYNC)
 CAMLprim value caml_extunix_fdatasync(value v)
 {
   return caml_extunix_fsync(v);
 }
+#endif
 
-#else
+#endif /* EXTUNIX_HAVE_FSYNC */
 
+#else /* WIN32 */
+
+#if defined(EXTUNIX_HAVE_FSYNC)
 CAMLprim value caml_extunix_fsync(value v_fd)
 {
     CAMLparam1(v_fd);
@@ -40,7 +45,9 @@ CAMLprim value caml_extunix_fsync(value v_fd)
       uerror("fsync",Nothing);
     CAMLreturn(Val_unit);
 }
+#endif
 
+#if defined(EXTUNIX_HAVE_FDATASYNC)
 CAMLprim value caml_extunix_fdatasync(value v_fd)
 {
     CAMLparam1(v_fd);
@@ -52,7 +59,7 @@ CAMLprim value caml_extunix_fdatasync(value v_fd)
       uerror("fdatasync",Nothing);
     CAMLreturn(Val_unit);
 }
+#endif
 
 #endif /* WIN32 */
-#endif /* EXTUNIX_HAVE_FSYNC */
 

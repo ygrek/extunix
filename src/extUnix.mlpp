@@ -6,6 +6,9 @@ exception Not_available of string
 
 HAVE FSYNC
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
+END
+
+HAVE FDATASYNC
 external fdatasync : Unix.file_descr -> unit = "caml_extunix_fdatasync"
 END
 

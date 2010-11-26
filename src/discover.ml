@@ -216,7 +216,11 @@ let () =
     "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid" ];
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[
-      [I "unistd.h"; S "fsync"; S "fdatasync"; ];
+      [I "unistd.h"; S "fsync";];
+      [D "WIN32"; S "FlushFileBuffers"; ];
+    ];
+    "FDATASYNC", ANY[
+      [I "unistd.h"; S "fdatasync";];
       [D "WIN32"; S "FlushFileBuffers"; ];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
