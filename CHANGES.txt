@@ -1,4 +1,12 @@
 
+0.0.2-dev - ?
+* New bindings :
+  * getrlimit setrlimit
+  * getpriority setpriority
+  * ptrace (minimal)
+  * renameat mkdirat
+* Separate configure test for fsync and fdatasync
+
 0.0.1 - 7 Nov 2010
 * First release, implemented bindings :
   * fsync fdatasync
