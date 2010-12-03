@@ -366,3 +366,6 @@ external setrlimit : resource -> soft:Rlimit.t -> hard:Rlimit.t -> unit = "caml_
 
 END
 
+(** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
+external sys_exit : int -> 'a = "caml_sys_exit"
+
