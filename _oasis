@@ -19,7 +19,7 @@ Description:
   which are not covered by Unix module.
   .
   Some of the implemented functions : uname, statvfs, fsync, fadvise,
-    fallocate, openat, dirfd, eventfd, signalfd, setrlimit, etc
+    fallocate, openat, dirfd, eventfd, signalfd, setrlimit, mlockall, etc
 
 PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
 PreDistCleanCommand: $rm src/config.h
@@ -39,7 +39,7 @@ Library extunix
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
-            resource.c
+            resource.c, mman.c
   BuildDepends: unix
 
 Executable test

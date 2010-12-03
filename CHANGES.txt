@@ -5,6 +5,7 @@
   * getpriority setpriority
   * ptrace (minimal)
   * renameat mkdirat
+  * mlockall munlockall
 * Separate configure test for fsync and fdatasync
 
 0.0.1 - 7 Nov 2010

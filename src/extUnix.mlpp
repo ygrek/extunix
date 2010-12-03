@@ -369,3 +369,16 @@ END
 (** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
 external sys_exit : int -> 'a = "caml_sys_exit"
 
+HAVE MLOCKALL
+(**  {2 Memory management} *)
+
+type mlockall_flag = MCL_CURRENT | MCL_FUTURE
+
+(** Lock all pages mapped into the address space of the calling process. *)
+external mlockall : mlockall_flag list -> unit = "caml_extunix_mlockall"
+
+(** Unlock all pages mapped into the address space of the calling process. *)
+external munlockall : unit -> unit = "caml_extunix_munlockall"
+
+END
+
