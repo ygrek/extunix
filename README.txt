@@ -113,5 +113,6 @@ Checklist for adding new bindings
 * Add the path to C bindings to _oasis CSources and run `OASIS setup`
 * Add the OCaml code to src/extUnix.mlpp guarded with HAVE ... END
 * Add some tests to test/test.ml
+* Add note to CHANGES.txt
 * Run ./configure && make
 

@@ -232,5 +232,6 @@ let () =
       V "PRIO_PROCESS"; V "RLIMIT_NOFILE"; V "RLIM_INFINITY";
       ];
     "MLOCKALL", L[ I "sys/mman.h"; S "mlockall"; S "munlockall"; V "MCL_CURRENT"; V "MCL_FUTURE"; ];
+    "STRTIME", L[ I "time.h"; S"strptime"; S"strftime"; S"asctime_r"; ];
   ]
 

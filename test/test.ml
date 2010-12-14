@@ -121,6 +121,11 @@ let test_resource =
        assert_equal ~printer:string_of_int (prio + 1) (getpriority me));
   ]
 
+let test_strtime () =
+  assert_equal ~printer:(fun x -> x) "2010/12/14" (strftime "%Y/%m/%d" (strptime "%Y-%m-%d" "2010-12-14"));
+  let (_:string) = asctime (Unix.localtime (Unix.gettimeofday ())) in
+  ()
+
 let () =
   let tests = ("tests" >::: [
     "eventfd" >:: test_eventfd;
@@ -131,6 +136,7 @@ let () =
     "realpath" >:: test_realpath;
     "signalfd" >:: test_signalfd;
     "resource" >::: test_resource;
+    "strtime" >:: test_strtime;
   ]) in
   ignore (run_test_tt_main (test_decorate with_unix_error tests))
 

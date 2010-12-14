@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: ac49571dfc935016d902169283f3bd0c)
+# DO NOT EDIT (digest: e4c22dc3b5d5a30d4001c1bdc6818bad)
 eventfd.o
 dirfd.o
 fsync.o
@@ -16,4 +16,5 @@ signalfd.o
 ptrace.o
 resource.o
 mman.o
+time.o
 # OASIS_STOP
