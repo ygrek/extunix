@@ -123,7 +123,9 @@ let test_resource =
 
 let test_strtime () =
   assert_equal ~printer:(fun x -> x) "2010/12/14" (strftime "%Y/%m/%d" (strptime "%Y-%m-%d" "2010-12-14"));
-  let (_:string) = asctime (Unix.localtime (Unix.gettimeofday ())) in
+  let tm = Unix.localtime (Unix.gettimeofday ()) in
+  let (_:string) = asctime tm in
+  let (_:string) = tzname tm.Unix.tm_isdst in
   ()
 
 let () =

@@ -1,12 +1,12 @@
 * comments: mark "emulated" (windows) functions
 
-[SLG]
-
 * INRIA request for extended UNIX:
-  http://caml.inria.fr/mantis/view.php?id=5063
-  http://caml.inria.fr/mantis/view.php?id=2533 (<- very interesting)
+  http://caml.inria.fr/mantis/view.php?id=5063 (DONE)
+  http://caml.inria.fr/mantis/view.php?id=2533 (DONE)
   http://caml.inria.fr/mantis/view.php?id=3851 (DONE)
   http://caml.inria.fr/mantis/view.php?id=480
+
+* investigate F_FULLFSYNC fcntl and fsync on Mac OS
 
 Wanted functions:
 * sysconf: get system configuration constants. In particular, PAGESIZE,

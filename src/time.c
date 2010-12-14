@@ -37,7 +37,7 @@ static void fill_tm(struct tm* tm, value t)
   tm->tm_year = Int_val(Field(t, 5));
   tm->tm_wday = Int_val(Field(t, 6));
   tm->tm_yday = Int_val(Field(t, 7));
-  tm->tm_isdst = -1; /* Bool_val(Field(t, 8)); */
+  tm->tm_isdst = Bool_val(Field(t, 8)); /* -1 */
 }
 
 CAMLprim value caml_extunix_strptime(value v_fmt, value v_s)
@@ -69,6 +69,12 @@ CAMLprim value caml_extunix_strftime(value v_fmt, value v_t)
     unix_error(EINVAL, "strftime", v_fmt);
 
   return caml_copy_string(buf);
+}
+
+CAMLprim value caml_extunix_tzname(value v_isdst)
+{
+  int i = Bool_val(v_isdst) ? 1 : 0;
+  return caml_copy_string(tzname[i]);
 }
 
 #endif

@@ -400,5 +400,11 @@ external asctime: Unix.tm -> string = "caml_extunix_asctime"
   according to the format specified by [fmt]. *)
 external strftime: string -> Unix.tm -> string = "caml_extunix_strftime"
 
+(** [tzname isdst] 
+  @param isdst specifies whether daylight saving is in effect
+  @return abbreviated name of the current timezone
+*)
+external tzname : bool -> string = "caml_extunix_tzname"
+
 END
 
