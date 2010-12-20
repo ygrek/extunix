@@ -233,5 +233,9 @@ let () =
       ];
     "MLOCKALL", L[ I "sys/mman.h"; S "mlockall"; S "munlockall"; V "MCL_CURRENT"; V "MCL_FUTURE"; ];
     "STRTIME", L[ I "time.h"; S"strptime"; S"strftime"; S"asctime_r"; S"tzname"; ];
+    "PTS", L[
+      I "fcntl.h"; I "stdlib.h";
+      S "posix_openpt"; S "grantpt"; S "unlockpt"; S "ptsname";
+    ];
   ]
 

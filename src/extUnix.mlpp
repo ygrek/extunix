@@ -408,3 +408,12 @@ external tzname : bool -> string = "caml_extunix_tzname"
 
 END
 
+HAVE PTS
+
+external posix_openpt : Unix.open_flag list -> Unix.file_descr = "caml_posix_openpt"
+external grantpt: Unix.file_descr -> unit = "caml_grantpt"
+external unlockpt: Unix.file_descr -> unit = "caml_unlockpt"
+external ptsname: Unix.file_descr -> string = "caml_ptsname"
+
+END
+

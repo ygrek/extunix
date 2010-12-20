@@ -128,6 +128,19 @@ let test_strtime () =
   let (_:string) = tzname tm.Unix.tm_isdst in
   ()
 
+let test_pts () =
+  let master = posix_openpt [Unix.O_RDWR] in
+    grantpt master;
+    unlockpt master;
+    let name = ptsname master in
+    let slave = Unix.openfile name [Unix.O_RDWR; Unix.O_NOCTTY] 0 in
+    let test = "test" in
+    let len = Unix.write slave test 0 (String.length test) in
+    let str = String.create len in
+    ignore (Unix.read master str 0 len);
+    assert_equal str test;
+    ()
+
 let () =
   let tests = ("tests" >::: [
     "eventfd" >:: test_eventfd;
@@ -139,6 +152,7 @@ let () =
     "signalfd" >:: test_signalfd;
     "resource" >::: test_resource;
     "strtime" >:: test_strtime;
+    "pts" >:: test_pts;
   ]) in
   ignore (run_test_tt_main (test_decorate with_unix_error tests))
 
