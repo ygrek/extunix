@@ -9,7 +9,7 @@ static int open_flag_table[] = {
   O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC
 };
 
-CAMLprim value caml_posix_openpt(value flags)
+CAMLprim value caml_extunix_posix_openpt(value flags)
 {
 	CAMLparam1(flags);
 	int ret, cv_flags;
@@ -20,7 +20,7 @@ CAMLprim value caml_posix_openpt(value flags)
 	CAMLreturn(Val_int(ret));
 }
 
-CAMLprim value caml_grantpt(value fd)
+CAMLprim value caml_extunix_grantpt(value fd)
 {
 	CAMLparam1(fd);
 	if(grantpt(Int_val(fd)) == -1)
@@ -28,7 +28,7 @@ CAMLprim value caml_grantpt(value fd)
 	CAMLreturn(Val_unit); 
 }
 
-CAMLprim value caml_unlockpt(value fd)
+CAMLprim value caml_extunix_unlockpt(value fd)
 {
 	CAMLparam1(fd);
 	if(unlockpt(Int_val(fd)) == -1)
@@ -36,7 +36,7 @@ CAMLprim value caml_unlockpt(value fd)
 	CAMLreturn(Val_unit); 
 }
 
-CAMLprim value caml_ptsname(value fd)
+CAMLprim value caml_extunix_ptsname(value fd)
 {
 	CAMLparam1(fd);
 	CAMLlocal1(ret);
