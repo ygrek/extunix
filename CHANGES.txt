@@ -9,6 +9,11 @@
   * strftime strptime asctime
   * tzname
   * posix_openpt grantpt unlockpt ptsname (Niki Yoshiuchi)
+  * getsid
+  * ctermid
+  * is_open_descr
+  * tcgetpgrp tcsetpgrp
+  * int_of_file_descr file_descr_of_int
 * Separate configure test for fsync and fdatasync
 
 0.0.1 - 7 Nov 2010

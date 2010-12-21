@@ -213,7 +213,8 @@ let () =
       D "CRTSCTS"; D "TCSANOW"; D "TIOCMGET"; D "TIOCMSET"; D "TIOCMBIC"; D "TIOCMBIS";
     ];
     "TTYNAME", L[ I "unistd.h"; S "ttyname"; ];
-    "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid" ];
+    "CTERMID", L[ I "stdio.h"; S "ctermid"; V "L_ctermid"; ];
+    "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid"; S "getsid"; ];
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[
       [I "unistd.h"; S "fsync";];
@@ -237,5 +238,7 @@ let () =
       I "fcntl.h"; I "stdlib.h";
       S "posix_openpt"; S "grantpt"; S "unlockpt"; S "ptsname";
     ];
+    "FCNTL", L[ I"unistd.h"; I"fcntl.h"; S"fcntl"; V"F_GETFL"; ];
+    "TCPGRP", L[ I"unistd.h"; S"tcgetpgrp"; S"tcsetpgrp"; ];
   ]
 

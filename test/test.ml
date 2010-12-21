@@ -26,9 +26,11 @@ let test_uname () =
 
 let test_fadvise () =
   require "fadvise";
-  fadvise (Unix.descr_of_in_channel stdin) 0 0 POSIX_FADV_NORMAL;
-  LargeFile.fadvise (Unix.descr_of_out_channel stdout) 0L 0L POSIX_FADV_SEQUENTIAL;
-  ()
+  let (name,ch) = Filename.open_temp_file "extunix" "test" in
+  try
+    fadvise (Unix.descr_of_out_channel ch) 0 0 POSIX_FADV_NORMAL;
+    LargeFile.fadvise (Unix.descr_of_out_channel ch) 0L 0L POSIX_FADV_SEQUENTIAL;
+  with exn -> close_out_noerr ch; Unix.unlink name; raise exn
 
 let test_fallocate () =
   require "fallocate";
@@ -60,14 +62,27 @@ let test_unistd =
     if Unix.isatty Unix.stdin then ignore (ttyname Unix.stdin);
     if Unix.isatty Unix.stdout then ignore (ttyname Unix.stdout);
   end;
+  "ctermid" >:: (fun () -> require "ctermid"; ignore (ctermid ()));
   "pgid" >:: begin fun () ->
     require "getpgid";
+    assert_equal (getsid 0) (getsid (Unix.getpid ()));
     let pgid = getpgid 0 in
     setpgid 0 0;
     assert_equal (getpgid 0) (Unix.getpid ());
     setpgid 0 pgid;
     assert_equal (getpgid 0) pgid;
   end;
+  "fcntl" >:: begin fun () ->
+    require "is_open_descr";
+    assert (is_open_descr Unix.stdin);
+    assert (is_open_descr Unix.stdout);
+  end;
+  "int_of_file_descr" >:: begin fun () ->
+    try
+      assert (Unix.stdout = (file_descr_of_int (int_of_file_descr Unix.stdout)))
+    with
+      Not_available _ -> skip_if true "int_of_file_descr"
+  end
   ]
 
 let test_realpath () =

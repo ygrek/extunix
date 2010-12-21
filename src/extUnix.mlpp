@@ -155,6 +155,11 @@ HAVE TTYNAME
 external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
 END
 
+HAVE CTERMID
+(** Get controlling terminal name *)
+external ctermid : unit -> string = "caml_extunix_ctermid"
+END
+
 HAVE PGID
 
 (** [setpgid pid pgid] sets the process group of the process specified by [pid] to [pgid].
@@ -165,6 +170,10 @@ external setpgid : int -> int -> unit = "caml_extunix_setpgid"
 (** [getpgid pid] returns the PGID of the process specified by [pid].
     If [pid] is zero, the process ID of the calling process is used. *)
 external getpgid : int -> int = "caml_extunix_getpgid"
+
+(** [getsid pid] returns the session ID of the process specified by [pid].
+    If [pid] is zero, the process ID of the calling process is used. *)
+external getsid : int -> int = "caml_extunix_getsid"
 
 END
 
@@ -188,6 +197,30 @@ HAVE REALPATH
     @see "realpath(2)" manual *)
 external realpath : string -> string = "caml_extunix_realpath"
 END
+
+HAVE FCNTL
+(** @return whether file desctiptor is open *)
+external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
+END
+
+HAVE TCPGRP
+external tcgetpgrp : Unix.file_descr -> int = "caml_extunix_tcgetpgrp"
+external tcsetpgrp : Unix.file_descr -> int -> unit = "caml_extunix_tcsetpgrp"
+END
+
+(** @raise Not_available if OS does not represent file descriptors as numbers *)
+let int_of_file_descr : Unix.file_descr -> int =
+  if Obj.is_block (Obj.repr Unix.stdin) then
+    fun _ -> raise (Not_available "int_of_file_descr")
+  else
+    Obj.magic
+
+(** @raise Not_available if OS does not represent file descriptors as numbers *)
+let file_descr_of_int : int -> Unix.file_descr =
+  if Obj.is_block (Obj.repr Unix.stdin) then
+    fun _ -> raise (Not_available "file_descr_of_int")
+  else
+    Obj.magic
 
 HAVE SIGNALFD
 
@@ -254,6 +287,8 @@ external ssi_addr         : ssi -> int64 = "caml_extunix_ssi_addr"
 END
 
 HAVE PTRACE
+
+(** {2 ptrace} *)
 
 external ptrace_traceme : unit -> unit = "caml_extunix_ptrace_traceme"
 external ptrace_peekdata : int -> nativeint -> nativeint = "caml_extunix_ptrace_peekdata"
@@ -431,5 +466,16 @@ external ptsname: Unix.file_descr -> string = "caml_extunix_ptsname"
 
 END
 
+(* NB Should be after all 'external' definitions *)
+
+(** {2 Meta} *)
+(** [have name]
+  @return indication whether function [name] is available
+  - [Some true] if available
+  - [Some false] if not available
+  - [None] if not known
+
+  e.g. [have "eventfd"]
+*)
 SHOW ME THE MONEY
 
