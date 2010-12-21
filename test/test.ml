@@ -135,7 +135,7 @@ let test_resource =
     match hard with
     | Some 0L -> ()
     | None -> test soft soft
-    | Some n -> test soft (Some (Int64.pred n))
+    | Some n -> let lim = Some (Int64.pred n) in test lim lim
   in
   let test_setrlimit r =
     (string_of_resource r) >:: (fun () -> test_setrlimit r)
