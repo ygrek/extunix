@@ -15,6 +15,8 @@ struct
   let all = ref false
   let verbose = ref false
 
+  let funcs = Hashtbl.create 16
+
   let rec make_dummy_f body = function
   | <:ctyp@loc< ~ $s$ : $t$ -> $tl$ >> -> <:expr@loc< fun ~ $s$:(_:$t$) -> $make_dummy_f body tl$ >>
   | <:ctyp@loc< ? $s$ : $t$ -> $tl$ >> -> <:expr@loc< fun ? $s$:(_:option $t$) -> $make_dummy_f body tl$ >>
@@ -26,7 +28,20 @@ struct
       <:str_item< value $lid:i$ = $make_dummy_f <:expr< raise (Not_available $str:i$) >> t$; >>
   | e -> e
 
-  let invalid_external e = (Ast.map_str_item invalid_external)#str_item e
+  let record_external have si =
+    begin match si with
+    | <:str_item@_loc< external $i$ : $t$ = $sl$ >> ->
+(*       if Hashtbl.mem funcs i then failwith (Printf.sprintf "duplicate external %s" i); *)
+      Hashtbl.replace funcs i have
+    | _ -> () end;
+    si
+
+  let map_str_item f e = (Ast.map_str_item f)#str_item e
+
+  let make_have loc =
+    Hashtbl.fold (fun func have acc -> <:match_case@loc< $`str:func$ -> Some ($`bool:have$) | $acc$ >>)
+      funcs
+      <:match_case@loc< _ -> None >>
 
   let show name s = if !verbose then Printf.eprintf "%-20s %s\n%!" name s
 
@@ -34,12 +49,20 @@ struct
     GLOBAL: str_item;
     str_item:
       [ [ "HAVE"; name=UIDENT; si=str_items; "END" ->
-          match Config.have name, !all with
-          | Some true, _ -> show name "ok"; si
-          | Some false, true -> show name "rewrite"; invalid_external <:str_item< $si$ >>
-          | Some false, false -> show name "drop"; <:str_item<>>
-          | None, _ -> failwith ("Unregistered feature : " ^ name)
-      ] ]
+          match Config.have name with
+          | None -> failwith ("Unregistered feature : " ^ name)
+          | Some have ->
+            let _ = map_str_item (record_external have) <:str_item< $si$ >> in
+            match have, !all with
+            | true, _ -> show name "ok"; si
+            | false, true -> show name "rewrite"; map_str_item invalid_external <:str_item< $si$ >>
+            | false, false -> show name "drop"; <:str_item<>> ]
+      | [ "SHOW"; "ME"; "THE"; "MONEY" ->
+          if !all then
+            <:str_item< value have = fun [ $make_have _loc$ ] >>
+          else
+            <:str_item<>> ]
+      ]
     ;
   END
 

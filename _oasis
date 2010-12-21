@@ -3,13 +3,14 @@ Name:         extunix
 Version:      0.0.2-dev
 #LicenseFile:  ?
 License:      LGPL-2.1 with OCaml linking exception
-Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri
+Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi
 Copyrights:
               (C) 2010 ygrek,
               (C) 2009 Sylvain Le Gall,
               (C) 2008-2009 Talend Inc.,
               (C) 2010 Stéphane Glondu,
-              (C) 2005 Joshua Smith
+              (C) 2005 Joshua Smith,
+              (C) 2010 Niki Yoshiuchi
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.1.0), META (0.1.0)
@@ -23,8 +24,8 @@ Description:
     fallocate, openat, dirfd, eventfd, signalfd, setrlimit, mlockall, etc
 
 PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
-PreDistCleanCommand: $rm src/config.h
-PostDistCleanCommand: $rm src/config.ml # workaround bug in oasis 0.2.0~alpha1
+PreDistCleanCommand: $rm $(utoh "src/config.h")
+PostDistCleanCommand: $rm $(utoh "src/config.ml") # workaround bug in oasis 0.2.0~alpha1
 
 Flag strict
   Description: Strict compile-time checks
@@ -57,7 +58,7 @@ Test main
 Document api
   Title: API reference for extunix
   Type: ocamlbuild
-  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri
+  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi
   BuildTools: ocamldoc
   Format: HTML
   Index: index.html

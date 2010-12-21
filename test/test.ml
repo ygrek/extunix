@@ -6,23 +6,32 @@ let with_unix_error f () =
   try f ()
   with Unix.Unix_error(e,f,a) -> assert_failure (Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e))
 
+let require feature =
+  match have feature with
+  | None -> assert false
+  | Some present -> skip_if (not present) (Printf.sprintf "%S is not available" feature)
+
 let test_eventfd () =
+  require "eventfd";
   let e = eventfd 2 in
   assert_equal 2L (eventfd_read e);
   eventfd_write e 3L;
   assert_equal 3L (eventfd_read e)
 
 let test_uname () =
+  require "uname";
   let t = uname () in
   let _s: string = Uname.to_string t in
   ()
 
 let test_fadvise () =
+  require "fadvise";
   fadvise (Unix.descr_of_in_channel stdin) 0 0 POSIX_FADV_NORMAL;
   LargeFile.fadvise (Unix.descr_of_out_channel stdout) 0L 0L POSIX_FADV_SEQUENTIAL;
   ()
 
 let test_fallocate () =
+  require "fallocate";
   let (name,ch) = Filename.open_temp_file "extunix" "test" in
   try
     let fd = Unix.descr_of_out_channel ch in
@@ -47,10 +56,12 @@ let rec test_decorate g tst =
 let test_unistd =
   [
   "ttyname" >:: begin fun () ->
-    ignore (ttyname Unix.stdin);
-    ignore (ttyname Unix.stdout);
+    require "ttyname";
+    if Unix.isatty Unix.stdin then ignore (ttyname Unix.stdin);
+    if Unix.isatty Unix.stdout then ignore (ttyname Unix.stdout);
   end;
   "pgid" >:: begin fun () ->
+    require "getpgid";
     let pgid = getpgid 0 in
     setpgid 0 0;
     assert_equal (getpgid 0) (Unix.getpid ());
@@ -60,6 +71,7 @@ let test_unistd =
   ]
 
 let test_realpath () =
+  require "realpath";
   let printer x = x in
   assert_equal ~printer (Unix.getcwd ()) (realpath ".");
   assert_equal ~printer (Unix.getcwd ()) (realpath "./././/./");
@@ -68,6 +80,7 @@ let test_realpath () =
   ()
 
 let test_signalfd () =
+  require "signalfd";
   let pid = Unix.getpid () in
   let (_:int list) = Unix.sigprocmask Unix.SIG_BLOCK [Sys.sigusr1; Sys.sigusr2] in
   let fd = signalfd ~sigs:[Sys.sigusr1] ~flags:[] () in 
@@ -93,6 +106,7 @@ let test_resource =
   ]
   in
   let test_setrlimit r =
+    require "setrlimit";
     let test soft hard =
       setrlimit r ~soft ~hard;
       let (soft',hard') = getrlimit r in
@@ -113,8 +127,9 @@ let test_resource =
   in
   [
     "setrlimit" >::: (List.rev_map test_setrlimit all_resources);
-    "getpriority" >:: (fun () -> let (_:int) = getpriority (PRIO_PROCESS (Unix.getpid ())) in ());
+    "getpriority" >:: (fun () -> require "getpriority"; let (_:int) = getpriority (PRIO_PROCESS (Unix.getpid ())) in ());
     "setpriority" >:: (fun () ->
+       require "setpriority";
        let me = PRIO_PROCESS (Unix.getpid ()) in
        let prio = getpriority me in
        setpriority me (prio + 1);
@@ -122,6 +137,7 @@ let test_resource =
   ]
 
 let test_strtime () =
+  require "strptime";
   assert_equal ~printer:(fun x -> x) "2010/12/14" (strftime "%Y/%m/%d" (strptime "%Y-%m-%d" "2010-12-14"));
   let tm = Unix.localtime (Unix.gettimeofday ()) in
   let (_:string) = asctime tm in
@@ -129,6 +145,7 @@ let test_strtime () =
   ()
 
 let test_pts () =
+  require "posix_openpt";
   let master = posix_openpt [Unix.O_RDWR] in
     grantpt master;
     unlockpt master;
