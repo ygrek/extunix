@@ -14,7 +14,7 @@ Copyrights:
               (C) 2001 Gerd Stolpmann
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
-Plugins:      DevFiles (0.1.0), META (0.1.0)
+Plugins:      DevFiles (0.2), META (0.2)
 
 Synopsis: Extended functions for OCaml Unix module 
 Description:
@@ -26,7 +26,7 @@ Description:
 
 PostConfCommand: ocaml src/discover.ml -ocamlc $ocamlc -ext_obj $ext_obj
 PreDistCleanCommand: $rm $(utoh "src/config.h")
-PostDistCleanCommand: $rm $(utoh "src/config.ml") # workaround bug in oasis 0.2.0~alpha1
+PostDistCleanCommand: $rm $(utoh "src/config.ml") # [FORGE#742]
 
 Flag strict
   Description: Strict compile-time checks
@@ -48,17 +48,18 @@ Library extunix
 Executable test
   Path: test/
   Install: false
+  Custom: true
   CompiledObject: best
   MainIs: test.ml
   BuildDepends: extunix, oUnit (>= 1.0.3)
 
 Test main
-  Command: $test 
+  Command: $test
   TestTools: test
 
 Document api
   Title: API reference for extunix
-  Type: ocamlbuild
+  Type: ocamlbuild (0.2)
   Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann
   BuildTools: ocamldoc
   Format: HTML

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 50b3a683404172bba32383c17aeebe0f)
+# DO NOT EDIT (digest: c9eb5d9033c04fece2c4c8d30fdd3a10)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -48,5 +48,6 @@
 <test/*.ml{,i}>: use_extunix
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
+<test/test.{native,byte}>: custom
 # OASIS_STOP
 "src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o
