@@ -116,3 +116,13 @@ Checklist for adding new bindings
 * Add note to CHANGES.txt
 * Run ./configure && make
 
+Checklist for release
+---------------------
+
+* Review `git log` and update CHANGES.txt
+* Update version in _oasis and `oasis setup`
+* Commit
+* `make release`
+* Upload and update download links on web page
+* Set +dev version in _oasis and commit
+

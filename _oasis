@@ -1,6 +1,6 @@
 OASISFormat:  0.1
 Name:         extunix
-Version:      0.0.2-dev
+Version:      0.0.2
 #LicenseFile:  ?
 License:      LGPL-2.1 with OCaml linking exception
 Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann

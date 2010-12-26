@@ -37,10 +37,12 @@ setup.data:
 
 # OASIS_STOP
 
-VERSION=$(shell OASIS query version)
+VERSION=$(shell oasis query version)
 NAME=ocaml-extunix-$(VERSION)
 
 .PHONY: release
 release:
+	git tag -a -m $(VERSION) v$(VERSION)
 	git archive --prefix=$(NAME)/ v$(VERSION) | tar --delete $(NAME)/web | gzip > $(NAME).tar.gz
+	gpg -a -b $(NAME).tar.gz
 
