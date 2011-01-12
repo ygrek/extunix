@@ -29,10 +29,18 @@ external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
 END
 
 HAVE ATFILE
+(*
+external at_fdcwd : unit -> Unix.file_descr
+
+(** Pseudo file descriptor denoting current directory *)
+let at_fdcwd = at_fdcwd ()
+*)
+
+type at_flag = AT_EACCESS | AT_SYMLINK_NOFOLLOW | AT_REMOVEDIR
 external openat : Unix.file_descr -> string -> Unix.open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
 external fstatat : Unix.file_descr -> string -> Unix.stats = "caml_extunix_fstatat"
-external unlinkat : Unix.file_descr -> string -> bool -> unit = "caml_extunix_unlinkat"
-let unlinkat dirfd ?(rmdir=false) name = unlinkat dirfd name rmdir
+(** Supported flags : [AT_REMOVEDIR] *)
+external unlinkat : Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_unlinkat"
 external renameat : Unix.file_descr -> string -> Unix.file_descr -> string -> unit = "caml_extunix_renameat"
 external mkdirat : Unix.file_descr -> string -> int -> unit = "caml_extunix_mkdirat"
 END

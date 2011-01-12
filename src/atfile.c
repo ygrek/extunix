@@ -14,6 +14,18 @@ static int file_kind_table[] = {
   S_IFREG, S_IFDIR, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK
 };
 
+#ifndef AT_EACCESS
+#define AT_EACCESS 0
+#endif
+
+#ifndef AT_SYMLINK_NOFOLLOW
+#define AT_SYMLINK_NOFOLLOW 0
+#endif
+
+static int at_flags_table[] = {
+    AT_EACCESS, AT_SYMLINK_NOFOLLOW, AT_REMOVEDIR
+};
+
 static value stat_aux(/*int use_64,*/ struct stat *buf)
 {
   CAMLparam0();
@@ -58,15 +70,17 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name)
   CAMLreturn(stat_aux(/*0,*/ &buf));
 }
 
-CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_rmdir)
+CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_flags)
 {
-  CAMLparam3(v_dirfd, v_name, v_rmdir);
+  CAMLparam3(v_dirfd, v_name, v_flags);
   char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
-  int ret;
+  int ret = 0;
+  int flags = caml_convert_flag_list(v_flags, at_flags_table);
+  flags &= AT_REMOVEDIR;  /* only allowed flag here */
 
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
-  ret = unlinkat(Int_val(v_dirfd), p, (Bool_val(v_rmdir) ? AT_REMOVEDIR : 0));
+  ret = unlinkat(Int_val(v_dirfd), p, flags);
   caml_leave_blocking_section();
   caml_stat_free(p);
   if (ret != 0) uerror("unlinkat", v_name);
