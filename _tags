@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: c9eb5d9033c04fece2c4c8d30fdd3a10)
+# DO NOT EDIT (digest: 81cc1d1be15c43e0ec24e4002c720c42)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -21,6 +21,7 @@
 "src/mman.c": oasis_library_extunix_ccopt
 "src/time.c": oasis_library_extunix_ccopt
 "src/pts.c": oasis_library_extunix_ccopt
+"src/execinfo.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
@@ -41,6 +42,7 @@
 "src/mman.c": pkg_unix
 "src/time.c": pkg_unix
 "src/pts.c": pkg_unix
+"src/execinfo.c": pkg_unix
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix

@@ -42,7 +42,7 @@ Library extunix
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
-            resource.c, mman.c, time.c, pts.c
+            resource.c, mman.c, time.c, pts.c, execinfo.c
   BuildDepends: unix
 
 Executable test

@@ -474,6 +474,15 @@ external ptsname: Unix.file_descr -> string = "caml_extunix_ptsname"
 
 END
 
+HAVE EXECINFO
+
+(** {2 Application self-debugging *)
+
+(** @return a backtrace for the calling program *)
+external backtrace : unit -> string array = "caml_extunix_backtrace"
+
+END
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)

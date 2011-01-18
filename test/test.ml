@@ -173,7 +173,14 @@ let test_pts () =
     assert_equal str test;
     ()
 
+let test_execinfo () =
+  require "backtrace";
+  assert_bool "backtrace" ([||] <> backtrace ())
+
 let () =
+  let wrap test =
+    with_unix_error (fun () -> test (); Gc.compact ())
+  in
   let tests = ("tests" >::: [
     "eventfd" >:: test_eventfd;
     "uname" >:: test_uname;
@@ -185,6 +192,7 @@ let () =
     "resource" >::: test_resource;
     "strtime" >:: test_strtime;
     "pts" >:: test_pts;
+    "execinfo" >:: test_execinfo;
   ]) in
-  ignore (run_test_tt_main (test_decorate with_unix_error tests))
+  ignore (run_test_tt_main (test_decorate wrap tests))
 

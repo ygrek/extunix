@@ -1,6 +1,8 @@
 
 0.0.3 - ?
 * Keep unlinkat interface compatible with Netsys
+* New bindings :
+  * backtrace
 
 0.0.2 - 26 Dec 2010
 * New bindings :
