@@ -23,7 +23,18 @@ external dirfd : Unix.dir_handle -> Unix.file_descr = "caml_extunix_dirfd"
 END
 
 HAVE STATVFS
-type statvfs = { vfs_bsize : int; vfs_blocks : int64; vfs_bfree : int64; vfs_inodes : int64; vfs_ifree : int64; }
+type statvfs = {
+  f_bsize : int; (** file system block size *)
+  f_blocks : int64; (** size of file system in blocks *)
+  f_bfree : int64; (** free blocks *)
+  f_bavail : int64; (** free blocks for unprivileged users *)
+  f_files : int64; (** inodes *)
+  f_ffree : int64; (** free inodes *)
+  f_favail : int64; (** free inodes for unprivileged users *)
+  f_fsid : int64; (** file system ID *)
+  f_flag : int; (** mount flags *)
+  f_namemax : int; (** maximum filename length *)
+}
 external statvfs : string -> statvfs = "caml_extunix_statvfs"
 external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
 END

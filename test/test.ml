@@ -177,6 +177,13 @@ let test_execinfo () =
   require "backtrace";
   assert_bool "backtrace" ([||] <> backtrace ())
 
+let test_statvfs () =
+  require "statvfs";
+  let st = statvfs "." in
+  assert_bool "blocks" (st.f_blocks >= st.f_bfree && st.f_bfree >= st.f_bavail);
+  assert_bool "inodes" (st.f_files >= st.f_ffree && st.f_ffree >= st.f_favail);
+  assert_bool "bsize" (st.f_bsize > 0)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -193,6 +200,7 @@ let () =
     "strtime" >:: test_strtime;
     "pts" >:: test_pts;
     "execinfo" >:: test_execinfo;
+    "statvfs" >:: test_statvfs;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

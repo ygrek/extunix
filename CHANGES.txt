@@ -1,6 +1,7 @@
 
 0.0.3 - ?
 * Keep unlinkat interface compatible with Netsys
+* statvfs : return all fields, use POSIX names
 * New bindings :
   * backtrace
 

@@ -9,13 +9,18 @@ static value convert(struct statvfs* s)
   CAMLparam0();
   CAMLlocal1(v_s);
 
-  v_s = caml_alloc(5,0);
+  v_s = caml_alloc(10,0);
 
   Store_field(v_s,0,Val_int(s->f_bsize));
   Store_field(v_s,1,caml_copy_int64(s->f_blocks));
-  Store_field(v_s,2,caml_copy_int64(s->f_bavail));
-  Store_field(v_s,3,caml_copy_int64(s->f_files));
-  Store_field(v_s,4,caml_copy_int64(s->f_favail));
+  Store_field(v_s,2,caml_copy_int64(s->f_bfree));
+  Store_field(v_s,3,caml_copy_int64(s->f_bavail));
+  Store_field(v_s,4,caml_copy_int64(s->f_files));
+  Store_field(v_s,5,caml_copy_int64(s->f_ffree));
+  Store_field(v_s,6,caml_copy_int64(s->f_favail));
+  Store_field(v_s,7,caml_copy_int64(s->f_fsid));
+  Store_field(v_s,8,Val_int(s->f_flag));
+  Store_field(v_s,9,Val_int(s->f_namemax));
 
   CAMLreturn(v_s);
 }
