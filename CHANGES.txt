@@ -2,6 +2,7 @@
 0.0.3 - ?
 * Keep unlinkat interface compatible with Netsys
 * statvfs : return all fields, use POSIX names
+* realpath : fix segfault on non-glibc systems
 * New bindings :
   * backtrace
 
