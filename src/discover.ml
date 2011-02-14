@@ -167,7 +167,7 @@ let () =
       I "fcntl.h";
       I "sys/types.h"; I "sys/stat.h";
       I "unistd.h"; I "stdio.h";
-      D "S_IFREG"; D "O_DSYNC";
+      D "S_IFREG";
       S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat";
     ];
     "DIRFD", L[
