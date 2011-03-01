@@ -494,6 +494,27 @@ external backtrace : unit -> string array = "caml_extunix_backtrace"
 
 END
 
+HAVE SETENV
+
+(** {2 Environment manipulation} *)
+
+(** [setenv name value overwrite] adds the variable [name] to the environment with the value [value], if [name]
+does not already exist or [overwrite] is true *)
+external setenv : string -> string -> bool -> unit = "caml_extunix_setenv"
+
+(** [unsetenv name] removes variable [name] from the environment. If [name] does not exist in the environment, then the function
+succeeds, and the environment is unchanged. *)
+external unsetenv : string -> unit = "caml_extunix_unsetenv"
+
+END
+
+HAVE CLEARENV
+
+(** Clear the environment of all name-value pairs *)
+external clearenv : unit -> unit = "caml_extunix_clearenv"
+
+END
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)

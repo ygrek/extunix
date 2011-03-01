@@ -11,6 +11,8 @@ let require feature =
   | None -> assert false
   | Some present -> skip_if (not present) (Printf.sprintf "%S is not available" feature)
 
+let printer x = x
+
 let test_eventfd () =
   require "eventfd";
   let e = eventfd 2 in
@@ -87,7 +89,6 @@ let test_unistd =
 
 let test_realpath () =
   require "realpath";
-  let printer x = x in
   assert_equal ~printer (Unix.getcwd ()) (realpath ".");
   assert_equal ~printer (Unix.getcwd ()) (realpath "./././/./");
   assert_equal ~printer "/" (realpath "///");
@@ -153,7 +154,7 @@ let test_resource =
 
 let test_strtime () =
   require "strptime";
-  assert_equal ~printer:(fun x -> x) "2010/12/14" (strftime "%Y/%m/%d" (strptime "%Y-%m-%d" "2010-12-14"));
+  assert_equal ~printer "2010/12/14" (strftime "%Y/%m/%d" (strptime "%Y-%m-%d" "2010-12-14"));
   let tm = Unix.localtime (Unix.gettimeofday ()) in
   let (_:string) = asctime tm in
   let (_:string) = tzname tm.Unix.tm_isdst in
@@ -184,6 +185,20 @@ let test_statvfs () =
   assert_bool "inodes" (st.f_files >= st.f_ffree && st.f_ffree >= st.f_favail);
   assert_bool "bsize" (st.f_bsize > 0)
 
+let test_setenv () =
+  require "setenv";
+  let k = "EXTUNIX_TEST_VAR" in
+  let v = string_of_float (Unix.gettimeofday ()) in
+  setenv k k true;
+  assert_equal ~printer k (Unix.getenv k);
+  setenv k v false;
+  assert_equal ~printer k (Unix.getenv k);
+  setenv k v true;
+  assert_equal ~printer v (Unix.getenv k);
+  unsetenv k;
+  unsetenv k;
+  assert_raises Not_found (fun () -> Unix.getenv k)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -201,6 +216,7 @@ let () =
     "pts" >:: test_pts;
     "execinfo" >:: test_execinfo;
     "statvfs" >:: test_statvfs;
+    "setenv" >:: test_setenv;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

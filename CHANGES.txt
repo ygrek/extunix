@@ -5,6 +5,7 @@
 * realpath : fix segfault on non-glibc systems
 * New bindings :
   * backtrace
+  * setenv unsetenv clearenv
 
 0.0.2 - 26 Dec 2010
 * New bindings :

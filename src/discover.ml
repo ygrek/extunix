@@ -241,5 +241,7 @@ let () =
     "FCNTL", L[ I"unistd.h"; I"fcntl.h"; S"fcntl"; V"F_GETFL"; ];
     "TCPGRP", L[ I"unistd.h"; S"tcgetpgrp"; S"tcsetpgrp"; ];
     "EXECINFO", L[ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; ];
+    "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
+    "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
   ]
 
