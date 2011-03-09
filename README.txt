@@ -4,7 +4,7 @@ ExtUnix OCaml library
 
 A collection of thin bindings to various low-level system API.
 
-Our devise: "Be to Unix, what extlib is to stdlib"
+Our motto: "Be to Unix, what extlib is to stdlib"
 
  * Implement thin C bindings that directly map to underlying system API.
  * Provide common consistent ocaml interface: naming convention, exceptions.
