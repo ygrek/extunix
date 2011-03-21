@@ -22,8 +22,12 @@ static int file_kind_table[] = {
 #define AT_SYMLINK_NOFOLLOW 0
 #endif
 
+#ifndef AT_SYMLINK_FOLLOW
+#define AT_SYMLINK_FOLLOW 0
+#endif
+
 static int at_flags_table[] = {
-    AT_EACCESS, AT_SYMLINK_NOFOLLOW, AT_REMOVEDIR
+    AT_EACCESS, AT_SYMLINK_NOFOLLOW, AT_REMOVEDIR, AT_SYMLINK_FOLLOW,
 };
 
 static value stat_aux(/*int use_64,*/ struct stat *buf)
@@ -100,6 +104,25 @@ CAMLprim value caml_extunix_mkdirat(value v_dirfd, value v_name, value v_mode)
   CAMLparam3(v_dirfd, v_name, v_mode);
   int ret = mkdirat(Int_val(v_dirfd), String_val(v_name), Int_val(v_mode));
   if (ret != 0) uerror("mkdirat", v_name);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_linkat(value v_olddirfd, value v_oldname, value v_newdirfd, value v_newname, value v_flags)
+{
+  CAMLparam5(v_olddirfd, v_oldname, v_newdirfd, v_newname, v_flags);
+  int ret = 0;
+  int flags = caml_convert_flag_list(v_flags, at_flags_table);
+  flags &= AT_SYMLINK_FOLLOW;  /* only allowed flag here */
+  ret = linkat(Int_val(v_olddirfd), String_val(v_oldname), Int_val(v_newdirfd), String_val(v_newname), flags);
+  if (ret != 0) uerror("linkat", v_oldname);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_symlinkat(value v_path, value v_newdirfd, value v_newname)
+{
+  CAMLparam3(v_path, v_newdirfd, v_newname);
+  int ret = symlinkat(String_val(v_path), Int_val(v_newdirfd), String_val(v_newname));
+  if (ret != 0) uerror("symlinkat", v_path);
   CAMLreturn(Val_unit);
 }
 

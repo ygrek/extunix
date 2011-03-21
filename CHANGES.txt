@@ -6,6 +6,7 @@
 * New bindings :
   * backtrace
   * setenv unsetenv clearenv
+  * linkat symlinkat
 
 0.0.2 - 26 Dec 2010
 * New bindings :
