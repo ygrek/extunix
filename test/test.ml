@@ -32,6 +32,8 @@ let test_fadvise () =
   try
     fadvise (Unix.descr_of_out_channel ch) 0 0 POSIX_FADV_NORMAL;
     LargeFile.fadvise (Unix.descr_of_out_channel ch) 0L 0L POSIX_FADV_SEQUENTIAL;
+    close_out ch;
+    Unix.unlink name
   with exn -> close_out_noerr ch; Unix.unlink name; raise exn
 
 let test_fallocate () =
@@ -199,6 +201,19 @@ let test_setenv () =
   unsetenv k;
   assert_raises Not_found (fun () -> Unix.getenv k)
 
+let test_mkdtemp () =
+  require "mkdtemp";
+  let tmpl = Filename.concat Filename.temp_dir_name "extunix_test_XXXXXX" in
+  let d1 = mkdtemp tmpl in
+  let d2 = mkdtemp tmpl in
+  try
+    assert_bool "different" (d1 <> d2);
+    assert_bool "d1 exists" ((Unix.stat d1).Unix.st_kind = Unix.S_DIR);
+    assert_bool "d2 exists" ((Unix.stat d2).Unix.st_kind = Unix.S_DIR);
+    Unix.rmdir d1;
+    Unix.rmdir d2
+  with exn -> Unix.rmdir d1; Unix.rmdir d2; raise exn
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -217,6 +232,7 @@ let () =
     "execinfo" >:: test_execinfo;
     "statvfs" >:: test_statvfs;
     "setenv" >:: test_setenv;
+    "mkdtemp" >:: test_mkdtemp;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

@@ -2,7 +2,10 @@
 #define EXTUNIX_WANT_REALPATH
 #define EXTUNIX_WANT_SETENV
 #define EXTUNIX_WANT_CLEARENV
+#define EXTUNIX_WANT_MKDTEMP
 #include "config.h"
+
+#include <string.h>
 
 #if defined(EXTUNIX_HAVE_REALPATH)
 
@@ -90,6 +93,28 @@ CAMLprim value caml_extunix_clearenv(value v_unit)
   }
 
   return Val_unit;
+}
+
+#endif
+
+#if defined(EXTUNIX_HAVE_MKDTEMP)
+
+CAMLprim value caml_extunix_mkdtemp(value v_path)
+{
+  CAMLparam1(v_path);
+  char* path = strdup(String_val(v_path));
+  char *ret;
+  caml_enter_blocking_section();
+  ret = mkdtemp(path);
+  caml_leave_blocking_section();
+  if (NULL == ret)
+  {
+    free(path);
+    uerror("mkdtemp", v_path);
+  }
+  v_path = caml_copy_string(ret);
+  free(path);
+  CAMLreturn(v_path);
 }
 
 #endif

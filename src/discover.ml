@@ -243,5 +243,6 @@ let () =
     "EXECINFO", L[ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; ];
     "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
+    "MKDTEMP", L[ I"stdlib.h"; S"mkdtemp"; ];
   ]
 

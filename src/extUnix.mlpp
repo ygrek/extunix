@@ -518,6 +518,14 @@ external clearenv : unit -> unit = "caml_extunix_clearenv"
 
 END
 
+HAVE MKDTEMP
+
+(** [mkdtemp template] creates a unique temporary directory (with permissions 0700).
+  Last six characters of [template] must be "XXXXXX". *)
+external mkdtemp : string -> string = "caml_extunix_mkdtemp"
+
+END
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)
