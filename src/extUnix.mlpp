@@ -490,7 +490,7 @@ END
 
 HAVE EXECINFO
 
-(** {2 Application self-debugging *)
+(** {2 Application self-debugging} *)
 
 (** @return a backtrace for the calling program *)
 external backtrace : unit -> string array = "caml_extunix_backtrace"
