@@ -131,7 +131,17 @@ let test_resource =
       assert_equal ~printer:Rlimit.to_string ~msg:"soft limit" ~cmp:Rlimit.eq soft soft';
       assert_equal ~printer:Rlimit.to_string ~msg:"hard limit" ~cmp:Rlimit.eq hard hard';
     in
-    let (soft,hard) = getrlimit r in
+    let (soft,hard) = match r with
+    | RLIMIT_NOFILE ->
+      (* kernel may have lower limits on open files (fs.nr_open or kern.maxfilesperproc) than rlimit.
+         In such situation setrlimit may either silently adjust rlimits to lower values (BSD)
+         or fail with EPERM (Linux)
+      *)
+      let (soft,hard) = getrlimit r in
+      begin try setrlimit r ~soft ~hard with Unix.Unix_error (Unix.EPERM,_,_) -> skip_if true "setrlimit NOFILE EPERM" end;
+      getrlimit r
+    | _ -> getrlimit r
+    in
     assert_bool "soft <= hard" (Rlimit.le soft hard);
     test hard hard;
     test soft hard;
