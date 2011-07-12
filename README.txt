@@ -123,6 +123,6 @@ Checklist for release
 * Update version in _oasis and `oasis setup`
 * Commit
 * `make release`
-* Upload and update download links on web page
-* Set +dev version in _oasis and commit
+* Upload (forge and oasis-db) and update download links on web page
+* Commit
 

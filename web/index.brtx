@@ -9,13 +9,14 @@
 
 {begin list}
 {*}{link https://forge.ocamlcore.org/projects/extunix/|OCamlCore project page}
+{*}{link http://oasis.ocamlcore.org/dev/view/extunix/|OASIS DB}
 {*}{link https://forge.ocamlcore.org/frs/?group_id=175|Download}
 {begin list}
-  {*}{link https://forge.ocamlcore.org/frs/download.php/541/ocaml-extunix-0.0.2.tar.gz|ocaml-extunix-0.0.2.tar.gz}
-  ({link https://forge.ocamlcore.org/frs/download.php/542/ocaml-extunix-0.0.2.tar.gz.asc|sig}), 26 Dec 2010
+  {*}{link https://forge.ocamlcore.org/frs/download.php/646/ocaml-extunix-0.0.3.tar.gz|ocaml-extunix-0.0.3.tar.gz}
+  ({link https://forge.ocamlcore.org/frs/download.php/647/ocaml-extunix-0.0.3.tar.gz.asc|sig}), 12 Jul 2011
 {end}
 {*}{link https://forge.ocamlcore.org/tracker/?group_id=175|Bug tracker}
-{*}{link http://build.ygrek.org.ua/hudson/job/extunix/|Hudson CI builds}
+{*}{link http://build.ygrek.org.ua/jenkins/job/extunix/|Jenkins CI automatic builds}
 {*}Code
 {begin list}
   {*}{link http://git.ocamlcore.org/cgi-bin/gitweb.cgi?p=extunix/extunix.git;a=summary|gitweb}
@@ -28,7 +29,7 @@
 {end}
 
 {bypass end}<hr/>{end}
-{p}2010-12-26
+{p}2011-07-12
 {bypass end}
 <a href="http://oasis.forge.ocamlcore.org/">
   <img
