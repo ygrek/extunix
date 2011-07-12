@@ -68,7 +68,7 @@ let build_code args =
     | DEFINE s -> ()
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
-    | V s -> pr "size_t var_%d = %s;" (fresh ()) s
+    | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
     end args;
   pr "int main() { return 0; }";
   Buffer.contents b
