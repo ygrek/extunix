@@ -439,8 +439,9 @@ external munlockall : unit -> unit = "caml_extunix_munlockall"
 
 END
 
-HAVE STRTIME
 (** {2 Time conversion} *)
+
+HAVE STRTIME
 
 (** This function is the converse of the {!strftime} function.
   [strptime fmt data] convert a string containing time information [data]
@@ -462,6 +463,13 @@ external strftime: string -> Unix.tm -> string = "caml_extunix_strftime"
   @return abbreviated name of the current timezone
 *)
 external tzname : bool -> string = "caml_extunix_tzname"
+
+END
+
+HAVE TIMEGM
+
+(** Inverse of [Unix.gmtime] *)
+external timegm : Unix.tm -> float = "caml_extunix_timegm"
 
 END
 

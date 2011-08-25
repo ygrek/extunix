@@ -1,4 +1,8 @@
 
+? - ?
+* New bindings :
+  * timegm
+
 0.0.3 - 12 Jul 2011
 * Keep unlinkat interface compatible with Netsys
 * statvfs : return all fields, use POSIX names

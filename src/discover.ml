@@ -244,5 +244,6 @@ let () =
     "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
     "MKDTEMP", L[ I"stdlib.h"; S"mkdtemp"; ];
+    "TIMEGM", L[ I"time.h"; S"timegm"; ];
   ]
 

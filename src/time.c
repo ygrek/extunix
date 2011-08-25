@@ -1,12 +1,14 @@
+
+#define EXTUNIX_WANT_STRTIME
+#define EXTUNIX_WANT_TIMEGM
+#include "config.h"
+
+#if defined(EXTUNIX_HAVE_STRTIME)
+
 /*
  * http://caml.inria.fr/mantis/view.php?id=3851
  * Author: Joshua Smith
  */
-
-#define EXTUNIX_WANT_STRTIME
-#include "config.h"
-
-#if defined(EXTUNIX_HAVE_STRTIME)
 
 #include <errno.h>
 
@@ -75,6 +77,22 @@ CAMLprim value caml_extunix_tzname(value v_isdst)
 {
   int i = Bool_val(v_isdst) ? 1 : 0;
   return caml_copy_string(tzname[i]);
+}
+
+#endif
+
+#if defined(EXTUNIX_HAVE_TIMEGM)
+
+CAMLprim value caml_extunix_timegm(value v_t)
+{
+  CAMLparam1(v_t);
+  struct tm tm;
+  time_t t;
+
+  fill_tm(&tm, v_t);
+  t = timegm(&tm);
+
+  CAMLreturn(caml_copy_double(t));
 }
 
 #endif
