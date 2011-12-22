@@ -77,9 +77,9 @@ let execute code =
   let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
   output_string ch code;
   flush ch;
+  close_out ch;
   let cmd = sprintf "%s -c %s" !ocamlc (Filename.quote tmp) in
   let ret = Sys.command cmd in
-  close_out ch;
   Sys.remove tmp;
   (* assumption: C compiler puts object file in current directory *)
   let base = Filename.chop_extension (Filename.basename tmp) in

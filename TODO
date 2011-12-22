@@ -1,4 +1,5 @@
 * comments: mark "emulated" (windows) functions
+* unsetenv winapi? see http://old.nabble.com/-patch--(msvc)-use-more-modern-facilities-for-setenv()-unsetenv()-td15877005.html
 
 * INRIA request for extended UNIX:
   http://caml.inria.fr/mantis/view.php?id=5063 (DONE)
