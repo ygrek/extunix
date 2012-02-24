@@ -35,8 +35,8 @@ let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
 
 let config_defines = [
-  "_POSIX_C_SOURCE 200112L";
-  "_XOPEN_SOURCE 600";
+  "_POSIX_C_SOURCE 200809L";
+  "_XOPEN_SOURCE 700";
   "_BSD_SOURCE";
   "_LARGEFILE64_SOURCE";
   "WIN32_LEAN_AND_MEAN";
@@ -245,5 +245,7 @@ let () =
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
     "MKDTEMP", L[ I"stdlib.h"; S"mkdtemp"; ];
     "TIMEGM", L[ I"time.h"; S"timegm"; ];
+    "MALLOC_INFO", L[ I"malloc.h"; S"malloc_info"; ];
+    "MALLOC_STATS", L[ I"malloc.h"; S"malloc_stats"; ];
   ]
 

@@ -496,12 +496,26 @@ external ptsname: Unix.file_descr -> string = "caml_extunix_ptsname"
 
 END
 
-HAVE EXECINFO
+(** {2 Application self-debugging and diagnostics} *)
 
-(** {2 Application self-debugging} *)
+HAVE EXECINFO
 
 (** @return a backtrace for the calling program *)
 external backtrace : unit -> string array = "caml_extunix_backtrace"
+
+END
+
+HAVE MALLOC_STATS
+
+(** Print brief heap summary statistics on stderr *)
+external malloc_stats : unit -> unit = "caml_extunix_malloc_stats"
+
+END
+
+HAVE MALLOC_INFO
+
+(** @return the information about state of allocator *)
+external malloc_info : unit -> string = "caml_extunix_malloc_info"
 
 END
 

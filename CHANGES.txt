@@ -2,6 +2,8 @@
 ? - ?
 * New bindings :
   * timegm
+  * malloc_stats
+  * malloc_info
 
 0.0.3 - 12 Jul 2011
 * Keep unlinkat interface compatible with Netsys
