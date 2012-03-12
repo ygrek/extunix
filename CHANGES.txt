@@ -4,6 +4,7 @@
   * timegm
   * malloc_stats
   * malloc_info
+  * posix_memalign
 
 0.0.3 - 12 Jul 2011
 * Keep unlinkat interface compatible with Netsys

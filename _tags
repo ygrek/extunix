@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: d6d5b613af8be0b761af97372aa94014)
+# DO NOT EDIT (digest: fb1405223bb21483ec51d3141c7b7aea)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -25,33 +25,56 @@
 "src/malloc.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: stubs_extunix
 <src/*.ml{,i}>: pkg_unix
+<src/*.ml{,i}>: pkg_bigarray
 "src/eventfd.c": pkg_unix
+"src/eventfd.c": pkg_bigarray
 "src/dirfd.c": pkg_unix
+"src/dirfd.c": pkg_bigarray
 "src/fsync.c": pkg_unix
+"src/fsync.c": pkg_bigarray
 "src/statvfs.c": pkg_unix
+"src/statvfs.c": pkg_bigarray
 "src/atfile.c": pkg_unix
+"src/atfile.c": pkg_bigarray
 "src/ioctl_siocgifconf.c": pkg_unix
+"src/ioctl_siocgifconf.c": pkg_bigarray
 "src/uname.c": pkg_unix
+"src/uname.c": pkg_bigarray
 "src/fadvise.c": pkg_unix
+"src/fadvise.c": pkg_bigarray
 "src/fallocate.c": pkg_unix
+"src/fallocate.c": pkg_bigarray
 "src/tty_ioctl.c": pkg_unix
+"src/tty_ioctl.c": pkg_bigarray
 "src/unistd.c": pkg_unix
+"src/unistd.c": pkg_bigarray
 "src/stdlib.c": pkg_unix
+"src/stdlib.c": pkg_bigarray
 "src/signalfd.c": pkg_unix
+"src/signalfd.c": pkg_bigarray
 "src/ptrace.c": pkg_unix
+"src/ptrace.c": pkg_bigarray
 "src/resource.c": pkg_unix
+"src/resource.c": pkg_bigarray
 "src/mman.c": pkg_unix
+"src/mman.c": pkg_bigarray
 "src/time.c": pkg_unix
+"src/time.c": pkg_bigarray
 "src/pts.c": pkg_unix
+"src/pts.c": pkg_bigarray
 "src/execinfo.c": pkg_unix
+"src/execinfo.c": pkg_bigarray
 "src/malloc.c": pkg_unix
+"src/malloc.c": pkg_bigarray
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix
 <test/test.{native,byte}>: pkg_oUnit
+<test/test.{native,byte}>: pkg_bigarray
 <test/*.ml{,i}>: use_extunix
 <test/*.ml{,i}>: pkg_unix
 <test/*.ml{,i}>: pkg_oUnit
+<test/*.ml{,i}>: pkg_bigarray
 <test/test.{native,byte}>: custom
 # OASIS_STOP
 "src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o

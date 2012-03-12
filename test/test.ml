@@ -227,6 +227,13 @@ let test_mkdtemp () =
     Unix.rmdir d2
   with exn -> Unix.rmdir d1; Unix.rmdir d2; raise exn
 
+let test_memalign () =
+  require "memalign";
+  ignore (memalign 512 512);
+  ignore (memalign 1024 2048);
+  ignore (memalign 2048 16384);
+  ignore (memalign 4096 65536)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -246,6 +253,7 @@ let () =
     "statvfs" >:: test_statvfs;
     "setenv" >:: test_setenv;
     "mkdtemp" >:: test_mkdtemp;
+    "memalign" >:: test_memalign;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

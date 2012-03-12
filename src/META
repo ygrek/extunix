@@ -1,8 +1,8 @@
 # OASIS_START
-# DO NOT EDIT (digest: dc9e07010ba7baf7928fb9f68d0b4c10)
+# DO NOT EDIT (digest: 308fd05c234868399196475e75736e7c)
 version = "0.0.3"
 description = "Extended functions for OCaml Unix module"
-requires = "unix"
+requires = "unix bigarray"
 archive(byte) = "extunix.cma"
 archive(native) = "extunix.cmxa"
 exists_if = "extunix.cma"

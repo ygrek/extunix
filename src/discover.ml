@@ -247,5 +247,6 @@ let () =
     "TIMEGM", L[ I"time.h"; S"timegm"; ];
     "MALLOC_INFO", L[ I"malloc.h"; S"malloc_info"; ];
     "MALLOC_STATS", L[ I"malloc.h"; S"malloc_stats"; ];
+    "MEMALIGN", L[ I "stdlib.h"; S"posix_memalign"; ];
   ]
 
