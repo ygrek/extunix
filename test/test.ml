@@ -270,6 +270,57 @@ let test_endian () =
   assert (B.int64_from_host i64 <> L.int64_from_host i64);
   assert (B.int64_to_host i64 <> L.int64_to_host i64)
 
+let test_endian_string () =
+  require "unsafe_get_int8";
+  require "unsafe_get_int16";
+  require "unsafe_get_int31";
+  require "unsafe_get_int32";
+  require "unsafe_get_int64";
+  require "unsafe_get_uint8";
+  require "unsafe_get_uint16";
+  require "unsafe_get_uint31";
+  require "unsafe_set_uint8";
+  require "unsafe_set_uint16";
+  require "unsafe_set_uint31";
+  require "unsafe_set_int8";
+  require "unsafe_set_int16";
+  require "unsafe_set_int31";
+  require "unsafe_set_int32";
+  require "unsafe_set_int64";
+  let module B = EndianBig in
+  let module L = EndianLittle in
+  let src = (* FF FF FEDC FEDC FEDCBA98 FEDCBA9876543210 *)
+    "\255\255\254\220\254\220\254\220\186\152\254\220\186\152\118\084\050\016"
+  in
+  assert_equal (B.get_uint8  src  0) 0xFF;
+  assert_equal (B.get_int8   src  1) (-0x01);
+  assert_equal (B.get_uint16 src  2) 0xFEDC;
+  assert_equal (B.get_int16  src  4) (-0x0124);
+  assert_equal (B.get_int32  src  6) (0xFEDCBA98l);
+  assert_equal (B.get_int64  src 10) (0xFEDCBA9876543210L);
+  assert_equal (L.get_uint8  src  0) 0xFF;
+  assert_equal (L.get_int8   src  1) (-0x01);
+  assert_equal (L.get_uint16 src  2) 0xDCFE;
+  assert_equal (L.get_int16  src  4) (-0x2302);
+  assert_equal (L.get_int32  src  6) (0x98BADCFEl);
+  assert_equal (L.get_int64  src 10) (0x1032547698BADCFEL);
+  let b = "                  " in
+  B.set_uint8  b  0 0xFF;
+  B.set_int8   b  1 (-0x01);
+  B.set_uint16 b  2 0xFEDC;
+  B.set_uint16 b  4 (-0x0124);
+  B.set_int32  b  6 (0xFEDCBA98l);
+  B.set_int64  b 10 (0xFEDCBA9876543210L);
+  assert_equal b src;
+  let l = "                  " in
+  L.set_uint8  l  0 0xFF;
+  L.set_int8   l  1 (-0x01);
+  L.set_uint16 l  2 0xDCFE;
+  L.set_uint16 l  4 (-0x2302);
+  L.set_int32  l  6 (0x98BADCFEl);
+  L.set_int64  l 10 (0x1032547698BADCFEL);
+  assert_equal l src
+  
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -291,6 +342,7 @@ let () =
     "mkdtemp" >:: test_mkdtemp;
     "memalign" >:: test_memalign;
     "endian" >:: test_endian;
+    "endian" >:: test_endian_string;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

@@ -623,6 +623,125 @@ HAVE ENDIAN
   (** [int64_to_host int64] converts a 64bit integer from big endian to
       host byte order *)
   external int64_to_host : int64 -> int64 = "caml_extunix_be64toh"
+
+  (** [unsafe_get_X str off] extract integer of type [X] from string
+      [str] starting at offset [off]. Unsigned types are 0 extended
+      and signed types are sign extended to fill the ocaml type.
+      Bounds checking is not performed. Use with caution and only when
+      the program logic guarantees that the access is within bounds.
+
+      Note: The 31bit functions extract a 32bit integer and return it
+      as ocaml int. On 32bit platforms this can overflow as ocaml
+      integers are 31bit signed there. No error is reported if this
+      occurs. Use with care. *)
+  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8"
+  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8"
+  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_bu16"
+  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_bs16"
+  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_bu31"
+  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_bs31"
+  external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_bs32"
+  external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_bs64"
+
+  (** [get_X str off] same as [unsafe_get_X] but with bounds checking. *)
+  let get_uint8 str off =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint8 str off
+
+  let get_int8 str off =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int8 str off
+
+  let get_uint16 str off =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint16 str off
+
+  let get_int16 str off =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int16 str off
+
+  let get_uint31 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint31 str off
+
+  let get_int31 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int31 str off
+
+  let get_int32 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int32 str off
+
+  let get_int64 str off =
+    if off < 0 || off + 8 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int64 str off
+
+  (** [unsafe_set_X str off v] stores the integer [v] as type [X] in
+      string [str] starting at offset [off]. Bounds checking is not
+      performed. Use with caution and only when the program logic
+      guarantees that the access is within bounds.
+
+      Note: The 31bit functions store an ocaml int as 32bit
+      integer. On 32bit platforms ocaml integers are 31bit signed and
+      will be sign extended to 32bit first. Use with care. *)
+  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8"
+  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8"
+  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_b16"
+  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_b16"
+  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_b31"
+  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_b31"
+  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_b32"
+  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_b64"
+
+  (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
+  let set_uint8 str off v =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint8 str off v
+
+  let set_int8 str off v =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int8 str off v
+
+  let set_uint16 str off v =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint16 str off v
+
+  let set_int16 str off v =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int16 str off v
+
+  let set_uint31 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint31 str off v
+
+  let set_int31 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int31 str off v
+
+  let set_int32 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int32 str off v
+
+  let set_int64 str off v =
+    if off < 0 || off + 8 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int64 str off v
+
 END
 
 end
@@ -690,11 +809,256 @@ HAVE ENDIAN
   (** [int64_to_host int64] converts a 64bit integer from little endian to
       host byte order *)
   external int64_to_host : int64 -> int64 = "caml_extunix_le64toh"
-END
   
+  (** [unsafe_get_X str off] extract integer of type [X] from string
+      [str] starting at offset [off]. Unsigned types are 0 extended
+      and signed types are sign extended to fill the ocaml type.
+      Bounds checking is not performed. Use with caution and only when
+      the program logic guarantees that the access is within bounds.
+
+      Note: The 31bit functions extract a 32bit integer and return it
+      as ocaml int. On 32bit platforms this can overflow as ocaml
+      integers are 31bit signed there. No error is reported if this
+      occurs. Use with care. *)
+  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8"
+  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8"
+  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_lu16"
+  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_ls16"
+  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_lu31"
+  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_ls31"
+  external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_ls32"
+  external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_ls64"
+
+  (** [get_X str off] same as [unsafe_get_X] but with bounds checking. *)
+  let get_uint8 str off =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint8 str off
+
+  let get_int8 str off =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int8 str off
+
+  let get_uint16 str off =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint16 str off
+
+  let get_int16 str off =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int16 str off
+
+  let get_uint31 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint31 str off
+
+  let get_int31 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int31 str off
+
+  let get_int32 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int32 str off
+
+  let get_int64 str off =
+    if off < 0 || off + 8 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int64 str off
+
+  (** [unsafe_set_X str off v] stores the integer [v] as type [X] in
+      string [str] starting at offset [off]. Bounds checking is not
+      performed. Use with caution and only when the program logic
+      guarantees that the access is within bounds.
+
+      Note: The 31bit functions store an ocaml int as 32bit
+      integer. On 32bit platforms ocaml integers are 31bit signed and
+      will be sign extended to 32bit first. Use with care. *)
+  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8"
+  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8"
+  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_l16"
+  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_l16"
+  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_l31"
+  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_l31"
+  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_l32"
+  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_l64"
+
+  (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
+  let set_uint8 str off v =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint8 str off v
+
+  let set_int8 str off v =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int8 str off v
+
+  let set_uint16 str off v =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint16 str off v
+
+  let set_int16 str off v =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int16 str off v
+
+  let set_uint31 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint31 str off v
+
+  let set_int31 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int31 str off v
+
+  let set_int32 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int32 str off v
+
+  let set_int64 str off v =
+    if off < 0 || off + 8 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int64 str off v
+
+END
+
 end
 
 module EndianNet = EndianBig
+
+module EndianHost = struct
+
+  (** {2 host endian functions}
+
+      {b Author:} Goswin von Brederlow *)
+
+  (** [unsafe_get_X str off] extract integer of type [X] from string
+      [str] starting at offset [off]. Unsigned types are 0 extended
+      and signed types are sign extended to fill the ocaml type.
+      Bounds checking is not performed. Use with caution and only when
+      the program logic guarantees that the access is within bounds.
+
+      Note: The 31bit functions extract a 32bit integer and return it
+      as ocaml int. On 32bit platforms this can overflow as ocaml
+      integers are 31bit signed there. No error is reported if this
+      occurs. Use with care. *)
+  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8"
+  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8"
+  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_hu16"
+  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_hs16"
+  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_hu31"
+  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_hs31"
+  external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_hs32"
+  external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_hs64"
+
+  (** [get_X str off] same as [unsafe_get_X] but with bounds checking. *)
+  let get_uint8 str off =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint8 str off
+
+  let get_int8 str off =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int8 str off
+
+  let get_uint16 str off =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint16 str off
+
+  let get_int16 str off =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int16 str off
+
+  let get_uint31 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint31 str off
+
+  let get_int31 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int31 str off
+
+  let get_int32 str off =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int32 str off
+
+  let get_int64 str off =
+    if off < 0 || off + 8 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int64 str off
+
+  (** [unsafe_set_X str off v] stores the integer [v] as type [X] in
+      string [str] starting at offset [off]. Bounds checking is not
+      performed. Use with caution and only when the program logic
+      guarantees that the access is within bounds.
+
+      Note: The 31bit functions store an ocaml int as 32bit
+      integer. On 32bit platforms ocaml integers are 31bit signed and
+      will be sign extended to 32bit first. Use with care. *)
+  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8"
+  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8"
+  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_h16"
+  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_h16"
+  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_h31"
+  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_h31"
+  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_h32"
+  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_h64"
+
+  (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
+  let set_uint8 str off v =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint8 str off v
+
+  let set_int8 str off v =
+    if off < 0 || off >= String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int8 str off v
+
+  let set_uint16 str off v =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint16 str off v
+
+  let set_int16 str off v =
+    if off < 0 || off + 2 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int16 str off v
+
+  let set_uint31 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint31 str off v
+
+  let set_int31 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int31 str off v
+
+  let set_int32 str off v =
+    if off < 0 || off + 4 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int32 str off v
+
+  let set_int64 str off v =
+    if off < 0 || off + 8 > String.length str
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int64 str off v
+
+end
 
 (* NB Should be after all 'external' definitions *)
 

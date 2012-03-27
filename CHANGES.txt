@@ -5,7 +5,7 @@
   * malloc_stats
   * malloc_info
   * posix_memalign
-* New submodules: EndianBig, EndianLittle, EndianNet
+* New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
   * New bindings
     * uint16_from_host uint16_to_host
     *  int16_from_host  int16_to_host
@@ -13,6 +13,12 @@
     *  int31_from_host  int31_to_host
     *  int32_from_host  int32_to_host
     *  int64_from_host  int64_to_host
+  * New string functions
+    * get_uint8  set_uint8  get_int8  set_int8
+    * get_uint16 set_uint16 get_int16 set_int16
+    * get_uint31 set_uint31 get_int31 set_int31
+    * get_int32  set_int32
+    * get_int64 set_int64
 
 0.0.3 - 12 Jul 2011
 * Keep unlinkat interface compatible with Netsys
