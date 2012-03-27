@@ -42,6 +42,7 @@ let config_defines = [
   "WIN32_LEAN_AND_MEAN";
   "_WIN32_WINNT 0x500";
   "CAML_NAME_SPACE";
+  "_GNU_SOURCE"
   ]
 
 let config_includes = [
@@ -252,5 +253,6 @@ let () =
 		 D"htobe16"; D"htole16"; D"be16toh"; D"le16toh";
 		 D"htobe32"; D"htole32"; D"be32toh"; D"le32toh";
 		 D"htobe64"; D"htole64"; D"be64toh"; D"le64toh"; ];
+    "READ_CREDENTIALS", L[ I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
   ]
 

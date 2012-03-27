@@ -321,6 +321,12 @@ let test_endian_string () =
   L.set_int64  l 10 (0x1032547698BADCFEL);
   assert_equal l src
   
+let test_read_credentials () =
+  require "read_credentials";
+  let (fd1, fd2) = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  let (pid, uid, gid) = Unix.getpid (), Unix.getuid (), Unix.getgid () in
+  assert_equal (read_credentials fd2) (pid, uid, gid)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -343,6 +349,7 @@ let () =
     "memalign" >:: test_memalign;
     "endian" >:: test_endian;
     "endian" >:: test_endian_string;
-  ]) in
+    "read_credentials" >:: test_read_credentials;
+]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 
