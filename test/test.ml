@@ -336,7 +336,6 @@ let test_fexecve () =
       Unix.close s1;
       Unix.close s2;
       let fd = Unix.openfile "/bin/echo" [Unix.O_RDONLY] 0 in
-      let pid = Printf.sprintf "%d" (Unix.getpid ()) in
       fexecve fd [| "/bin/echo"; "-n"; "fexecve" |] [| |]
   | pid ->
       Unix.close s2;
