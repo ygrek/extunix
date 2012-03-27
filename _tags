@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: fb1405223bb21483ec51d3141c7b7aea)
+# DO NOT EDIT (digest: 8057fbb421cb3c81e1248ef9b8f825e9)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -23,7 +23,8 @@
 "src/pts.c": oasis_library_extunix_ccopt
 "src/execinfo.c": oasis_library_extunix_ccopt
 "src/malloc.c": oasis_library_extunix_ccopt
-<src/extunix.{cma,cmxa}>: stubs_extunix
+"src/endian.c": oasis_library_extunix_ccopt
+<src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 <src/*.ml{,i}>: pkg_bigarray
 "src/eventfd.c": pkg_unix
@@ -66,6 +67,8 @@
 "src/execinfo.c": pkg_bigarray
 "src/malloc.c": pkg_unix
 "src/malloc.c": pkg_bigarray
+"src/endian.c": pkg_unix
+"src/endian.c": pkg_bigarray
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix

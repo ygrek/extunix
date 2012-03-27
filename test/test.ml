@@ -234,6 +234,42 @@ let test_memalign () =
   ignore (memalign 2048 16384);
   ignore (memalign 4096 65536)
 
+let test_endian () =
+  require "uint16_from_host";
+  require "uint16_to_host";
+  require "int16_from_host";
+  require "int16_to_host";
+  require "uint31_from_host";
+  require "uint31_to_host";
+  require "int31_from_host";
+  require "int31_to_host";
+  require "int32_from_host";
+  require "int32_to_host";
+  require "int64_from_host";
+  require "int64_to_host";
+  let module B = EndianBig in
+  let module L = EndianLittle in
+  let u16 = 0xABCD in
+  let i16 = -0x1234 in
+  let i32 = 0x89ABCDEFl in
+  let i64 = 0x0123456789ABCDEFL in
+  assert (B.uint16_to_host (B.uint16_from_host u16) =  u16);
+  assert (B.int16_to_host  (B.int16_from_host i16) = i16);
+  assert (L.uint16_to_host (L.uint16_from_host u16) =  u16);
+  assert (L.int16_to_host  (L.int16_from_host i16) = i16);
+  assert (B.uint16_from_host u16 <> L.uint16_from_host u16);
+  assert (B.uint16_to_host u16 <> L.uint16_to_host u16);
+  assert (B.int16_from_host i16 <> L.int16_from_host i16);
+  assert (B.int16_to_host i16 <> L.int16_to_host i16);
+  assert (B.int32_to_host  (B.int32_from_host i32) = i32);
+  assert (L.int32_to_host  (L.int32_from_host i32) = i32);
+  assert (B.int32_from_host i32 <> L.int32_from_host i32);
+  assert (B.int32_to_host i32 <> L.int32_to_host i32);
+  assert (B.int64_to_host  (B.int64_from_host i64) = i64);
+  assert (L.int64_to_host  (L.int64_from_host i64) = i64);
+  assert (B.int64_from_host i64 <> L.int64_from_host i64);
+  assert (B.int64_to_host i64 <> L.int64_to_host i64)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -254,6 +290,7 @@ let () =
     "setenv" >:: test_setenv;
     "mkdtemp" >:: test_mkdtemp;
     "memalign" >:: test_memalign;
+    "endian" >:: test_endian;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

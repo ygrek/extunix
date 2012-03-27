@@ -560,6 +560,142 @@ external memalign: int -> int -> (int, Bigarray.int8_unsigned_elt, Bigarray.c_la
 
 END
 
+module EndianBig = struct
+
+HAVE ENDIAN
+  (** {2 big endian functions}
+
+      {b Author:} Goswin von Brederlow *)
+
+  (** Conversion functions from host to big endian byte order and back *)
+
+  (** Conversion of 16bit integers *)
+  (** [uint16_from_host u16] converts an unsigned 16bit integer from host to
+      big endian byte order *)
+  external uint16_from_host : int -> int = "caml_extunix_htobe16"
+
+  (** [int16_from_host i16] converts a signed 16bit integer from host to
+      big endian byte order *)
+  external int16_from_host : int -> int = "caml_extunix_htobe16_signed"
+
+  (** [uint16_to_host u16] converts an unsigned 16bit integer from big
+      endian to host byte order *)
+  external uint16_to_host : int -> int = "caml_extunix_be16toh"
+
+  (** [int16_to_host i16] converts a signed 16bit integer from big
+      endian to host byte order *)
+  external int16_to_host : int -> int = "caml_extunix_be16toh_signed"
+
+  (** Conversion of 31bit integeres
+      On 64bit platforms this actualy converts 32bit integers without
+      the need to allocate a new int32. On 32bit platforms it produces
+      garbage. For use on 64bit platforms only! *)
+  (** [uint31_from_host u31] converts an unsigned 31bit integer from
+      host to big endian byte order *)
+  external uint31_from_host : int -> int = "caml_extunix_htobe31"
+
+  (** [int31_from_host i31] converts a signed 31bit integer from host to
+      big endian byte order *)
+  external int31_from_host : int -> int = "caml_extunix_htobe31_signed"
+
+  (** [uint31_to_host u31] converts an unsigned 31bit integer from big
+      endian to host byte order *)
+  external uint31_to_host : int -> int = "caml_extunix_be31toh"
+
+  (** [int31_to_host i31] converts a signed 31bit integer from big
+      endian to host byte order *)
+  external int31_to_host : int -> int = "caml_extunix_be31toh_signed"
+
+  (** Conversion of 32bit integers *)
+  (** [int32_from_host int32] converts a 32bit integer from host to big
+      endian byte order *)
+  external int32_from_host : int32 -> int32 = "caml_extunix_htobe32"
+
+  (** [int32_to_host int32] converts a 32bit integer from big endian to
+      host byte order *)
+  external int32_to_host : int32 -> int32 = "caml_extunix_be32toh"
+
+  (** Conversion of 64bit integers *)
+  (** [int64_from_host int64] converts a 64bit integer from host to big
+      endian byte order *)
+  external int64_from_host : int64 -> int64 = "caml_extunix_htobe64"
+
+  (** [int64_to_host int64] converts a 64bit integer from big endian to
+      host byte order *)
+  external int64_to_host : int64 -> int64 = "caml_extunix_be64toh"
+END
+
+end
+
+module EndianLittle = struct
+
+HAVE ENDIAN
+  (** {2 little endian functions}
+
+      {b Author:} Goswin von Brederlow *)
+
+  (** Conversion functions from host to little endian byte order and back *)
+
+  (** Conversion of 16bit integers *)
+  (** [uint16_from_host u16] converts an unsigned 16bit integer from host to
+      little endian byte order *)
+  external uint16_from_host : int -> int = "caml_extunix_htole16"
+
+  (** [int16_from_host i16] converts a signed 16bit integer from host to
+      little endian byte order *)
+  external int16_from_host : int -> int = "caml_extunix_htole16_signed"
+
+  (** [uint16_to_host u16] converts an unsigned 16bit integer from little
+      endian to host byte order *)
+  external uint16_to_host : int -> int = "caml_extunix_le16toh"
+
+  (** [int16_to_host i16] converts a signed 16bit integer from little
+      endian to host byte order *)
+  external int16_to_host : int -> int = "caml_extunix_le16toh_signed"
+
+  (** Conversion of 31bit integeres
+      On 64bit platforms this actualy converts 32bit integers without
+      the need to allocate a new int32. On 32bit platforms it produces
+      garbage. For use on 64bit platforms only! *)
+  (** [uint31_from_host u31] converts an unsigned 31bit integer from
+      host to little endian byte order *)
+  external uint31_from_host : int -> int = "caml_extunix_htole31"
+
+  (** [int31_from_host i31] converts a signed 31bit integer from host to
+      little endian byte order *)
+  external int31_from_host : int -> int = "caml_extunix_htole31_signed"
+
+  (** [uint31_to_host u31] converts an unsigned 31bit integer from little
+      endian to host byte order *)
+  external uint31_to_host : int -> int = "caml_extunix_le31toh"
+
+  (** [int31_to_host i31] converts a signed 31bit integer from little
+      endian to host byte order *)
+  external int31_to_host : int -> int = "caml_extunix_le31toh_signed"
+
+  (** Conversion of 32bit integers *)
+  (** [int32_from_host int32] converts a 32bit integer from host to little
+      endian byte order *)
+  external int32_from_host : int32 -> int32 = "caml_extunix_htole32"
+
+  (** [int32_to_host int32] converts a 32bit integer from little endian to
+      host byte order *)
+  external int32_to_host : int32 -> int32 = "caml_extunix_le32toh"
+
+  (** Conversion of 64bit integers *)
+  (** [int64_from_host int64] converts a 64bit integer from host to little
+      endian byte order *)
+  external int64_from_host : int64 -> int64 = "caml_extunix_htole64"
+
+  (** [int64_to_host int64] converts a 64bit integer from little endian to
+      host byte order *)
+  external int64_to_host : int64 -> int64 = "caml_extunix_le64toh"
+END
+  
+end
+
+module EndianNet = EndianBig
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)
