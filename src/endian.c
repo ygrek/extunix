@@ -5,6 +5,9 @@
 #include <string.h> /* for memcpy */
 
 #if defined(EXTUNIX_HAVE_ENDIAN)
+
+/*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
+
 #include <endian.h>
 #include <arpa/inet.h>
 
