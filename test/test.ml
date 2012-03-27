@@ -347,6 +347,28 @@ let test_fexecve () =
       assert_equal "fexecve" str;
       Unix.close s1
 
+let test_sendmsg () =
+  require "sendmsg";
+  let s1, s2 = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  match Unix.fork () with
+  | 0 ->
+      Unix.close s1;
+      let fd = Unix.openfile "/bin/ls" [Unix.O_RDONLY] 0 in
+      let st = Unix.fstat fd in
+      sendmsg s2 ~sendfd:fd (Printf.sprintf "%d" st.Unix.st_ino);
+      Unix.close fd;
+      Unix.close s2;
+  | pid ->
+      Unix.close s2;
+      let some_fd, msg = recvmsg s1 in
+      Unix.close s1;
+      match some_fd with
+      | None -> assert_failure "no fd"
+      | Some fd ->
+        let st = Unix.fstat fd in
+        assert_equal (int_of_string msg) st.Unix.st_ino;
+        Unix.close fd
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -371,6 +393,7 @@ let () =
     "endian" >:: test_endian_string;
     "read_credentials" >:: test_read_credentials;
     "fexecve" >:: test_fexecve;
+    "sendmsg" >:: test_sendmsg;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 
