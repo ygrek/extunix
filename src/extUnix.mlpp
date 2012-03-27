@@ -1108,7 +1108,7 @@ let sendfd conn_fd fd_to_send =
 (** Receive a file descriptor sent through a UNIX domain socket. *)
 let recvfd fd =
   match recvmsg fd with
-  | Some recvfd, "" -> recvfd
+  | (Some recvfd, "") -> recvfd
   | _ -> raise (Unix.Unix_error (Unix.EINVAL, "recvfd", "no descriptor"))
 
 END

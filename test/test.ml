@@ -348,7 +348,7 @@ let test_fexecve () =
 
 let test_sendmsg () =
   require "sendmsg";
-  let s1, s2 = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  let (s1, s2) = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
   match Unix.fork () with
   | 0 ->
       Unix.close s1;
@@ -359,7 +359,7 @@ let test_sendmsg () =
       Unix.close s2;
   | pid ->
       Unix.close s2;
-      let some_fd, msg = recvmsg s1 in
+      let (some_fd, msg) = recvmsg s1 in
       Unix.close s1;
       match some_fd with
       | None -> assert_failure "no fd"
