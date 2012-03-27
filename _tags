@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8046e7b7d76b9992d082544a287038be)
+# DO NOT EDIT (digest: 0d9f7d295985c7183dc3c1de7151f40f)
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
@@ -25,6 +25,7 @@
 "src/malloc.c": oasis_library_extunix_ccopt
 "src/endian.c": oasis_library_extunix_ccopt
 "src/read_cred.c": oasis_library_extunix_ccopt
+"src/fexecve.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 <src/*.ml{,i}>: pkg_bigarray
@@ -72,6 +73,8 @@
 "src/endian.c": pkg_bigarray
 "src/read_cred.c": pkg_unix
 "src/read_cred.c": pkg_bigarray
+"src/fexecve.c": pkg_unix
+"src/fexecve.c": pkg_bigarray
 # Executable test
 <test/test.{native,byte}>: use_extunix
 <test/test.{native,byte}>: pkg_unix

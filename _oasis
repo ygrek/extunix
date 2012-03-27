@@ -13,7 +13,7 @@ Copyrights:
               (C) 2010 Niki Yoshiuchi,
               (C) 2001 Gerd Stolpmann,
               (C) 2012 Goswin von Brederlow,
-	      (C) 2012 Andre Nathan
+              (C) 2012 Andre Nathan
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.2), META (0.2)
@@ -45,7 +45,7 @@ Library extunix
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
-            endian.c, read_cred.c
+            endian.c, read_cred.c, fexecve.c
   BuildDepends: unix, bigarray
 
 Executable test

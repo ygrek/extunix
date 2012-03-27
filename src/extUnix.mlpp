@@ -1072,6 +1072,22 @@ external read_credentials : Unix.file_descr -> int * int * int = "caml_extunix_r
 
 END
 
+HAVE FEXECVE
+
+(** {2 fexecve }
+
+    {b Author:} Andre Nathan *)
+
+(** [fexecve fd args env] executes the program in file represented by
+    file descriptor [fd] with arguments [args] and environment
+    variables given by [env]. As with the [execv*] functions, on
+    success [fexecve] never returns; the current process is replaced
+    by the new one.
+*)
+external fexecve: Unix.file_descr -> string array -> string array -> 'a = "caml_extunix_fexecve"
+
+  END
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)

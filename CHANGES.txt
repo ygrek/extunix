@@ -6,6 +6,7 @@
   * malloc_info
   * posix_memalign
   * read_credentials
+  * fexecve
 * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
   * New bindings
     * uint16_from_host uint16_to_host

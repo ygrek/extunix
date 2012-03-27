@@ -327,6 +327,26 @@ let test_read_credentials () =
   let (pid, uid, gid) = Unix.getpid (), Unix.getuid (), Unix.getgid () in
   assert_equal (read_credentials fd2) (pid, uid, gid)
 
+let test_fexecve () =
+  require "fexecve";
+  let s1, s2 = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  match Unix.fork () with
+  | 0 ->
+      Unix.dup2 s2 Unix.stdout;
+      Unix.close s1;
+      Unix.close s2;
+      let fd = Unix.openfile "/bin/echo" [Unix.O_RDONLY] 0 in
+      let pid = Printf.sprintf "%d" (Unix.getpid ()) in
+      fexecve fd [| "/bin/echo"; "-n"; "fexecve" |] [| |]
+  | pid ->
+      Unix.close s2;
+      let wpid, _ = Unix.wait () in
+      assert_equal wpid pid;
+      let str = String.create 7 in
+      ignore (Unix.read s1 str 0 7);
+      assert_equal "fexecve" str;
+      Unix.close s1
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -350,6 +370,7 @@ let () =
     "endian" >:: test_endian;
     "endian" >:: test_endian_string;
     "read_credentials" >:: test_read_credentials;
+    "fexecve" >:: test_fexecve;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 
