@@ -359,7 +359,7 @@ let test_sendmsg () =
       Unix.close s2;
   | pid ->
       Unix.close s2;
-      let (some_fd, msg) = recvmsg s1 in
+      let (some_fd, msg) = recvmsg_fd s1 in
       Unix.close s1;
       match some_fd with
       | None -> assert_failure "no fd"

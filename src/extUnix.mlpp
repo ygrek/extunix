@@ -1098,8 +1098,8 @@ HAVE SENDMSG
     file descriptors requires UNIX domain sockets. *)
 external sendmsg: Unix.file_descr -> ?sendfd:Unix.file_descr -> string -> unit = "caml_extunix_sendmsg"
 
-(** Send a message and possibly a file descriptor from a socket.  *)
-external recvmsg: Unix.file_descr -> (Unix.file_descr option) * string = "caml_extunix_recvmsg"
+(** Recieve a message and possibly a file descriptor from a socket.  *)
+external recvmsg_fd: Unix.file_descr -> (Unix.file_descr option) * string = "caml_extunix_recvmsg"
 
 (** Send a file descriptor through a UNIX domain socket. *)
 let sendfd conn_fd fd_to_send =
@@ -1107,9 +1107,24 @@ let sendfd conn_fd fd_to_send =
 
 (** Receive a file descriptor sent through a UNIX domain socket. *)
 let recvfd fd =
-  match recvmsg fd with
-  | (Some recvfd, "") -> recvfd
+  match recvmsg_fd fd with
+  | (Some recvfd, _) -> recvfd
   | _ -> raise (Unix.Unix_error (Unix.EINVAL, "recvfd", "no descriptor"))
+
+(** Receive a message sent through a UNIX domain socket. Raises
+    Recvfd(fd, msg) if a file descriptor is recieved. *)
+exception Recvfd of Unix.file_descr * string
+let recvmsg fd =
+  match recvmsg_fd fd with
+  | (None, msg) -> msg
+  | (Some fd, msg) -> raise (Recvfd (fd, msg))
+
+(** Receive a message sent through a UNIX domain socket. Closes and
+    ignores file descriptors. *)
+let recvmsg_nofd fd =
+  match recvmsg_fd fd with
+  | (Some fd, msg) -> Unix.close fd; msg
+  | (None, msg) -> msg
 
 END
 
