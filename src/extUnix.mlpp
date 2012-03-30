@@ -165,7 +165,7 @@ HAVE PWRITE
     error occurs. On error some data may or may not been writen.
 
     Non-blocking files raise an Unix_error of EAGAIN if no characters
-    could be read. *)
+    could be written. *)
 external pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pwrite"
 
 (** [single_pwrite fd off buf ofs len] - Same as pwrite, but attempts
