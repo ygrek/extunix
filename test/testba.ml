@@ -92,6 +92,94 @@ let test_endian_bigarray () =
   L.set_int64  l 10 (0x1032547698BADCFEL);
   assert_equal l src
 
+let cmp_buf buf c text =
+  for i = 0 to Bigarray.Array1.dim buf - 1 do
+    if Bigarray.Array1.get buf i <> (int_of_char c)
+    then assert_failure text;
+  done
+
+let test_pread_bigarray () =
+  require "pread";
+  let name = Filename.temp_file "extunix" "pread" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  try
+    let size = 65536 in
+    let s = String.make size 'x' in
+    assert_equal (Unix.write fd s 0 size) size;
+    let t =
+      Bigarray.Array1.create
+	Bigarray.int8_unsigned
+	Bigarray.c_layout
+	size
+    in
+    assert_equal (pread fd 0 t) size;
+    cmp_buf t 'x' "pread read bad data";
+    ignore (single_pread fd 0 t);
+    let t =
+      Bigarray.Array1.create
+	Bigarray.int8_unsigned
+	Bigarray.c_layout
+	size
+    in
+    assert_equal (LargeFile.pread fd Int64.zero t) size;
+    cmp_buf t 'x' "Largefile.pread read bad data";
+    ignore (LargeFile.single_pread fd Int64.zero t);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
+let cmp_str str c text =
+  for i = 0 to String.length str - 1 do
+    if str.[i] <> c
+    then assert_failure text;
+  done
+
+let test_pwrite_bigarray () =
+  require "pwrite";
+  let name = Filename.temp_file "extunix" "pwrite" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  let read dst =
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    let rec loop off = function
+      | 0 -> ()
+      | size ->
+	let len = Unix.read fd dst off size
+	in
+	loop (off + len) (size - len)
+    in
+    loop 0 (String.length dst)
+  in
+  try
+    let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
+    let s =
+      Bigarray.Array1.create
+	Bigarray.int8_unsigned
+	Bigarray.c_layout
+	size
+    in
+    for i = 0 to size - 1 do
+      Bigarray.Array1.set s i (int_of_char 'x');
+    done;
+    assert_equal (pwrite fd 0 s) size;
+    let t = String.make size ' ' in
+    read t;
+    cmp_str t 'x' "pwrite wrote bad data";
+    ignore (single_pwrite fd 0 s);
+    for i = 0 to size - 1 do
+      Bigarray.Array1.set s i (int_of_char 'y');
+    done;
+    assert_equal (LargeFile.pwrite fd Int64.zero s) size;
+    read t;
+    cmp_str t 'y' "Largefile.pwrite wrote bad data";
+    ignore (LargeFile.single_pwrite fd Int64.zero s);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -99,6 +187,8 @@ let () =
   let tests = ("tests" >::: [
     "memalign" >:: test_memalign;
     "endian_bigrray" >:: test_endian_bigarray;
+    "pread_bigarray" >:: test_pread_bigarray;
+    "pwrite_bigarray" >:: test_pwrite_bigarray;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 
