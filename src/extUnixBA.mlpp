@@ -59,7 +59,7 @@ HAVE PWRITE
     descriptor [fd] at offset [off] (from the start of the file) into
     the buffer [buf]. The file offset is not changed.
     
-    Return the number of characters actually write. [pwrite] repeats
+    Return the number of characters actually written. [pwrite] repeats
     the write operation until all characters have been written or an
     error occurs. On error some data may or may not been written.
 
