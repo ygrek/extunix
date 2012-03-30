@@ -141,13 +141,23 @@ HAVE PREAD
     On End-of-file the number of characters read is returned including
     but not limited to 0. Non-blocking files raise an Unix_error of
     EAGAIN if no characters could be read. *)
-external pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pread"
+external unsafe_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pread"
+
+let pread fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.pread"
+  else unsafe_pread fd off buf ofs len
 
 (** [single_pread fd off buf ofs len] - Same as pread, but attempts to
     read only once. Thus, if an error occurs, single_read guarantees
     that no data has been read. Reads at most UNIX_BUFFER_SIZE (16384)
     characters. *)
-external single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
+external unsafe_single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
+
+let single_pread fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.single_pread"
+  else unsafe_single_pread fd off buf ofs len
 END
 
 HAVE PWRITE
@@ -166,13 +176,23 @@ HAVE PWRITE
 
     Non-blocking files raise an Unix_error of EAGAIN if no characters
     could be written. *)
-external pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pwrite"
+external unsafe_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pwrite"
+
+let pwrite fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.pwrite"
+  else unsafe_pwrite fd off buf ofs len
 
 (** [single_pwrite fd off buf ofs len] - Same as pwrite, but attempts
     to write only once. Thus, if an error occurs, single_write
     guarantees that no data has been written. Writes at most
     UNIX_BUFFER_SIZE (16384) characters. *)
-external single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
+external unsafe_single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
+
+let single_pwrite fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.single_pwrite"
+  else unsafe_single_pwrite fd off buf ofs len
 END
     
 (** File operations on large files *)
@@ -198,15 +218,35 @@ struct
   END
 
   HAVE PREAD
-  external pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pread64"
+  external unsafe_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pread64"
 
-  external single_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pread64"
+  let pread fd off buf ofs len =
+    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
+    then invalid_arg "ExtUnix.LargeFile.pread"
+    else unsafe_pread fd off buf ofs len
+
+  external unsafe_single_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pread64"
+
+  let single_pread fd off buf ofs len =
+    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
+    then invalid_arg "ExtUnix.LargeFile.single_pread"
+    else unsafe_single_pread fd off buf ofs len
   END
 
   HAVE PWRITE
-  external pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pwrite64"
+  external unsafe_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pwrite64"
 
-  external single_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pwrite64"
+  let pwrite fd off buf ofs len =
+    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
+    then invalid_arg "ExtUnix.LargeFile.pwrite"
+    else unsafe_pwrite fd off buf ofs len
+
+  external unsafe_single_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pwrite64"
+
+  let single_pwrite fd off buf ofs len =
+    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
+    then invalid_arg "ExtUnix.LargeFile.single_pwrite"
+    else unsafe_single_pwrite fd off buf ofs len
   END
 end
 

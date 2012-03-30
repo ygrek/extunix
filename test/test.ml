@@ -368,7 +368,7 @@ let cmp_str str c text =
   done
 
 let test_pread () =
-  require "pread";
+  require "unsafe_pread";
   let name = Filename.temp_file "extunix" "pread" in
   let fd =
     Unix.openfile name [Unix.O_RDWR] 0
@@ -390,7 +390,7 @@ let test_pread () =
   with exn -> Unix.close fd; Unix.unlink name; raise exn
 
 let test_pwrite () =
-  require "pwrite";
+  require "unsafe_pwrite";
   let name = Filename.temp_file "extunix" "pwrite" in
   let fd =
     Unix.openfile name [Unix.O_RDWR] 0

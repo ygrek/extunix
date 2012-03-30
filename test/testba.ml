@@ -99,7 +99,7 @@ let cmp_buf buf c text =
   done
 
 let test_pread_bigarray () =
-  require "pread";
+  require "unsafe_pread";
   let name = Filename.temp_file "extunix" "pread" in
   let fd =
     Unix.openfile name [Unix.O_RDWR] 0
@@ -137,7 +137,7 @@ let cmp_str str c text =
   done
 
 let test_pwrite_bigarray () =
-  require "pwrite";
+  require "unsafe_pwrite";
   let name = Filename.temp_file "extunix" "pwrite" in
   let fd =
     Unix.openfile name [Unix.O_RDWR] 0
