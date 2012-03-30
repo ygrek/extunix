@@ -227,13 +227,6 @@ let test_mkdtemp () =
     Unix.rmdir d2
   with exn -> Unix.rmdir d1; Unix.rmdir d2; raise exn
 
-let test_memalign () =
-  require "memalign";
-  ignore (memalign 512 512);
-  ignore (memalign 1024 2048);
-  ignore (memalign 2048 16384);
-  ignore (memalign 4096 65536)
-
 let test_endian () =
   require "uint16_from_host";
   require "uint16_to_host";
@@ -387,7 +380,6 @@ let () =
     "statvfs" >:: test_statvfs;
     "setenv" >:: test_setenv;
     "mkdtemp" >:: test_mkdtemp;
-    "memalign" >:: test_memalign;
     "endian" >:: test_endian;
     "endian" >:: test_endian_string;
     "read_credentials" >:: test_read_credentials;

@@ -46,7 +46,19 @@ Library extunix
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
             endian.c, read_cred.c, fexecve.c, sendmsg.c
+  BuildDepends: unix
+
+Library extunixba
+  Path: src
+  Modules: ExtUnixBA
+  InternalModules: ExtUnixBAAll, ExtUnixBASpecific
+  if flag(strict) && ccomp_type(cc)
+    CCOpt: -std=c89 -pedantic -Wno-long-long
+  CSources: config.h,
+            memalign.c
   BuildDepends: unix, bigarray
+  FindlibParent: extunix
+  FindlibName: bigarray
 
 Executable test
   Path: test/
@@ -56,9 +68,17 @@ Executable test
   MainIs: test.ml
   BuildDepends: extunix, oUnit (>= 1.0.3)
 
+Executable testba
+  Path: test/
+  Install: false
+  Custom: true
+  CompiledObject: best
+  MainIs: testba.ml
+  BuildDepends: extunix, extunix.bigarray, oUnit (>= 1.0.3)
+
 Test main
-  Command: $test
-  TestTools: test
+  Command: $test && $testba
+  TestTools: test, testba
 
 Document api
   Title: API reference for extunix
@@ -68,8 +88,8 @@ Document api
   Format: HTML
   Index: index.html
   XOCamlbuildPath:      src/
-  XOCamlbuildLibraries: extunix
-  XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific
+  XOCamlbuildLibraries: extunix, extunix.bigarray
+  XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific, ExtUnixBAAll, ExtUnixBASpecific
 
 #Document changelog
 #  Title: Changelog

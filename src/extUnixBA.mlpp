@@ -1,0 +1,30 @@
+(** ExtUnixBA *)
+
+type buffer =
+    (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+
+HAVE MEMALIGN
+
+(** {2 posix_memalign}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [memalign alignment size] creates a {!Bigarray.Array1.t} of [size] bytes,
+    which data is aligned to [alignment] (must be a power of 2) *)
+external memalign: int -> int -> buffer = "caml_extunix_memalign"
+
+END
+
+(* NB Should be after all 'external' definitions *)
+
+(** {2 Meta} *)
+(** [have name]
+  @return indication whether function [name] is available
+  - [Some true] if available
+  - [Some false] if not available
+  - [None] if not known
+
+  e.g. [have "eventfd"]
+*)
+SHOW ME THE MONEY
+

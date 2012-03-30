@@ -52,6 +52,7 @@ let config_includes = [
   "caml/signals.h";
   "caml/alloc.h";
   "caml/custom.h";
+  "caml/bigarray.h";
   ]
 
 let build_code args =

@@ -548,18 +548,6 @@ external mkdtemp : string -> string = "caml_extunix_mkdtemp"
 
 END
 
-HAVE MEMALIGN
-
-(** {2 posix_memalign}
-
-    {b Author:} Goswin von Brederlow *)
-
-(** [memalign alignment size] creates a {!Bigarray.Array1.t} of [size] bytes,
-    which data is aligned to [alignment] (must be a power of 2) *)
-external memalign: int -> int -> (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t = "caml_extunix_memalign"
-
-END
-
 module EndianBig = struct
 
 HAVE ENDIAN

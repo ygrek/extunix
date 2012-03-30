@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 9ac596a28d465f86846cf6c0c975c8ec) *)
+(* DO NOT EDIT (digest: 24a07e5d13de669b5c02d5a3b0792968) *)
 module OASISGettext = struct
 # 21 "/tmp/buildd/oasis-0.2.0/src/oasis/OASISGettext.ml"
   
@@ -451,10 +451,31 @@ end
 open Ocamlbuild_plugin;;
 let package_default =
   {
-     MyOCamlbuildBase.lib_ocaml = [("src/extunix", ["src"])];
-     lib_c = [("extunix", "src/", ["src/config.h"])];
+     MyOCamlbuildBase.lib_ocaml =
+       [("src/extunixba", ["src"]); ("src/extunix", ["src"])];
+     lib_c =
+       [
+          ("extunixba", "src", ["src/config.h"]);
+          ("extunix", "src/", ["src/config.h"])
+       ];
      flags =
        [
+          (["oasis_library_extunixba_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true, S []);
+               (OASISExpr.EAnd
+                  (OASISExpr.EFlag "strict",
+                    OASISExpr.ETest ("ccomp_type", "cc")),
+                 S
+                   [
+                      A "-ccopt";
+                      A "-std=c89";
+                      A "-ccopt";
+                      A "-pedantic";
+                      A "-ccopt";
+                      A "-Wno-long-long"
+                   ])
+            ]);
           (["oasis_library_extunix_ccopt"; "compile"],
             [
                (OASISExpr.EBool true, S []);
@@ -500,6 +521,21 @@ let my_dispatch = MyOCamlbuildBase.dispatch_combine
             in
             gen true "src/extUnixAll.ml";
             gen false "src/extUnixSpecific.ml";
+            let gen gen_all prod =
+              rule ("generate " ^ if gen_all then "BAall" else "BAspecific")
+              ~deps:["src/extUnixBA.mlpp";"src/pa_have.cmo";"src/config.cmo"] 
+              ~prod
+              (fun _ _ -> Cmd 
+                (S([P"camlp4o";
+                  T (tags_of_pathname "src/extUnixBA.mlpp"++"ocaml"++"pp");
+                  A "src/config.cmo"; A"src/pa_have.cmo";
+                  A"pr_o.cmo";
+                  A"-impl"; A"src/extUnixBA.mlpp";
+                  A"-o"; A prod;
+                  ] @ if gen_all then [A"-gen-all"] else [])))
+            in
+            gen true "src/extUnixBAAll.ml";
+            gen false "src/extUnixBASpecific.ml";
         | _ -> ()
         end;
       ]
