@@ -655,32 +655,32 @@ HAVE ENDIAN
     unsafe_get_int8 str off
 
   let get_uint16 str off =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_uint16 str off
 
   let get_int16 str off =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int16 str off
 
   let get_uint31 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_uint31 str off
 
   let get_int31 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int31 str off
 
   let get_int32 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 str off
 
   let get_int64 str off =
-    if off < 0 || off + 8 > String.length str
+    if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int64 str off
 
@@ -713,32 +713,32 @@ HAVE ENDIAN
     unsafe_set_int8 str off v
 
   let set_uint16 str off v =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint16 str off v
 
   let set_int16 str off v =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int16 str off v
 
   let set_uint31 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint31 str off v
 
   let set_int31 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int31 str off v
 
   let set_int32 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
   let set_int64 str off v =
-    if off < 0 || off + 8 > String.length str
+    if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
@@ -841,32 +841,32 @@ HAVE ENDIAN
     unsafe_get_int8 str off
 
   let get_uint16 str off =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_uint16 str off
 
   let get_int16 str off =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int16 str off
 
   let get_uint31 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_uint31 str off
 
   let get_int31 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int31 str off
 
   let get_int32 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 str off
 
   let get_int64 str off =
-    if off < 0 || off + 8 > String.length str
+    if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int64 str off
 
@@ -899,32 +899,32 @@ HAVE ENDIAN
     unsafe_set_int8 str off v
 
   let set_uint16 str off v =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint16 str off v
 
   let set_int16 str off v =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int16 str off v
 
   let set_uint31 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint31 str off v
 
   let set_int31 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int31 str off v
 
   let set_int32 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
   let set_int64 str off v =
-    if off < 0 || off + 8 > String.length str
+    if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
@@ -971,32 +971,32 @@ module EndianHost = struct
     unsafe_get_int8 str off
 
   let get_uint16 str off =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_uint16 str off
 
   let get_int16 str off =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int16 str off
 
   let get_uint31 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_uint31 str off
 
   let get_int31 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int31 str off
 
   let get_int32 str off =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 str off
 
   let get_int64 str off =
-    if off < 0 || off + 8 > String.length str
+    if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int64 str off
 
@@ -1029,32 +1029,32 @@ module EndianHost = struct
     unsafe_set_int8 str off v
 
   let set_uint16 str off v =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint16 str off v
 
   let set_int16 str off v =
-    if off < 0 || off + 2 > String.length str
+    if off < 0 || off > String.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int16 str off v
 
   let set_uint31 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint31 str off v
 
   let set_int31 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int31 str off v
 
   let set_int32 str off v =
-    if off < 0 || off + 4 > String.length str
+    if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
   let set_int64 str off v =
-    if off < 0 || off + 8 > String.length str
+    if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
