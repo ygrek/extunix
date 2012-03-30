@@ -127,6 +127,8 @@ CAMLprim value caml_extunix_tcsetpgrp(value v_fd, value v_pgid)
 
 #if defined(EXTUNIX_HAVE_PREAD)
 
+/*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
+
 #include <string.h>
 
 CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, value v_ofs, value v_len, int once) {
@@ -161,13 +163,13 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
 
 value caml_extunix_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
-    off_t off = Int_val(v_off);
+    off_t off = Long_val(v_off);
     return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, 0);
 }
 
 value caml_extunix_single_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
-    off_t off = Int_val(v_off);
+    off_t off = Long_val(v_off);
     return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, 1);
 }
 
@@ -185,6 +187,8 @@ value caml_extunix_single_pread64(value v_fd, value v_off, value v_buf, value v_
 #endif
 
 #if defined(EXTUNIX_HAVE_PWRITE)
+
+/*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 
 #include <string.h>
 
@@ -220,13 +224,13 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
 
 value caml_extunix_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
-    off_t off = Int_val(v_off);
+    off_t off = Long_val(v_off);
     return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, 0);
 }
 
 value caml_extunix_single_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
-    off_t off = Int_val(v_off);
+    off_t off = Long_val(v_off);
     return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, 1);
 }
 
