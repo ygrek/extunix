@@ -8,7 +8,7 @@
 
 /* Convert an intX_t from one endianness to another */
 #define CONV(name, type, conv, type_val, val_type)	\
-CAMLprim value caml_extunix_##name(value v_x)		\ 
+CAMLprim value caml_extunix_##name(value v_x)		\
 {							\
   CAMLparam1(v_x);					\
   type x = type_val(v_x);				\
