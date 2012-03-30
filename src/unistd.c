@@ -5,6 +5,8 @@
 #define EXTUNIX_WANT_SETREUID
 #define EXTUNIX_WANT_FCNTL
 #define EXTUNIX_WANT_TCPGRP
+#define EXTUNIX_WANT_PREAD
+#define EXTUNIX_WANT_PWRITE
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_TTYNAME)
@@ -121,5 +123,123 @@ CAMLprim value caml_extunix_tcsetpgrp(value v_fd, value v_pgid)
     return Val_int(r);
 }
 
+#endif
+
+#if defined(EXTUNIX_HAVE_PREAD)
+
+#include <string.h>
+
+CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, value v_ofs, value v_len, int once) {
+    CAMLparam4(v_fd, v_buf, v_ofs, v_len);
+    ssize_t ret;
+    size_t fd = Int_val(v_fd);
+    size_t ofs = Int_val(v_ofs);
+    size_t len = Int_val(v_len);
+    size_t written = 0;
+    char iobuf[UNIX_BUFFER_SIZE];
+
+    while(len > 0) {
+	size_t numbytes = (len > UNIX_BUFFER_SIZE) ? UNIX_BUFFER_SIZE : len;
+	caml_enter_blocking_section();
+	ret = pread(fd, iobuf, numbytes, off);
+	caml_leave_blocking_section();
+	if (ret == 0) break;
+	if (ret == -1) {
+	    if ((errno == EAGAIN || errno == EWOULDBLOCK) && written > 0) break;
+	    uerror("pread", Nothing);
+	}
+	memcpy(&Byte(v_buf, ofs), iobuf, ret);
+	written += ret;
+	off += ret;
+	ofs += ret;
+	len -= ret;
+	if (once) break;
+    }
+
+    CAMLreturn(Val_int(written));
+}
+
+value caml_extunix_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int_val(v_off);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, 0);
+}
+
+value caml_extunix_single_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int_val(v_off);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, 1);
+}
+
+value caml_extunix_pread64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int64_val(v_off);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, 0);
+}
+
+value caml_extunix_single_pread64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int64_val(v_off);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, 1);
+}
+#endif
+
+#if defined(EXTUNIX_HAVE_PWRITE)
+
+#include <string.h>
+
+CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, value v_ofs, value v_len, int once) {
+    CAMLparam4(v_fd, v_buf, v_ofs, v_len);
+    ssize_t ret;
+    size_t fd = Int_val(v_fd);
+    size_t ofs = Int_val(v_ofs);
+    size_t len = Int_val(v_len);
+    size_t written = 0;
+    char iobuf[UNIX_BUFFER_SIZE];
+
+    while(len > 0) {
+	size_t numbytes = (len > UNIX_BUFFER_SIZE) ? UNIX_BUFFER_SIZE : len;
+	memcpy(iobuf, &Byte(v_buf, ofs), numbytes);
+	caml_enter_blocking_section();
+	ret = pwrite(fd, iobuf, numbytes, off);
+	caml_leave_blocking_section();
+	if (ret == 0) break;
+	if (ret == -1) {
+	    if ((errno == EAGAIN || errno == EWOULDBLOCK) && written > 0) break;
+	    uerror("pwrite", Nothing);
+	}
+	written += ret;
+	off += ret;
+	ofs += ret;
+	len -= ret;
+	if (once) break;
+    }
+
+    CAMLreturn(Val_int(written));
+}
+
+value caml_extunix_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int_val(v_off);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, 0);
+}
+
+value caml_extunix_single_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int_val(v_off);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, 1);
+}
+
+value caml_extunix_pwrite64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int64_val(v_off);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, 0);
+}
+
+value caml_extunix_single_pwrite64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
+{
+    off_t off = Int64_val(v_off);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, 1);
+}
 #endif
 

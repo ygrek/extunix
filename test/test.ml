@@ -361,6 +361,68 @@ let test_sendmsg () =
         assert_equal (int_of_string msg) st.Unix.st_ino;
         Unix.close fd
 
+let cmp_str str c text =
+  for i = 0 to String.length str - 1 do
+    if str.[i] <> c
+    then assert_failure text;
+  done
+
+let test_pread () =
+  require "pread";
+  let name = Filename.temp_file "extunix" "pread" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  try
+    let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
+    let s = String.make size 'x' in
+    assert_equal (Unix.write fd s 0 size) size;
+    let t = String.make size ' ' in
+    assert_equal (pread fd 0 t 0 size) size;
+    cmp_str t 'x' "pread read bad data";
+    ignore (single_pread fd 0 t 0 size);
+    let t = String.make size ' ' in
+    assert_equal (LargeFile.pread fd Int64.zero t 0 size) size;
+    cmp_str t 'x' "Largefile.pread read bad data";
+    ignore (LargeFile.single_pread fd Int64.zero t 0 size);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
+let test_pwrite () =
+  require "pwrite";
+  let name = Filename.temp_file "extunix" "pwrite" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  let read dst =
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    let rec loop off = function
+      | 0 -> ()
+      | size ->
+	let len = Unix.read fd dst off size
+	in
+	loop (off + len) (size - len)
+    in
+    loop 0 (String.length dst)
+  in
+  try
+    let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
+    let s = String.make size 'x' in
+    assert_equal (pwrite fd 0 s 0 size) size;
+    let t = String.make size ' ' in
+    read t;
+    cmp_str t 'x' "pwrite wrote bad data";
+    ignore (single_pwrite fd 0 s 0 size);
+    let s = String.make size 'y' in
+    assert_equal (LargeFile.pwrite fd Int64.zero s 0 size) size;
+    read t;
+    cmp_str t 'y' "Largefile.pwrite wrote bad data";
+    ignore (LargeFile.single_pwrite fd Int64.zero s 0 size);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -385,6 +447,8 @@ let () =
     "read_credentials" >:: test_read_credentials;
     "fexecve" >:: test_fexecve;
     "sendmsg" >:: test_sendmsg;
+    "pread" >:: test_pread;
+    "pwrite" >:: test_pwrite;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

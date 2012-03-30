@@ -124,18 +124,90 @@ external fallocate: Unix.file_descr -> int -> int -> unit = "caml_extunix_falloc
 
 END
 
+HAVE PREAD
+(** {2 pread}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [pread fd off buf ofs len] reads up to [len] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer strintg [buf] at offset [ofs]. The file offset is not
+    changed.
+
+    Return the number of characters actually read. [pread] repeats the
+    read operation until all characters have been read or an error
+    occurs. On error some data may or may not been read.
+
+    On End-of-file the number of characters read is returned including
+    but not limited to 0. Non-blocking files raise an Unix_error of
+    EAGAIN if no characters could be read. *)
+external pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pread"
+
+(** [single_pread fd off buf ofs len] - Same as pread, but attempts to
+    read only once. Thus, if an error occurs, single_read guarantees
+    that no data has been read. Reads at most UNIX_BUFFER_SIZE (16384)
+    characters. *)
+external single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
+END
+
+HAVE PWRITE
+(** {2 pwrite}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [pwrite fd off buf ofs len] writes up to [len] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer strintg [buf] at offset [ofs]. The file offset is not
+    changed.
+    
+    Return the number of characters actually write. [pwrite] repeats
+    the write operation until all characters have been writen or an
+    error occurs. On error some data may or may not been writen.
+
+    Non-blocking files raise an Unix_error of EAGAIN if no characters
+    could be read. *)
+external pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pwrite"
+
+(** [single_pwrite fd off buf ofs len] - Same as pwrite, but attempts
+    to write only once. Thus, if an error occurs, single_write
+    guarantees that no data has been writen. Writes at most
+    UNIX_BUFFER_SIZE (16384) characters. *)
+external single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
+    END
+    
 (** File operations on large files *)
 module LargeFile =
 struct
 
-HAVE FADVISE
+  (** File operations on large files. This sub-module provides 64-bit
+      variants of the functions ExtUnix.fadvise (for predeclaring an
+      access pattern for file data), ExtUnix.fallocate (for allocating
+      disk space for a file), ExtUnix.pread, ExtUnix.single_pread,
+      ExtUnix.pwrite and ExtUnix.single_pwrite (for reading from or
+      writing to a file descriptor at a given offset). These alternate
+      functions represent positions and sizes by 64-bit integers (type
+      int64) instead of regular integers (type int), thus allowing
+      operating on files whose sizes are greater than max_int. *)
+
+  HAVE FADVISE
   external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
-END
+  END
 
-HAVE FALLOCATE
+  HAVE FALLOCATE
   external fallocate: Unix.file_descr -> int64 -> int64 -> unit = "caml_extunix_fallocate64"
-END
+  END
 
+  HAVE PREAD
+  external pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pread64"
+
+  external single_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pread64"
+  END
+
+  HAVE PWRITE
+  external pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pwrite64"
+
+  external single_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pwrite64"
+  END
 end
 
 (** {2 ioctl} *)

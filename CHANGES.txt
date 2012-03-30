@@ -7,6 +7,8 @@
   * read_credentials
   * fexecve
   * sendmsg / readmsg
+  * pread, single_pread, pread64, single_pread64
+  * pwrite, single_pwrite, pwrite64, single_pwrite64
   * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
     * New bindings
       * uint16_from_host uint16_to_host

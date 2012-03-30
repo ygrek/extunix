@@ -257,5 +257,7 @@ let () =
     "READ_CREDENTIALS", L[ I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
     "FEXECVE", L[ I "unistd.h"; S"fexecve"; ];
     "SENDMSG", L[ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg" ];
+    "PREAD", L[ I "unistd.h"; S"pread"; ];
+    "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
   ]
 
