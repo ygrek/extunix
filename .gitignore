@@ -6,3 +6,4 @@ setup.data
 setup.log
 src/config.*
 web/index.html
+*~
