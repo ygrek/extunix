@@ -133,9 +133,9 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
     CAMLparam4(v_fd, v_buf, v_ofs, v_len);
     ssize_t ret;
     size_t fd = Int_val(v_fd);
-    size_t ofs = Int_val(v_ofs);
-    size_t len = Int_val(v_len);
-    size_t written = 0;
+    size_t ofs = Long_val(v_ofs);
+    size_t len = Long_val(v_len);
+    size_t processed = 0;
     char iobuf[UNIX_BUFFER_SIZE];
 
     while(len > 0) {
@@ -145,18 +145,18 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
 	caml_leave_blocking_section();
 	if (ret == 0) break;
 	if (ret == -1) {
-	    if ((errno == EAGAIN || errno == EWOULDBLOCK) && written > 0) break;
+	    if ((errno == EAGAIN || errno == EWOULDBLOCK) && processed > 0) break;
 	    uerror("pread", Nothing);
 	}
 	memcpy(&Byte(v_buf, ofs), iobuf, ret);
-	written += ret;
+	processed += ret;
 	off += ret;
 	ofs += ret;
 	len -= ret;
 	if (once) break;
     }
 
-    CAMLreturn(Val_int(written));
+    CAMLreturn(Val_long(processed));
 }
 
 value caml_extunix_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
@@ -192,9 +192,9 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
     CAMLparam4(v_fd, v_buf, v_ofs, v_len);
     ssize_t ret;
     size_t fd = Int_val(v_fd);
-    size_t ofs = Int_val(v_ofs);
-    size_t len = Int_val(v_len);
-    size_t written = 0;
+    size_t ofs = Long_val(v_ofs);
+    size_t len = Long_val(v_len);
+    size_t processed = 0;
     char iobuf[UNIX_BUFFER_SIZE];
 
     while(len > 0) {
@@ -205,17 +205,17 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
 	caml_leave_blocking_section();
 	if (ret == 0) break;
 	if (ret == -1) {
-	    if ((errno == EAGAIN || errno == EWOULDBLOCK) && written > 0) break;
+	    if ((errno == EAGAIN || errno == EWOULDBLOCK) && processed > 0) break;
 	    uerror("pwrite", Nothing);
 	}
-	written += ret;
+	processed += ret;
 	off += ret;
 	ofs += ret;
 	len -= ret;
 	if (once) break;
     }
 
-    CAMLreturn(Val_int(written));
+    CAMLreturn(Val_long(processed));
 }
 
 value caml_extunix_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
