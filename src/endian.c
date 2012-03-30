@@ -4,519 +4,114 @@
 #include <stdint.h>
 #include <string.h> /* for memcpy */
 
-#if defined(EXTUNIX_HAVE_ENDIAN)
-
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
+
+/* Convert an intX_t from one endianness to another */
+#define CONV(name, type, conv, type_val, val_type)	\
+CAMLprim value caml_extunix_##name(value v_x)		\ 
+{							\
+  CAMLparam1(v_x);					\
+  type x = type_val(v_x);				\
+  x = conv(x);						\
+  CAMLreturn(val_type(x));				\
+}
+
+/* Get an intX_t out of a string */
+#define GET(name, type, conv, Val_type)					\
+CAMLprim value caml_extunix_get_##name(value v_str, value v_off) {	\
+  CAMLparam2(v_str, v_off);						\
+  char *str = String_val(v_str);					\
+  size_t off = Long_val(v_off);						\
+  type x;								\
+  memcpy(&x, str + off, sizeof(x));					\
+  x = conv(x);								\
+  CAMLreturn(Val_type(x));							\
+}
+
+/* Store an intX_t in a string */
+#define SET(name, type, conv, Type_val)					\
+CAMLprim value caml_extunix_set_##name(value v_str, value v_off, value v_x) { \
+  CAMLparam3(v_str, v_off, v_x);					\
+  char *str = String_val(v_str);					\
+  size_t off = Long_val(v_off);						\
+  type x = Type_val(v_x);						\
+  x = conv(x);								\
+  memcpy(str + off, &x, sizeof(x));					\
+  CAMLreturn(Val_unit);							\
+}
+
+#if defined(EXTUNIX_HAVE_ENDIAN)
 
 #include <endian.h>
 #include <arpa/inet.h>
 
-CAMLprim value caml_extunix_htobe16(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint16_t x = Long_val(v_x);
-  x = htobe16(x);
-  CAMLreturn(Val_long(x));
-}
+/* Big endian */
+CONV(htobe16,        uint16_t, htobe16, Long_val, Val_long)
+CONV(htobe16_signed,  int16_t, htobe16, Long_val, Val_long)
+CONV(be16toh,        uint16_t, be16toh, Long_val, Val_long)
+CONV(be16toh_signed,  int16_t, be16toh, Long_val, Val_long)
+CONV(htobe31,        uint32_t, htobe32, Long_val, Val_long)
+CONV(htobe31_signed,  int32_t, htobe32, Long_val, Val_long)
+CONV(be31toh,        uint32_t, be32toh, Long_val, Val_long)
+CONV(be31toh_signed,  int32_t, be32toh, Long_val, Val_long)
+CONV(htobe32,         int32_t, htobe32, Int32_val, caml_copy_int32)
+CONV(be32toh,         int32_t, be32toh, Int32_val, caml_copy_int32)
+CONV(htobe64,         int64_t, htobe64, Int64_val, caml_copy_int64)
+CONV(be64toh,         int64_t, be64toh, Int64_val, caml_copy_int64)
 
-CAMLprim value caml_extunix_htobe16_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int16_t x = Long_val(v_x);
-  x = htobe16(x);
-  CAMLreturn(Val_long(x));
-}
+GET(bu16, uint16_t, be16toh, Val_long)
+GET(bs16,  int16_t, be16toh, Val_long)
+GET(bu31, uint32_t, be32toh, Val_long)
+GET(bs31,  int32_t, be32toh, Val_long)
+GET(bs32,  int32_t, be32toh, caml_copy_int32)
+GET(bs64,  int64_t, be64toh, caml_copy_int64)
 
-CAMLprim value caml_extunix_be16toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint16_t x = Long_val(v_x);
-  x = be16toh(x);
-  CAMLreturn(Val_long(x));
-}
+SET(b16, uint16_t, htobe16, Long_val)
+SET(b31, uint32_t, htobe32, Long_val)
+SET(b32, uint32_t, htobe32, Int32_val)
+SET(b64, uint64_t, htobe64, Int64_val)
 
-CAMLprim value caml_extunix_be16toh_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int16_t x = Long_val(v_x);
-  x = be16toh(x);
-  CAMLreturn(Val_long(x));
-}
+/* Little endian */
+CONV(htole16,        uint16_t, htole16, Long_val, Val_long)
+CONV(htole16_signed,  int16_t, htole16, Long_val, Val_long)
+CONV(le16toh,        uint16_t, le16toh, Long_val, Val_long)
+CONV(le16toh_signed,  int16_t, le16toh, Long_val, Val_long)
+CONV(htole31,        uint32_t, htole32, Long_val, Val_long)
+CONV(htole31_signed,  int32_t, htole32, Long_val, Val_long)
+CONV(le31toh,        uint32_t, le32toh, Long_val, Val_long)
+CONV(le31toh_signed,  int32_t, le32toh, Long_val, Val_long)
+CONV(htole32,         int32_t, htole32, Int32_val, caml_copy_int32)
+CONV(le32toh,         int32_t, le32toh, Int32_val, caml_copy_int32)
+CONV(htole64,         int64_t, htole64, Int64_val, caml_copy_int64)
+CONV(le64toh,         int64_t, le64toh, Int64_val, caml_copy_int64)
 
-CAMLprim value caml_extunix_htobe31(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Long_val(v_x);
-  x = htobe32(x);
-  CAMLreturn(Val_long(x));
-}
+GET(lu16, uint16_t, le16toh, Val_long)
+GET(ls16,  int16_t, le16toh, Val_long)
+GET(lu31, uint32_t, le32toh, Val_long)
+GET(ls31,  int32_t, le32toh, Val_long)
+GET(ls32,  int32_t, le32toh, caml_copy_int32)
+GET(ls64,  int64_t, le64toh, caml_copy_int64)
 
-CAMLprim value caml_extunix_htobe31_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int32_t x = Long_val(v_x);
-  x = htobe32(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_be31toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Long_val(v_x);
-  x = be32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_be31toh_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int32_t x = Long_val(v_x);
-  x = be32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_htobe32(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Int32_val(v_x);
-  x = htobe32(x);
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_be32toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Int32_val(v_x);
-  x = be32toh(x);
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_htobe64(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint64_t x = Int64_val(v_x);
-  x = htobe64(x);
-  CAMLreturn(caml_copy_int64(x));
-}
-
-CAMLprim value caml_extunix_be64toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint64_t x = Int64_val(v_x);
-  x = be64toh(x);
-  CAMLreturn(caml_copy_int64(x));
-}
-
-CAMLprim value caml_extunix_htole16(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint16_t x = Long_val(v_x);
-  x = htole16(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_htole16_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int16_t x = Long_val(v_x);
-  x = htole16(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_le16toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint16_t x = Long_val(v_x);
-  x = le16toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_le16toh_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int16_t x = Long_val(v_x);
-  x = le16toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_htole31(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Long_val(v_x);
-  x = htole32(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_htole31_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int32_t x = Long_val(v_x);
-  x = htole32(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_le31toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Long_val(v_x);
-  x = le32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_le31toh_signed(value v_x) 
-{
-  CAMLparam1(v_x);
-  int32_t x = Long_val(v_x);
-  x = le32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_htole32(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Int32_val(v_x);
-  x = htole32(x);
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_le32toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint32_t x = Int32_val(v_x);
-  x = le32toh(x);
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_htole64(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint64_t x = Int64_val(v_x);
-  x = htole64(x);
-  CAMLreturn(caml_copy_int64(x));
-}
-
-CAMLprim value caml_extunix_le64toh(value v_x) 
-{
-  CAMLparam1(v_x);
-  uint64_t x = Int64_val(v_x);
-  x = le64toh(x);
-  CAMLreturn(caml_copy_int64(x));
-}
-
-
-/* Get big endian intX_t out of a string */
-CAMLprim value caml_extunix_get_bu16(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint16_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = be16toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_bs16(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int16_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = be16toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_bu31(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = be32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_bs31(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = be32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_bs32(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = be32toh(x);
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_get_bs64(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int64_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = be64toh(x);
-  CAMLreturn(caml_copy_int64(x));
-}
-
-/* Store intX_t as big endian in a string */
-CAMLprim value caml_extunix_set_b16(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint16_t x = Long_val(v_x);
-  x = htobe16(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_b31(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x = Long_val(v_x);
-  x = htobe32(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_b32(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x = Int32_val(v_x);
-  x = htobe32(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_b64(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint64_t x = Int64_val(v_x);
-  x = htobe64(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-
-/* Get little endian intX_t out of a string */
-CAMLprim value caml_extunix_get_lu16(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint16_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = le16toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_ls16(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int16_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = le16toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_lu31(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = le32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_ls31(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = le32toh(x);
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_ls32(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = le32toh(x);
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_get_ls64(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int64_t x;
-  memcpy(&x, str + off, sizeof(x));
-  x = le64toh(x);
-  CAMLreturn(caml_copy_int64(x));
-}
-
-/* Store intX_t as big endian in a string */
-CAMLprim value caml_extunix_set_l16(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint16_t x = Long_val(v_x);
-  x = htole16(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_l31(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x = Long_val(v_x);
-  x = htole32(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_l32(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x = Int32_val(v_x);
-  x = htole32(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_l64(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint64_t x = Int64_val(v_x);
-  x = htole64(x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
+SET(l16, uint16_t, htole16, Long_val)
+SET(l31, uint32_t, htole32, Long_val)
+SET(l32, uint32_t, htole32, Int32_val)
+SET(l64, uint64_t, htole64, Int64_val)
 
 #endif /* EXTUNIX_HAVE_ENDIAN */
 
-/* Get intX_t out of a string */
-CAMLprim value caml_extunix_get_u8(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  uint8_t x = String_val(v_str)[Long_val(v_off)];
-  CAMLreturn(Val_long(x));
-}
+/* Host endian */
+#define id(x) x
+GET(u8,    uint8_t, id, Val_long)
+GET(s8,     int8_t, id, Val_long)
+GET(hu16, uint16_t, id, Val_long)
+GET(hs16,  int16_t, id, Val_long)
+GET(hu31, uint32_t, id, Val_long)
+GET(hs31,  int32_t, id, Val_long)
+GET(hs32,  int32_t, id, caml_copy_int32)
+GET(hs64,  int64_t, id, caml_copy_int64)
 
-CAMLprim value caml_extunix_get_s8(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  int8_t x = String_val(v_str)[Long_val(v_off)];
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_hu16(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint16_t x;
-  memcpy(&x, str + off, sizeof(x));
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_hs16(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int16_t x;
-  memcpy(&x, str + off, sizeof(x));
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_hu31(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_hs31(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  CAMLreturn(Val_long(x));
-}
-
-CAMLprim value caml_extunix_get_hs32(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int32_t x;
-  memcpy(&x, str + off, sizeof(x));
-  CAMLreturn(caml_copy_int32(x));
-}
-
-CAMLprim value caml_extunix_get_hs64(value v_str, value v_off) {
-  CAMLparam2(v_str, v_off);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  int64_t x;
-  memcpy(&x, str + off, sizeof(x));
-  CAMLreturn(caml_copy_int64(x));
-}
-
-/* Store intX_t in a string */
-CAMLprim value caml_extunix_set_8(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  String_val(v_str)[Long_val(v_off)] = Long_val(v_x);  
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_h16(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint16_t x = Long_val(v_x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_h31(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x = Long_val(v_x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_h32(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint32_t x = Int32_val(v_x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
-
-CAMLprim value caml_extunix_set_h64(value v_str, value v_off, value v_x) {
-  CAMLparam3(v_str, v_off, v_x);
-  char *str = String_val(v_str);
-  size_t off = Long_val(v_off);
-  uint64_t x = Int64_val(v_x);
-  memcpy(str + off, &x, sizeof(x));
-  CAMLreturn(Val_unit);
-}
+SET(8,    uint8_t, id, Long_val)
+SET(h16, uint16_t, id, Long_val)
+SET(h31, uint32_t, id, Long_val)
+SET(h32, uint32_t, id, Int32_val)
+SET(h64, uint64_t, id, Int64_val)
