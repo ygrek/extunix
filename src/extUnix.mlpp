@@ -161,8 +161,8 @@ HAVE PWRITE
     changed.
     
     Return the number of characters actually write. [pwrite] repeats
-    the write operation until all characters have been writen or an
-    error occurs. On error some data may or may not been writen.
+    the write operation until all characters have been written or an
+    error occurs. On error some data may or may not been written.
 
     Non-blocking files raise an Unix_error of EAGAIN if no characters
     could be written. *)
@@ -170,7 +170,7 @@ external pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_e
 
 (** [single_pwrite fd off buf ofs len] - Same as pwrite, but attempts
     to write only once. Thus, if an error occurs, single_write
-    guarantees that no data has been writen. Writes at most
+    guarantees that no data has been written. Writes at most
     UNIX_BUFFER_SIZE (16384) characters. *)
 external single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
 END
