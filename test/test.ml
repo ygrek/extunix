@@ -381,7 +381,7 @@ let () =
     "setenv" >:: test_setenv;
     "mkdtemp" >:: test_mkdtemp;
     "endian" >:: test_endian;
-    "endian" >:: test_endian_string;
+    "endian_string" >:: test_endian_string;
     "read_credentials" >:: test_read_credentials;
     "fexecve" >:: test_fexecve;
     "sendmsg" >:: test_sendmsg;
