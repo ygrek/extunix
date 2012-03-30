@@ -518,6 +518,32 @@ module EndianHost = struct
 
 end
 
+(** [unsafe_get_substr buf off len] extracts the substring from buffer
+    [buf] starting at offset [off] and length [len]. Bounds checking
+    is not performed. Use with caution and only when the program logic
+    guarantees that the access is within bounds.*)
+external unsafe_get_substr : buffer -> int -> int -> string = "caml_extunixba_get_substr"
+
+(** [get_substr buf off len] same as [unsafe_get_substr] but with
+    bounds checking. *)
+let get_substr buf off len =
+  if off < 0 || len < 0 || off > Bigarray.Array1.dim buf - len
+  then raise (Invalid_argument "index out of bounds");
+  unsafe_get_substr buf off len
+
+(** [unsafe_set_substr buf off str] stores the string in buffer [buf]
+    starting at offset [off]. Bounds checking is not performed. Use
+    with caution and only when the program logic guarantees that the
+    access is within bounds.*)
+external unsafe_set_substr : buffer -> int -> string -> unit = "caml_extunixba_set_substr"
+
+(** [set_substr buf off str] same as [unsafe_set_substr] but with
+    bounds checking. *)
+let set_substr buf off str =
+  if off < 0 || off > Bigarray.Array1.dim buf - String.length str
+  then raise (Invalid_argument "index out of bounds");
+  unsafe_set_substr buf off str
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)

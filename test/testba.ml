@@ -180,6 +180,18 @@ let test_pwrite_bigarray () =
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
 
+let test_substr () =
+  let arr =
+    Bigarray.Array1.create
+      Bigarray.int8_unsigned
+      Bigarray.c_layout
+      12
+  in
+  set_substr arr 0 "Hell";
+  set_substr arr 4 "o World!";
+  assert_equal (get_substr arr 0 6) "Hello ";
+  assert_equal (get_substr arr 6 6) "World!"  
+    
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -189,6 +201,7 @@ let () =
     "endian_bigrray" >:: test_endian_bigarray;
     "pread_bigarray" >:: test_pread_bigarray;
     "pwrite_bigarray" >:: test_pwrite_bigarray;
+    "substr" >:: test_substr;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

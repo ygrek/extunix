@@ -1,10 +1,11 @@
 # OASIS_START
-# DO NOT EDIT (digest: e472b7cf7e90cd375fac83fff39d8da1)
+# DO NOT EDIT (digest: 403e70a20cfe6a81c22c2b649bb12688)
 # Library extunixba
 <src/*.ml{,i}>: oasis_library_extunixba_ccopt
 "src/memalign.c": oasis_library_extunixba_ccopt
 "src/endianba.c": oasis_library_extunixba_ccopt
 "src/pread_pwrite_ba.c": oasis_library_extunixba_ccopt
+"src/bigarray.c": oasis_library_extunixba_ccopt
 <src/extunixba.{cma,cmxa}>: use_libextunixba
 <src/*.ml{,i}>: pkg_bigarray
 "src/memalign.c": pkg_unix
@@ -13,6 +14,8 @@
 "src/endianba.c": pkg_bigarray
 "src/pread_pwrite_ba.c": pkg_unix
 "src/pread_pwrite_ba.c": pkg_bigarray
+"src/bigarray.c": pkg_unix
+"src/bigarray.c": pkg_bigarray
 # Library extunix
 "src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
