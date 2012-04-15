@@ -16,7 +16,7 @@ Copyrights:
               (C) 2012 Andre Nathan
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
-Plugins:      DevFiles (0.2), META (0.2)
+Plugins:      DevFiles (0.3), META (0.3)
 
 Synopsis: Extended functions for OCaml Unix module 
 Description:
@@ -82,7 +82,7 @@ Test main
 
 Document api
   Title: API reference for extunix
-  Type: ocamlbuild (0.2)
+  Type: ocamlbuild (0.3)
   Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan
   BuildTools: ocamldoc
   Format: HTML
