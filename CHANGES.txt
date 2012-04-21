@@ -1,5 +1,4 @@
-
-? - ?
+0.0.4 - 21 Apr 2012
 * New bindings :
   * timegm
   * malloc_stats
