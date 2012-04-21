@@ -34,7 +34,7 @@ external unsafe_all_pread: Unix.file_descr -> int -> buffer -> int = "caml_extun
 
 let all_pread fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.all_pread"
+  then invalid_arg "ExtUnixBA.all_pread"
   else unsafe_all_pread fd off buf
 
 (** [single_pread fd off buf] reads up to [size of buf] bytes from file
@@ -49,7 +49,7 @@ external unsafe_single_pread: Unix.file_descr -> int -> buffer -> int = "caml_ex
 
 let single_pread fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.single_pread"
+  then invalid_arg "ExtUnixBA.single_pread"
   else unsafe_single_pread fd off buf
 
 (** [pread fd off buf] reads up to [size of buf] bytes from file
@@ -65,7 +65,7 @@ external unsafe_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba
 
 let pread fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.pread"
+  then invalid_arg "ExtUnixBA.pread"
   else unsafe_pread fd off buf
 
 (** [intr_pread fd off buf] reads up to [size of buf] bytes from file
@@ -81,7 +81,7 @@ external unsafe_intr_pread: Unix.file_descr -> int -> buffer -> int = "caml_extu
 
 let intr_pread fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.intr_pread"
+  then invalid_arg "ExtUnixBA.intr_pread"
   else unsafe_intr_pread fd off buf
 END
 
@@ -103,7 +103,7 @@ external unsafe_all_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extu
 
 let all_pwrite fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.all_pwrite"
+  then invalid_arg "ExtUnixBA.all_pwrite"
   else unsafe_all_pwrite fd off buf
 
 (** [single_pwrite fd off buf] writes up to [size of buf] bytes from file
@@ -118,7 +118,7 @@ external unsafe_single_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_e
 
 let single_pwrite fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.single_pwrite"
+  then invalid_arg "ExtUnixBA.single_pwrite"
   else unsafe_single_pwrite fd off buf
 
 (** [pwrite fd off buf] writes up to [size of buf] bytes from file
@@ -134,7 +134,7 @@ external unsafe_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixb
 
 let pwrite fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.pwrite"
+  then invalid_arg "ExtUnixBA.pwrite"
   else unsafe_pwrite fd off buf
 
 (** [intr_pwrite fd off buf] writes up to [size of buf] bytes from file
@@ -150,7 +150,7 @@ external unsafe_intr_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_ext
 
 let intr_pwrite fd off buf =
   if off < 0
-  then invalid_arg "ExtUnix.intr_pwrite"
+  then invalid_arg "ExtUnixBA.intr_pwrite"
   else unsafe_intr_pwrite fd off buf
 END
 
@@ -159,10 +159,10 @@ module LargeFile =
 struct
 
   (** File operations on large files. This sub-module provides 64-bit
-      variants of the functions ExtUnix.all_pread,
-      ExtUnix.single_pread, ExtUnix.pread, ExtUnix.intr_pread,
-      ExtUnix.all_pwrite, ExtUnix.single_pwrite, ExtUnix.pwrite and
-      ExtUnix.intr_pwrite (for reading from or writing to a file
+      variants of the functions ExtUnixBA.all_pread,
+      ExtUnixBA.single_pread, ExtUnixBA.pread, ExtUnixBA.intr_pread,
+      ExtUnixBA.all_pwrite, ExtUnixBA.single_pwrite, ExtUnixBA.pwrite
+      and ExtUnixBA.intr_pwrite (for reading from or writing to a file
       descriptor at a given offset). These alternate functions
       represent positions and sizes by 64-bit integers (type int64)
       instead of regular integers (type int), thus allowing operating
@@ -172,28 +172,28 @@ struct
 
   let all_pread fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.all_pread"
+    then invalid_arg "ExtUnixBA.LargeFile.all_pread"
     else unsafe_all_pread fd off buf
 
   external unsafe_single_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_single_pread64"
 
   let single_pread fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.single_pread"
+    then invalid_arg "ExtUnixBA.LargeFile.single_pread"
     else unsafe_single_pread fd off buf
 
   external unsafe_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_pread64"
 
   let pread fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.pread"
+    then invalid_arg "ExtUnixBA.LargeFile.pread"
     else unsafe_pread fd off buf
 
   external unsafe_intr_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_intr_pread64"
 
   let intr_pread fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.intr_pread"
+    then invalid_arg "ExtUnixBA.LargeFile.intr_pread"
     else unsafe_intr_pread fd off buf
   END
 
@@ -202,28 +202,28 @@ struct
     
   let all_pwrite fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.all_pwrite"
+    then invalid_arg "ExtUnixBA.LargeFile.all_pwrite"
     else unsafe_all_pwrite fd off buf
 
   external unsafe_single_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_single_pwrite64"
 
   let single_pwrite fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.single_pwrite"
+    then invalid_arg "ExtUnixBA.LargeFile.single_pwrite"
     else unsafe_single_pwrite fd off buf
 
   external unsafe_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_pwrite64"
     
   let pwrite fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.pwrite"
+    then invalid_arg "ExtUnixBA.LargeFile.pwrite"
     else unsafe_pwrite fd off buf
 
   external unsafe_intr_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_intr_pwrite64"
     
   let intr_pwrite fd off buf =
     if off < Int64.zero
-    then invalid_arg "ExtUnix.LargeFile.intr_pwrite"
+    then invalid_arg "ExtUnixBA.LargeFile.intr_pwrite"
     else unsafe_intr_pwrite fd off buf
   END
 end
