@@ -129,18 +129,48 @@ HAVE PREAD
 
     {b Author:} Goswin von Brederlow *)
 
-(** [pread fd off buf ofs len] reads up to [len] bytes from file
+(** [all_pread fd off buf ofs len] reads up to [len] bytes from file
     descriptor [fd] at offset [off] (from the start of the file) into
-    the buffer string [buf] at offset [ofs]. The file offset is not
+    the string [buf] at offset [ofs]. The file offset is not changed.
+
+    [all_pread] repeats the read operation until all characters have
+    been read or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK or End-of-file but
+    only ever returns 0 on End-of-file. Continues the read operation
+    on EINTR. Raises an Unix.Unix_error exception in all other
+    cases. *)
+external unsafe_all_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_all_pread"
+
+let all_pread fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.all_pread"
+  else unsafe_all_pread fd off buf ofs len
+
+(** [single_pread fd off buf ifs len] reads up to [len] bytes from
+    file descriptor [fd] at offset [off] (from the start of the file)
+    into the string [buf] at offset [ofs]. The file offset is not
     changed.
 
-    Return the number of characters actually read. [pread] repeats the
-    read operation until all characters have been read or an error
-    occurs. On error some data may or may not been read.
+    [single_pread] attempts to read only once. Returns the number of
+    characters read or raises an Unix.Unix_error exception. Unlike the
+    string variant of the same name there is no limit on the number of
+    characters read. *)
+external unsafe_single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
 
-    On End-of-file the number of characters read is returned including
-    but not limited to 0. Non-blocking files raise an Unix_error of
-    EAGAIN if no characters could be read. *)
+let single_pread fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.single_pread"
+  else unsafe_single_pread fd off buf ofs len
+
+(** [pread fd off buf ofs len] reads up to [len] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the string [buf] at offset [ofs]. The file offset is not changed.
+
+    [pread] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Continues
+    the read operation on EINTR. Returns the number of characters
+    written in all other cases. *)
 external unsafe_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pread"
 
 let pread fd off buf ofs len =
@@ -148,16 +178,21 @@ let pread fd off buf ofs len =
   then invalid_arg "ExtUnix.pread"
   else unsafe_pread fd off buf ofs len
 
-(** [single_pread fd off buf ofs len] - Same as pread, but attempts to
-    read only once. Thus, if an error occurs, single_read guarantees
-    that no data has been read. Reads at most UNIX_BUFFER_SIZE (16384)
-    characters. *)
-external unsafe_single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
+(** [intr_pread fd off buf ofs len] reads up to [len] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the string [buf] at offset [ofs]. The file offset is not changed.
 
-let single_pread fd off buf ofs len =
+    [intr_pread] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external unsafe_intr_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_intr_pread"
+
+let intr_pread fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
-  then invalid_arg "ExtUnix.single_pread"
-  else unsafe_single_pread fd off buf ofs len
+  then invalid_arg "ExtUnix.intr_pread"
+  else unsafe_intr_pread fd off buf ofs len
 END
 
 HAVE PWRITE
@@ -165,17 +200,47 @@ HAVE PWRITE
 
     {b Author:} Goswin von Brederlow *)
 
+(** [all_pwrite fd off buf ofs len] writes up to [len] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the string [buf] at offset [ofs]. The file offset is not changed.
+
+    [all_pwrite] repeats the write operation until all characters have
+    been written or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
+    the write operation on EINTR. Raises an Unix.Unix_error exception
+    in all other cases. *)
+external unsafe_all_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_all_pwrite"
+
+let all_pwrite fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.all_pwrite"
+  else unsafe_all_pwrite fd off buf ofs len
+
+(** [single_pwrite fd off buf ofs len] writes up to [len] bytes from
+    file descriptor [fd] at offset [off] (from the start of the file)
+    into the string [buf] at offset [ofs]. The file offset is not
+    changed.
+
+    [single_pwrite] attempts to write only once. Returns the number of
+    characters written or raises an Unix.Unix_error exception. Unlike
+    the string variant of the same name there is no limit on the
+    number of characters written. *)
+external unsafe_single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
+
+let single_pwrite fd off buf ofs len =
+  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.single_pwrite"
+  else unsafe_single_pwrite fd off buf ofs len
+
 (** [pwrite fd off buf ofs len] writes up to [len] bytes from file
     descriptor [fd] at offset [off] (from the start of the file) into
-    the buffer string [buf] at offset [ofs]. The file offset is not
-    changed.
-    
-    Return the number of characters actually written. [pwrite] repeats
-    the write operation until all characters have been written or an
-    error occurs. On error some data may or may not been written.
+    the string [buf] at offset [ofs]. The file offset is not changed.
 
-    Non-blocking files raise an Unix_error of EAGAIN if no characters
-    could be written. *)
+    [pwrite] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Continues
+    the write operation on EINTR. Returns the number of characters
+    written in all other cases. *)
 external unsafe_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pwrite"
 
 let pwrite fd off buf ofs len =
@@ -183,18 +248,24 @@ let pwrite fd off buf ofs len =
   then invalid_arg "ExtUnix.pwrite"
   else unsafe_pwrite fd off buf ofs len
 
-(** [single_pwrite fd off buf ofs len] - Same as pwrite, but attempts
-    to write only once. Thus, if an error occurs, single_write
-    guarantees that no data has been written. Writes at most
-    UNIX_BUFFER_SIZE (16384) characters. *)
-external unsafe_single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
+(** [intr_pwrite fd off buf ofs len] writes up to [len] bytes from
+    file descriptor [fd] at offset [off] (from the start of the file)
+    into the string [buf] at offset [ofs]. The file offset is not
+    changed.
 
-let single_pwrite fd off buf ofs len =
+    [intr_pwrite] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external unsafe_intr_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_intr_pwrite"
+
+let intr_pwrite fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
-  then invalid_arg "ExtUnix.single_pwrite"
-  else unsafe_single_pwrite fd off buf ofs len
+  then invalid_arg "ExtUnix.intr_pwrite"
+  else unsafe_intr_pwrite fd off buf ofs len
 END
-    
+
 (** File operations on large files *)
 module LargeFile =
 struct
@@ -202,12 +273,14 @@ struct
   (** File operations on large files. This sub-module provides 64-bit
       variants of the functions ExtUnix.fadvise (for predeclaring an
       access pattern for file data), ExtUnix.fallocate (for allocating
-      disk space for a file), ExtUnix.pread, ExtUnix.single_pread,
-      ExtUnix.pwrite and ExtUnix.single_pwrite (for reading from or
-      writing to a file descriptor at a given offset). These alternate
-      functions represent positions and sizes by 64-bit integers (type
-      int64) instead of regular integers (type int), thus allowing
-      operating on files whose sizes are greater than max_int. *)
+      disk space for a file), ExtUnix.all_pread, ExtUnix.single_pread,
+      ExtUnix.pread, ExtUnix.intr_pread, ExtUnix.all_pwrite,
+      ExtUnix.single_pwrite, ExtUnix.pwrite and ExtUnix.intr_pwrite
+      (for reading from or writing to a file descriptor at a given
+      offset). These alternate functions represent positions and sizes
+      by 64-bit integers (type int64) instead of regular integers
+      (type int), thus allowing operating on files whose sizes are
+      greater than max_int. *)
 
   HAVE FADVISE
   external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
@@ -218,35 +291,63 @@ struct
   END
 
   HAVE PREAD
-  external unsafe_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pread64"
+  external unsafe_all_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_all_pread64"
 
-  let pread fd off buf ofs len =
-    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
-    then invalid_arg "ExtUnix.LargeFile.pread"
-    else unsafe_pread fd off buf ofs len
+  let all_pread fd off buf ofs len =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.all_pread"
+    else unsafe_all_pread fd off buf ofs len
 
   external unsafe_single_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pread64"
 
   let single_pread fd off buf ofs len =
-    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
+    if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.single_pread"
     else unsafe_single_pread fd off buf ofs len
+
+  external unsafe_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pread64"
+
+  let pread fd off buf ofs len =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.pread"
+    else unsafe_pread fd off buf ofs len
+
+  external unsafe_intr_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_intr_pread64"
+
+  let intr_pread fd off buf ofs len =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.intr_pread"
+    else unsafe_intr_pread fd off buf ofs len
   END
 
   HAVE PWRITE
-  external unsafe_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pwrite64"
-
-  let pwrite fd off buf ofs len =
-    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
-    then invalid_arg "ExtUnix.LargeFile.pwrite"
-    else unsafe_pwrite fd off buf ofs len
+  external unsafe_all_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_all_pwrite64"
+    
+  let all_pwrite fd off buf ofs len =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.all_pwrite"
+    else unsafe_all_pwrite fd off buf ofs len
 
   external unsafe_single_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pwrite64"
 
   let single_pwrite fd off buf ofs len =
-    if off < Int64.zero || ofs < 0 || len < 0 || ofs > String.length buf - len
+    if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.single_pwrite"
     else unsafe_single_pwrite fd off buf ofs len
+
+  external unsafe_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pwrite64"
+    
+  let pwrite fd off buf ofs len =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.pwrite"
+    else unsafe_pwrite fd off buf ofs len
+
+  external unsafe_intr_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_intr_pwrite64"
+    
+  let intr_pwrite fd off buf ofs len =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.intr_pwrite"
+    else unsafe_intr_pwrite fd off buf ofs len
   END
 end
 
