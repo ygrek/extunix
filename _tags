@@ -1,26 +1,12 @@
 # OASIS_START
-# DO NOT EDIT (digest: d4a9d9fa2a4cd8a1712d0b610a573078)
-# Ignore VCS directories, you can use the same kind of rule outside 
-# OASIS_START/STOP if you want to exclude directories that contains 
-# useless stuff for the build process
-<**/.svn>: -traverse
-<**/.svn>: not_hygienic
-".bzr": -traverse
-".bzr": not_hygienic
-".hg": -traverse
-".hg": not_hygienic
-".git": -traverse
-".git": not_hygienic
-"_darcs": -traverse
-"_darcs": not_hygienic
+# DO NOT EDIT (digest: 403e70a20cfe6a81c22c2b649bb12688)
 # Library extunixba
-"src/extunixba.cmxs": use_extunixba
 <src/*.ml{,i}>: oasis_library_extunixba_ccopt
 "src/memalign.c": oasis_library_extunixba_ccopt
 "src/endianba.c": oasis_library_extunixba_ccopt
 "src/pread_pwrite_ba.c": oasis_library_extunixba_ccopt
 "src/bigarray.c": oasis_library_extunixba_ccopt
-<src/extunixba.{cma,cmxa}>: use_libextunixba_stubs
+<src/extunixba.{cma,cmxa}>: use_libextunixba
 <src/*.ml{,i}>: pkg_bigarray
 "src/memalign.c": pkg_unix
 "src/memalign.c": pkg_bigarray
@@ -31,7 +17,7 @@
 "src/bigarray.c": pkg_unix
 "src/bigarray.c": pkg_bigarray
 # Library extunix
-"src/extunix.cmxs": use_extunix
+"src": include
 <src/*.ml{,i}>: oasis_library_extunix_ccopt
 "src/eventfd.c": oasis_library_extunix_ccopt
 "src/dirfd.c": oasis_library_extunix_ccopt
@@ -57,7 +43,7 @@
 "src/read_cred.c": oasis_library_extunix_ccopt
 "src/fexecve.c": oasis_library_extunix_ccopt
 "src/sendmsg.c": oasis_library_extunix_ccopt
-<src/extunix.{cma,cmxa}>: use_libextunix_stubs
+<src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
 "src/dirfd.c": pkg_unix

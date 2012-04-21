@@ -1,7 +1,0 @@
-# OASIS_START
-# DO NOT EDIT (digest: c82d88ca7ff88c753d40949b480ab2fc)
-memalign.o
-endianba.o
-pread_pwrite_ba.o
-bigarray.o
-# OASIS_STOP
