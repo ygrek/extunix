@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 403e70a20cfe6a81c22c2b649bb12688)
+# DO NOT EDIT (digest: 62ed87c3f91783624ead63c212a488b3)
 # Library extunixba
 <src/*.ml{,i}>: oasis_library_extunixba_ccopt
 "src/memalign.c": oasis_library_extunixba_ccopt
@@ -43,6 +43,7 @@
 "src/read_cred.c": oasis_library_extunix_ccopt
 "src/fexecve.c": oasis_library_extunix_ccopt
 "src/sendmsg.c": oasis_library_extunix_ccopt
+"src/setresuid.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
@@ -69,6 +70,7 @@
 "src/read_cred.c": pkg_unix
 "src/fexecve.c": pkg_unix
 "src/sendmsg.c": pkg_unix
+"src/setresuid.c": pkg_unix
 # Executable testba
 <test/testba.{native,byte}>: use_extunix
 <test/testba.{native,byte}>: use_extunixba

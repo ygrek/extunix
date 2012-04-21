@@ -263,5 +263,6 @@ let () =
     "WRITE", L[ I "unistd.h"; S"write"; ];
     "MKSTEMPS", L[ I "stdlib.h"; S"mkstemps"; ];
     "MKOSTEMPS", L[ I "stdlib.h"; S"mkostemps"; ];
+    "SETRESUID", L[ I"sys/types.h"; I"unistd.h"; S"setresuid"; S"setresgid" ];
   ]
 

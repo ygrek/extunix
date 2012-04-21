@@ -1508,6 +1508,20 @@ let recvmsg_nofd fd =
 
 END
 
+HAVE SETRESUID
+
+(** [setresuid ruid euid suid] sets real, effective and saved user IDs of the calling process.
+    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
+    @see "setresuid(2)" manual *)
+external setresuid: int -> int -> int -> unit = "caml_extunix_setresuid"
+
+(** [setresgid rgid egid sgid] sets real, effective and saved group IDs of the calling process.
+    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged. 
+    @see "setresgid(2)" manual *)
+external setresgid: int -> int -> int -> unit = "caml_extunix_setresgid"
+
+END
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)

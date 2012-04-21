@@ -45,7 +45,7 @@ Library extunix
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
-            endian.c, read_cred.c, fexecve.c, sendmsg.c
+            endian.c, read_cred.c, fexecve.c, sendmsg.c, setresuid.c
   BuildDepends: unix
 
 Library extunixba
