@@ -472,6 +472,18 @@ let test_write () =
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
 
+let test_mkstemp () =
+  require "internal_mkstemps";
+  let (fd, name) = mkstemp ~suffix:"mkstemp" "extunix"
+  in
+  Unix.unlink name
+
+let test_mkostemp () =
+  require "internal_mkostemps";
+  let (fd, name) = mkostemp ~suffix:"mkstemp" ~flags:[Unix.O_APPEND] "extunix"
+  in
+  Unix.unlink name
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -500,6 +512,8 @@ let () =
     "pwrite" >:: test_pwrite;
     "read" >:: test_read;
     "write" >:: test_write;
+    "mkstemp" >:: test_mkstemp;
+    "mkostemp" >:: test_mkostemp;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

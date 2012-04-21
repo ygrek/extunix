@@ -261,5 +261,7 @@ let () =
     "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
     "READ", L[ I "unistd.h"; S"read"; ];
     "WRITE", L[ I "unistd.h"; S"write"; ];
+    "MKSTEMPS", L[ I "stdlib.h"; S"mkstemps"; ];
+    "MKOSTEMPS", L[ I "stdlib.h"; S"mkostemps"; ];
   ]
 

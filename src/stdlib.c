@@ -119,3 +119,50 @@ CAMLprim value caml_extunix_mkdtemp(value v_path)
 
 #endif
 
+#if defined(EXTUNIX_HAVE_MKSTEMPS)
+
+CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixlen)
+{
+  CAMLparam2(v_template, v_suffixlen);
+  char *template = String_val(v_template);
+  int suffixlen = Int_val(v_suffixlen);
+  int ret;
+  
+  ret = mkstemps(template, suffixlen);
+  if (ret == -1)
+  {
+    uerror("mkstemps", v_template);
+  }
+  CAMLreturn(Val_int(ret));
+}
+
+#endif
+
+#if defined(EXTUNIX_HAVE_MKOSTEMPS)
+
+/* FIXME: also in atfile.c, move to common file */
+#include <fcntl.h>
+
+static int open_flag_table[] = {
+  O_RDONLY, O_WRONLY, O_RDWR, O_NONBLOCK, O_APPEND, O_CREAT, O_TRUNC, O_EXCL,
+  O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC
+};
+
+CAMLprim value caml_extunix_internal_mkostemps(value v_template, value v_suffixlen, value v_flags)
+{
+  CAMLparam3(v_template, v_suffixlen, v_flags);
+  char *template = String_val(v_template);
+  int flags = caml_convert_flag_list(v_flags, open_flag_table) | O_CLOEXEC;
+  int suffixlen = Int_val(v_suffixlen);
+  int ret;
+  
+  ret = mkostemps(template, suffixlen, flags);
+  if (ret == -1)
+  {
+    uerror("mkostemps", v_template);
+  }
+  CAMLreturn(Val_int(ret));
+}
+
+#endif
+

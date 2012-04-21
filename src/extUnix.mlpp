@@ -892,6 +892,54 @@ external mkdtemp : string -> string = "caml_extunix_mkdtemp"
 
 END
 
+HAVE MKSTEMPS
+
+(** internal use only *)
+external internal_mkstemps : string -> int -> Unix.file_descr = "caml_extunix_internal_mkstemps"
+
+(** [mkstemp ?(suffix="") prefix] generates a unique temporary
+    filename in the form [prefix]XXXXXX[suffix], creates and opens the
+    file, and returns an open file descriptor and name for the
+    file. *)
+let mkstemp ?(suffix="") prefix =
+  let prefixlen = String.length prefix in
+  let suffixlen = String.length suffix in
+  let len = prefixlen + 6 + suffixlen in
+  let s = String.create len
+  in
+  String.blit prefix 0 s 0 prefixlen;
+  String.blit "XXXXXX" 0 s prefixlen 6;
+  String.blit suffix 0 s (prefixlen + 6) suffixlen;
+  let fd = internal_mkstemps s suffixlen
+  in
+  (fd, s)
+END
+
+HAVE MKOSTEMPS
+
+(** internal use only *)
+external internal_mkostemps : string -> int -> Unix.open_flag list -> Unix.file_descr = "caml_extunix_internal_mkostemps"
+
+(** [mkostemp ?(suffix="") ?(flags=[]) prefix] generates a unique temporary
+    filename in the form [prefix]XXXXXX[suffix], creates and opens the
+    file with [flags], and returns an open file descriptor and name
+    for the file. *)
+let mkostemp ?(suffix="") ?(flags=[]) prefix =
+  let prefixlen = String.length prefix in
+  let suffixlen = String.length suffix in
+  let len = prefixlen + 6 + suffixlen in
+  let s = String.create len
+  in
+  String.blit prefix 0 s 0 prefixlen;
+  String.blit "XXXXXX" 0 s prefixlen 6;
+  String.blit suffix 0 s (prefixlen + 6) suffixlen;
+  let fd = internal_mkostemps s suffixlen flags
+  in
+  (fd, s)
+
+let mkstemp ?(suffix="") prefix = mkostemp ~suffix:suffix prefix
+END
+
 module EndianBig = struct
 
 HAVE ENDIAN
