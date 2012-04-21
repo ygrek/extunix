@@ -7,8 +7,10 @@
   * read_credentials
   * fexecve
   * sendmsg / readmsg
-  * pread, single_pread, pread64, single_pread64
-  * pwrite, single_pwrite, pwrite64, single_pwrite64
+  * all_pread, single_pread, pread, intr_pread
+  * all_pread64, single_pread64, pread64, intr_pread64
+  * all_pwrite, single_pwrite, pwrite, intr_pwrite
+  * all_pwrite64, single_pwrite64, pwrite64, intr_pwrite64
   * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
     * New bindings
       * uint16_from_host uint16_to_host
@@ -25,6 +27,10 @@
       * get_int64 set_int64
 * New library ExtUnixBA
   * posix_memalign
+  * all_pread, single_pread, pread, intr_pread
+  * all_pread64, single_pread64, pread64, intr_pread64
+  * all_pwrite, single_pwrite, pwrite, intr_pwrite
+  * all_pwrite64, single_pwrite64, pwrite64, intr_pwrite64
   * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
     * New bigarray functions
       * get_uint8  set_uint8  get_int8  set_int8
