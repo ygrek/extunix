@@ -423,6 +423,55 @@ let test_pwrite () =
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
 
+let test_read () =
+  require "unsafe_read";
+  let name = Filename.temp_file "extunix" "read" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  try
+    let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
+    let s = String.make size 'x' in
+    assert_equal (Unix.write fd s 0 size) size;
+    let t = String.make size ' ' in
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    assert_equal (read fd t 0 size) size;
+    cmp_str t 'x' "read read bad data";
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    ignore (single_read fd t 0 size);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
+let test_write () =
+  require "unsafe_write";
+  let name = Filename.temp_file "extunix" "write" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  let read dst =
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    let rec loop off = function
+      | 0 -> ()
+      | size ->
+	let len = Unix.read fd dst off size
+	in
+	loop (off + len) (size - len)
+    in
+    loop 0 (String.length dst)
+  in
+  try
+    let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
+    let s = String.make size 'x' in
+    assert_equal (write fd s 0 size) size;
+    let t = String.make size ' ' in
+    read t;
+    cmp_str t 'x' "write wrote bad data";
+    ignore (single_write fd s 0 size);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -449,6 +498,8 @@ let () =
     "sendmsg" >:: test_sendmsg;
     "pread" >:: test_pread;
     "pwrite" >:: test_pwrite;
+    "read" >:: test_read;
+    "write" >:: test_write;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

@@ -7,6 +7,8 @@
 #define EXTUNIX_WANT_TCPGRP
 #define EXTUNIX_WANT_PREAD
 #define EXTUNIX_WANT_PWRITE
+#define EXTUNIX_WANT_READ
+#define EXTUNIX_WANT_WRITE
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_TTYNAME)
@@ -305,6 +307,126 @@ value caml_extunix_intr_pwrite64(value v_fd, value v_off, value v_buf, value v_o
 {
     off_t off = Int64_val(v_off);
     return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOERROR);
+}
+#endif
+
+#if defined(EXTUNIX_HAVE_READ)
+
+/*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
+
+#include <string.h>
+
+CAMLprim value caml_extunix_read_common(value v_fd, value v_buf, value v_ofs, value v_len, int mode) {
+    CAMLparam4(v_fd, v_buf, v_ofs, v_len);
+    ssize_t ret;
+    size_t fd = Int_val(v_fd);
+    size_t ofs = Long_val(v_ofs);
+    size_t len = Long_val(v_len);
+    size_t processed = 0;
+    char iobuf[UNIX_BUFFER_SIZE];
+
+    while(len > 0) {
+	size_t numbytes = (len > UNIX_BUFFER_SIZE) ? UNIX_BUFFER_SIZE : len;
+	caml_enter_blocking_section();
+	ret = read(fd, iobuf, numbytes);
+	caml_leave_blocking_section();
+	if (ret == 0) break;
+	if (ret == -1) {
+	    if (errno == EINTR && (mode & NOINTR)) continue;
+	    if (processed > 0) {
+		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
+		if (mode & NOERROR) break;
+	    }
+	    uerror("read", Nothing);
+	}
+	memcpy(&Byte(v_buf, ofs), iobuf, ret);
+	processed += ret;
+	ofs += ret;
+	len -= ret;
+	if (mode & ONCE) break;
+    }
+
+    CAMLreturn(Val_long(processed));
+}
+
+value caml_extunix_all_read(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, NOINTR);
+}
+
+value caml_extunix_single_read(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, ONCE);
+}
+
+value caml_extunix_read(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+}
+
+value caml_extunix_intr_read(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, NOERROR);
+}
+#endif
+
+#if defined(EXTUNIX_HAVE_WRITE)
+
+/*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
+
+#include <string.h>
+
+CAMLprim value caml_extunix_write_common(value v_fd, value v_buf, value v_ofs, value v_len, int mode) {
+    CAMLparam4(v_fd, v_buf, v_ofs, v_len);
+    ssize_t ret;
+    size_t fd = Int_val(v_fd);
+    size_t ofs = Long_val(v_ofs);
+    size_t len = Long_val(v_len);
+    size_t processed = 0;
+    char iobuf[UNIX_BUFFER_SIZE];
+
+    while(len > 0) {
+	size_t numbytes = (len > UNIX_BUFFER_SIZE) ? UNIX_BUFFER_SIZE : len;
+	memcpy(iobuf, &Byte(v_buf, ofs), numbytes);
+	caml_enter_blocking_section();
+	ret = write(fd, iobuf, numbytes);
+	caml_leave_blocking_section();
+	if (ret == 0) break;
+	if (ret == -1) {
+	    if (errno == EINTR && (mode & NOINTR)) continue;
+	    if (processed > 0){
+		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
+		if (mode & NOERROR) break;
+	    }
+	    uerror("write", Nothing);
+	}
+	processed += ret;
+	ofs += ret;
+	len -= ret;
+	if (mode & ONCE) break;
+    }
+
+    CAMLreturn(Val_long(processed));
+}
+
+value caml_extunix_all_write(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, NOINTR);
+}
+
+value caml_extunix_single_write(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, ONCE);
+}
+
+value caml_extunix_write(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+}
+
+value caml_extunix_intr_write(value v_fd, value v_buf, value v_ofs, value v_len)
+{
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, NOERROR);
 }
 #endif
 

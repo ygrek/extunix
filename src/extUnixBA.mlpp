@@ -154,6 +154,97 @@ let intr_pwrite fd off buf =
   else unsafe_intr_pwrite fd off buf
 END
 
+HAVE READ
+(** {2 read}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_read fd buf] reads up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [all_read] repeats the read operation until all characters have
+    been read or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK or End-of-file but
+    only ever returns 0 on End-of-file. Continues the read operation
+    on EINTR. Raises an Unix.Unix_error exception in all other
+    cases. *)
+external all_read: Unix.file_descr -> buffer -> int = "caml_extunixba_all_read"
+
+(** [single_read fd buf] reads up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [single_read] attempts to read only once. Returns the number of
+    characters read or raises an Unix.Unix_error exception. Unlike the
+    string variant of the same name there is no limit on the number of
+    characters read. *)
+external single_read: Unix.file_descr -> buffer -> int = "caml_extunixba_single_read"
+
+(** [read fd buf] reads up to [size of buf] bytes from file descriptor
+    [fd] into the buffer [buf].
+
+    [read] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Continues
+    the read operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external read: Unix.file_descr -> buffer -> int = "caml_extunixba_read"
+
+(** [intr_read fd buf] reads up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [intr_read] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external intr_read: Unix.file_descr -> buffer -> int = "caml_extunixba_intr_read"
+END
+
+HAVE WRITE
+(** {2 write}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+    
+    [all_write] repeats the write operation until all characters have
+    been written or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
+    the write operation on EINTR. Raises an Unix.Unix_error exception
+    in all other cases. *)
+external all_write: Unix.file_descr -> buffer -> int = "caml_extunixba_all_write"
+
+(** [single_write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [single_write] attempts to write only once. Returns the number of
+    characters written or raises an Unix.Unix_error exception. Unlike
+    the string variant of the same name there is no limit on the
+    number of characters written. *)
+external single_write: Unix.file_descr -> buffer -> int = "caml_extunixba_single_write"
+
+(** [write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [write] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Continues
+    the write operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external write: Unix.file_descr -> buffer -> int = "caml_extunixba_write"
+
+(** [intr_write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [intr_write] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external intr_write: Unix.file_descr -> buffer -> int = "caml_extunixba_intr_write"
+END
+
 (** File operations on large files *)
 module LargeFile =
 struct

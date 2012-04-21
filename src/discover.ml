@@ -259,5 +259,7 @@ let () =
     "SENDMSG", L[ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg" ];
     "PREAD", L[ I "unistd.h"; S"pread"; ];
     "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
+    "READ", L[ I "unistd.h"; S"read"; ];
+    "WRITE", L[ I "unistd.h"; S"write"; ];
   ]
 

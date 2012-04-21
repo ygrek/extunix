@@ -266,6 +266,137 @@ let intr_pwrite fd off buf ofs len =
   else unsafe_intr_pwrite fd off buf ofs len
 END
 
+HAVE READ
+(** {2 read}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_read fd buf ofs len] reads up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [all_read] repeats the read operation until all characters have
+    been read or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK or End-of-file but
+    only ever returns 0 on End-of-file. Continues the read operation
+    on EINTR. Raises an Unix.Unix_error exception in all other
+    cases. *)
+external unsafe_all_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_all_read"
+
+let all_read fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.all_read"
+  else unsafe_all_read fd buf ofs len
+
+(** [single_read fd buf ifs len] reads up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [single_read] attempts to read only once. Returns the number of
+    characters read or raises an Unix.Unix_error exception. Unlike the
+    string variant of the same name there is no limit on the number of
+    characters read. *)
+external unsafe_single_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_single_read"
+
+let single_read fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.single_read"
+  else unsafe_single_read fd buf ofs len
+
+(** [read fd buf ofs len] reads up to [len] bytes from file descriptor
+    [fd] into the string [buf] at offset [ofs].
+
+    [read] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Continues
+    the read operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external unsafe_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_read"
+
+let read fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.pread"
+  else unsafe_read fd buf ofs len
+
+(** [intr_read fd buf ofs len] reads up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [intr_read] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external unsafe_intr_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_intr_read"
+
+let intr_read fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.intr_read"
+  else unsafe_intr_read fd buf ofs len
+END
+
+HAVE WRITE
+(** {2 write}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_write fd buf ofs len] writes up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [all_write] repeats the write operation until all characters have
+    been written or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
+    the write operation on EINTR. Raises an Unix.Unix_error exception
+    in all other cases. *)
+external unsafe_all_write: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_all_write"
+
+let all_write fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.all_write"
+  else unsafe_all_write fd buf ofs len
+
+(** [single_write fd buf ofs len] writes up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [single_write] attempts to write only once. Returns the number of
+    characters written or raises an Unix.Unix_error exception. Unlike
+    the string variant of the same name there is no limit on the
+    number of characters written. *)
+external unsafe_single_write: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_single_write"
+
+let single_write fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.single_write"
+  else unsafe_single_write fd buf ofs len
+
+(** [write fd buf ofs len] writes up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [write] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Continues
+    the write operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external unsafe_write: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_write"
+
+let write fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.pwrite"
+  else unsafe_write fd buf ofs len
+
+(** [intr_write fd buf ofs len] writes up to [len] bytes from file
+    descriptor [fd] into the string [buf] at offset [ofs].
+
+    [intr_write] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external unsafe_intr_write: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_intr_write"
+
+let intr_write fd buf ofs len =
+  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  then invalid_arg "ExtUnix.intr_write"
+  else unsafe_intr_write fd buf ofs len
+END
+
 (** File operations on large files *)
 module LargeFile =
 struct

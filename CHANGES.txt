@@ -11,6 +11,10 @@
   * all_pread64, single_pread64, pread64, intr_pread64
   * all_pwrite, single_pwrite, pwrite, intr_pwrite
   * all_pwrite64, single_pwrite64, pwrite64, intr_pwrite64
+  * all_read, single_read, pread, intr_read
+  * all_read64, single_read64, pread64, intr_read64
+  * all_write, single_write, pwrite, intr_write
+  * all_write64, single_write64, pwrite64, intr_write64
   * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
     * New bindings
       * uint16_from_host uint16_to_host
@@ -31,6 +35,10 @@
   * all_pread64, single_pread64, pread64, intr_pread64
   * all_pwrite, single_pwrite, pwrite, intr_pwrite
   * all_pwrite64, single_pwrite64, pwrite64, intr_pwrite64
+  * all_read, single_read, pread, intr_read
+  * all_read64, single_read64, pread64, intr_read64
+  * all_write, single_write, pwrite, intr_write
+  * all_write64, single_write64, pwrite64, intr_write64
   * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
     * New bigarray functions
       * get_uint8  set_uint8  get_int8  set_int8

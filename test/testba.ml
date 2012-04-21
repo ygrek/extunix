@@ -192,6 +192,68 @@ let test_substr () =
   assert_equal (get_substr arr 0 6) "Hello ";
   assert_equal (get_substr arr 6 6) "World!"  
     
+let test_read_bigarray () =
+  require "read";
+  let name = Filename.temp_file "extunix" "read" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  try
+    let size = 65536 in
+    let s = String.make size 'x' in
+    assert_equal (Unix.write fd s 0 size) size;
+    let t =
+      Bigarray.Array1.create
+	Bigarray.int8_unsigned
+	Bigarray.c_layout
+	size
+    in
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    assert_equal (read fd t) size;
+    cmp_buf t 'x' "read read bad data";
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    ignore (single_read fd t);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
+let test_write_bigarray () =
+  require "write";
+  let name = Filename.temp_file "extunix" "write" in
+  let fd =
+    Unix.openfile name [Unix.O_RDWR] 0
+  in
+  let read dst =
+    assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
+    let rec loop off = function
+      | 0 -> ()
+      | size ->
+	let len = Unix.read fd dst off size
+	in
+	loop (off + len) (size - len)
+    in
+    loop 0 (String.length dst)
+  in
+  try
+    let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
+    let s =
+      Bigarray.Array1.create
+	Bigarray.int8_unsigned
+	Bigarray.c_layout
+	size
+    in
+    for i = 0 to size - 1 do
+      Bigarray.Array1.set s i (int_of_char 'x');
+    done;
+    assert_equal (write fd s) size;
+    let t = String.make size ' ' in
+    read t;
+    cmp_str t 'x' "write wrote bad data";
+    ignore (single_write fd s);
+    Unix.close fd;
+    Unix.unlink name
+  with exn -> Unix.close fd; Unix.unlink name; raise exn
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -202,6 +264,8 @@ let () =
     "pread_bigarray" >:: test_pread_bigarray;
     "pwrite_bigarray" >:: test_pwrite_bigarray;
     "substr" >:: test_substr;
+    "read_bigarray" >:: test_read_bigarray;
+    "write_bigarray" >:: test_write_bigarray;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 
