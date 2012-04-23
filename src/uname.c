@@ -4,8 +4,6 @@
 
 #if defined(EXTUNIX_HAVE_UNAME)
 
-#include <string.h>
-
 CAMLprim value caml_extunix_uname(value u)
 {
   struct utsname uname_data;

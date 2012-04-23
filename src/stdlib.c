@@ -5,8 +5,6 @@
 #define EXTUNIX_WANT_MKDTEMP
 #include "config.h"
 
-#include <string.h>
-
 #if defined(EXTUNIX_HAVE_REALPATH)
 
 #ifdef __GLIBC__

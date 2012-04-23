@@ -14,8 +14,6 @@
 
 #if defined(EXTUNIX_HAVE_SIGNALFD)
 
-#include <string.h>
-
 extern int caml_convert_signal_number(int signo);
 extern int caml_rev_convert_signal_number(int signo);
 

@@ -32,7 +32,6 @@
 #if defined(EXTUNIX_HAVE_RESOURCE)
 
 #include <assert.h>
-#include <errno.h>
 
 static void decode_which_prio(value vwprio, int *pwhich, id_t *pwho)
 {

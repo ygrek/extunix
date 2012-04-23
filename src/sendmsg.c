@@ -6,9 +6,6 @@
 
 /*  Copyright © 2012 Andre Nathan <andre@digirati.com.br>   */
 
-#include <errno.h>
-#include <string.h>
-
 /*
  * These functions are adapted from Stevens, Fenner and Rudoff, UNIX Network
  * Programming, Volume 1, Third Edition. We use CMSG_LEN instead of CMSG_SPACE
@@ -72,7 +69,7 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
   free(buf);
 
   if (ret == -1)
-    unix_error(errno, "sendmsg", Nothing);
+    uerror("sendmsg", Nothing);
   CAMLreturn (Val_unit);
 }
 
@@ -112,7 +109,7 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   caml_leave_blocking_section();
 
   if (len == -1)
-    unix_error(errno, "recvmsg", Nothing);
+    uerror("recvmsg", Nothing);
 
   res = caml_alloc(2, 0);
 

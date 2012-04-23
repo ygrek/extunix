@@ -12,9 +12,6 @@ enum mode_bits { BIT_ONCE, BIT_NOERROR, BIT_NOINTR };
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 
-#include <errno.h>
-#include <string.h>
-
 CAMLprim value caml_extunixba_pread_common(value v_fd, off_t off, value v_buf, int mode) {
     CAMLparam2(v_fd, v_buf);
     ssize_t ret;
@@ -98,8 +95,6 @@ value caml_extunixba_intr_pread64(value v_fd, value v_off, value v_buf)
 #if defined(EXTUNIX_HAVE_PWRITE)
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
-
-#include <string.h>
 
 CAMLprim value caml_extunixba_pwrite_common(value v_fd, off_t off, value v_buf, int mode) {
     CAMLparam2(v_fd, v_buf);
@@ -185,9 +180,6 @@ value caml_extunixba_intr_pwrite64(value v_fd, value v_off, value v_buf)
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 
-#include <errno.h>
-#include <string.h>
-
 CAMLprim value caml_extunixba_read_common(value v_fd, value v_buf, int mode) {
     CAMLparam2(v_fd, v_buf);
     ssize_t ret;
@@ -242,8 +234,6 @@ value caml_extunixba_intr_read(value v_fd, value v_buf)
 #if defined(EXTUNIX_HAVE_WRITE)
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
-
-#include <string.h>
 
 CAMLprim value caml_extunixba_write_common(value v_fd, value v_buf, int mode) {
     CAMLparam2(v_fd, v_buf);

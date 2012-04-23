@@ -5,8 +5,6 @@
 
 #if defined(EXTUNIX_HAVE_SIOCGIFCONF)
 
-#include <string.h>
-
 CAMLprim value caml_extunix_ioctl_siocgifconf(value v_sock)
 {
     CAMLparam1(v_sock);

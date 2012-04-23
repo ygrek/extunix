@@ -121,8 +121,6 @@ CAMLprim value caml_extunix_setresgid(value r, value e, value s)
 
 #if defined(EXTUNIX_HAVE_FCNTL)
 
-#include <errno.h>
-
 CAMLprim value caml_extunix_is_open_descr(value v_fd)
 {
     int r = fcntl(Int_val(v_fd), F_GETFL);
@@ -164,8 +162,6 @@ enum mode_bits { BIT_ONCE, BIT_NOERROR, BIT_NOINTR };
 #if defined(EXTUNIX_HAVE_PREAD)
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
-
-#include <string.h>
 
 CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, value v_ofs, value v_len, int mode) {
     CAMLparam4(v_fd, v_buf, v_ofs, v_len);
@@ -254,8 +250,6 @@ value caml_extunix_intr_pread64(value v_fd, value v_off, value v_buf, value v_of
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 
-#include <string.h>
-
 CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, value v_ofs, value v_len, int mode) {
     CAMLparam4(v_fd, v_buf, v_ofs, v_len);
     ssize_t ret;
@@ -343,8 +337,6 @@ value caml_extunix_intr_pwrite64(value v_fd, value v_off, value v_buf, value v_o
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 
-#include <string.h>
-
 CAMLprim value caml_extunix_read_common(value v_fd, value v_buf, value v_ofs, value v_len, int mode) {
     CAMLparam4(v_fd, v_buf, v_ofs, v_len);
     ssize_t ret;
@@ -402,8 +394,6 @@ value caml_extunix_intr_read(value v_fd, value v_buf, value v_ofs, value v_len)
 #if defined(EXTUNIX_HAVE_WRITE)
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
-
-#include <string.h>
 
 CAMLprim value caml_extunix_write_common(value v_fd, value v_buf, value v_ofs, value v_len, int mode) {
     CAMLparam4(v_fd, v_buf, v_ofs, v_len);

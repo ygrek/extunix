@@ -2,7 +2,6 @@
 #include "config.h"
 
 #include <stdint.h>
-#include <string.h> /* for memcpy */
 
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 

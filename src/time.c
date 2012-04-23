@@ -10,8 +10,6 @@
  * Author: Joshua Smith
  */
 
-#include <errno.h>
-
 /* from otherlibs/unix/gmtime.c */
 static value alloc_tm(struct tm *tm)
 {

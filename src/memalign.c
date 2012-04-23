@@ -2,8 +2,6 @@
 #define EXTUNIX_WANT_MEMALIGN
 #include "config.h"
 
-#include <string.h>
-
 #if defined(EXTUNIX_HAVE_MEMALIGN)
 
 /*

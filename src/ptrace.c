@@ -4,8 +4,6 @@
 
 #if defined(EXTUNIX_HAVE_PTRACE)
 
-#include <errno.h>
-
 CAMLprim value caml_extunix_ptrace_traceme(value unit)
 {
   long r = ptrace(PTRACE_TRACEME, 0, 0, 0);

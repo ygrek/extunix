@@ -2,8 +2,6 @@
 #define EXTUNIX_WANT_DIRFD
 #include "config.h"
 
-#include <errno.h>
-
 #if defined(EXTUNIX_HAVE_DIRFD)
 
 CAMLprim value caml_extunix_dirfd(value v_dir)

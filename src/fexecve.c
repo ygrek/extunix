@@ -6,8 +6,6 @@
 
 /*  Copyright © 2012 Andre Nathan <andre@digirati.com.br>   */
 
-#include <errno.h>
-
 static char **
 array_of_value(value v)
 {
@@ -37,7 +35,7 @@ CAMLprim value caml_extunix_fexecve(value fd_val, value argv_val, value envp_val
 
   caml_stat_free(argv);
   caml_stat_free(envp);
-  unix_error(errno, "fexecve", Nothing);
+  uerror("fexecve", Nothing);
 
   CAMLreturn (Val_unit); /* not reached */
 }

@@ -6,8 +6,6 @@
 
 /*  Copyright © 2012 Andre Nathan <andre@digirati.com.br>   */
 
-#include <errno.h>
-
 CAMLprim value caml_extunix_read_credentials(value fd_val)
 {
   CAMLparam1(fd_val);
@@ -17,7 +15,7 @@ CAMLprim value caml_extunix_read_credentials(value fd_val)
   int fd = Int_val(fd_val);
 
   if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &crd, &crdlen) == -1)
-    unix_error(errno, "read_credentials", Nothing);
+    uerror("read_credentials", Nothing);
 
   res = caml_alloc_tuple(3);
   Store_field(res, 0, Val_int(crd.pid));

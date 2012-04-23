@@ -1,7 +1,5 @@
 #include "config.h"
 
-#include <string.h> /* for memcpy */
-
 /*  Copyright © 2012 Goswin von Brederlow <goswin-v-b@web.de>   */
 
 CAMLprim value caml_extunixba_get_substr(value v_buf, value v_off, value v_len)
@@ -17,7 +15,7 @@ CAMLprim value caml_extunixba_get_substr(value v_buf, value v_off, value v_len)
     memcpy(str, buf + off, len);
     CAMLreturn(v_str);
 }
-#include <stdio.h>
+
 CAMLprim value caml_extunixba_set_substr(value v_buf, value v_off, value v_str)
 {
     CAMLparam3(v_buf, v_off, v_str);
