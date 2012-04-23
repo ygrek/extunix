@@ -3,6 +3,7 @@
 #define EXTUNIX_WANT_CTERMID
 #define EXTUNIX_WANT_PGID
 #define EXTUNIX_WANT_SETREUID
+#define EXTUNIX_WANT_SETRESUID
 #define EXTUNIX_WANT_FCNTL
 #define EXTUNIX_WANT_TCPGRP
 #define EXTUNIX_WANT_PREAD
@@ -89,6 +90,34 @@ CAMLprim value caml_extunix_setregid(value v_rgid, value v_egid)
 }
 
 #endif
+
+#if defined(EXTUNIX_HAVE_SETRESUID)
+
+CAMLprim value caml_extunix_setresuid(value r, value e, value s)
+{
+  CAMLparam3(r, e, s);
+  uid_t ruid = Int_val(r);
+  uid_t euid = Int_val(e);
+  uid_t suid = Int_val(s);
+
+  if (setresuid(ruid, euid, suid) != 0)
+    uerror("setresuid", Nothing);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_setresgid(value r, value e, value s)
+{
+  CAMLparam3(r, e, s);
+  gid_t rgid = Int_val(r);
+  gid_t egid = Int_val(e);
+  gid_t sgid = Int_val(s);
+
+  if (setresgid(rgid, egid, sgid) == -1)
+    uerror("setresgid", Nothing);
+  CAMLreturn(Val_unit);
+}
+
+#endif /* EXTUNIX_HAVE_SETRESUID */
 
 #if defined(EXTUNIX_HAVE_FCNTL)
 

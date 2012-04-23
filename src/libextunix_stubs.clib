@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 0a8bda31574609b23e6e80d7a920f9c3)
+# DO NOT EDIT (digest: 17c15673ddca92c60cc1435555a7111b)
 eventfd.o
 dirfd.o
 fsync.o
@@ -24,5 +24,4 @@ endian.o
 read_cred.o
 fexecve.o
 sendmsg.o
-setresuid.o
 # OASIS_STOP
