@@ -7,6 +7,7 @@
 
 CAMLprim value caml_extunix_malloc_stats(value v_unit)
 {
+  UNUSED(v_unit);
   malloc_stats();
   return Val_unit;
 }
@@ -26,6 +27,7 @@ CAMLprim value caml_extunix_malloc_info(value v_unit)
   size_t size;
   int r;
   FILE* f = open_memstream(&buf,&size);
+  UNUSED(v_unit);
   if (NULL == f)
     uerror("malloc_info", Nothing);
   r = malloc_info(0,f);

@@ -110,6 +110,8 @@ let show_c file result =
   let b = Buffer.create 10 in
   let pr fmt = ksprintf (fun s -> Buffer.add_string b (s^"\n")) fmt in
   pr "";
+  pr "#define UNUSED(x) (void)(x)";
+  pr "";
   List.iter (print_define b) config_defines;
   List.iter begin function
     | NO _ -> ();

@@ -85,6 +85,7 @@ CAMLprim value caml_extunix_unsetenv(value v_name)
 
 CAMLprim value caml_extunix_clearenv(value v_unit) 
 {
+  UNUSED(v_unit);
   if (0 != clearenv())
   {
     uerror("clearenv", Nothing);

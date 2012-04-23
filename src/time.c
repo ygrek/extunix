@@ -40,6 +40,9 @@ static void fill_tm(struct tm* tm, value t)
   tm->tm_isdst = Bool_val(Field(t, 8)); /* -1 */
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+
 CAMLprim value caml_extunix_strptime(value v_fmt, value v_s)
 {
   struct tm tm = { 0 };
@@ -47,6 +50,8 @@ CAMLprim value caml_extunix_strptime(value v_fmt, value v_s)
     unix_error(EINVAL, "strptime", v_s);
   return alloc_tm(&tm);
 }
+
+#pragma GCC diagnostic pop
 
 CAMLprim value caml_extunix_asctime(value v_t)
 {

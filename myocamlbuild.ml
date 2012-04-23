@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: cc6a4afb3518b6256bdcee3517767f26) *)
+(* DO NOT EDIT (digest: e6d97c6d067b63022b830f622edae8f9) *)
 module OASISGettext = struct
 # 21 "src/oasis/OASISGettext.ml"
   
@@ -474,7 +474,9 @@ let package_default =
                       A "-ccopt";
                       A "-pedantic";
                       A "-ccopt";
-                      A "-Wno-long-long"
+                      A "-Wno-long-long";
+                      A "-ccopt";
+                      A "-Wextra"
                    ])
             ]);
           (["oasis_library_extunix_ccopt"; "compile"],
@@ -490,7 +492,9 @@ let package_default =
                       A "-ccopt";
                       A "-pedantic";
                       A "-ccopt";
-                      A "-Wno-long-long"
+                      A "-Wno-long-long";
+                      A "-ccopt";
+                      A "-Wextra"
                    ])
             ])
        ];

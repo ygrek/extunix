@@ -4,12 +4,13 @@
 
 #if defined(EXTUNIX_HAVE_PTRACE)
 
-CAMLprim value caml_extunix_ptrace_traceme(value unit)
+CAMLprim value caml_extunix_ptrace_traceme(value v_unit)
 {
   long r = ptrace(PTRACE_TRACEME, 0, 0, 0);
+  UNUSED(v_unit);
   if (r != 0)
     uerror("ptrace_traceme", Nothing);
-   return Val_unit; 
+  return Val_unit;
 }
 
 CAMLprim value caml_extunix_ptrace(value v_pid, value v_req)

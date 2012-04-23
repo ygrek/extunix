@@ -34,6 +34,7 @@ CAMLprim value caml_extunix_ttyname(value v_fd)
 CAMLprim value caml_extunix_ctermid(value v_unit) 
 {
   char buf[L_ctermid + 1];
+  UNUSED(v_unit);
   return caml_copy_string(ctermid(buf));
 }
 

@@ -164,6 +164,9 @@ CAMLprim value caml_extunix_getrlimit(value vrsrc)
   CAMLreturn(vres);
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+
 CAMLprim value caml_extunix_setrlimit(value vrsrc, value vslimit, value vhlimit)
 {
   CAMLparam3(vrsrc, vslimit, vhlimit);
@@ -179,6 +182,8 @@ CAMLprim value caml_extunix_setrlimit(value vrsrc, value vslimit, value vhlimit)
 
   CAMLreturn(Val_unit);
 }
+
+#pragma GCC diagnostic pop
 
 #endif /* EXTUNIX_HAVE_RESOURCE */
 

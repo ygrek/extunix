@@ -47,7 +47,10 @@ static struct custom_operations ssi_ops = {
   "signalfd.signalfd_siginfo",
   custom_finalize_default,
   custom_compare_default, custom_hash_default,
-  custom_serialize_default, custom_deserialize_default
+  custom_serialize_default, custom_deserialize_default,
+#if defined(custom_compare_ext_default)
+  custom_compare_ext_default,
+#endif
 };
 
 #define SSI_SIZE sizeof(struct signalfd_siginfo)
