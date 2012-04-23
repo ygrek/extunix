@@ -1,12 +1,12 @@
 # OASIS_START
-# DO NOT EDIT (digest: 62ed87c3f91783624ead63c212a488b3)
+# DO NOT EDIT (digest: a8be4b49fa93045e01184e6e27afce7c)
 # Library extunixba
 <src/*.ml{,i}>: oasis_library_extunixba_ccopt
 "src/memalign.c": oasis_library_extunixba_ccopt
 "src/endianba.c": oasis_library_extunixba_ccopt
 "src/pread_pwrite_ba.c": oasis_library_extunixba_ccopt
 "src/bigarray.c": oasis_library_extunixba_ccopt
-<src/extunixba.{cma,cmxa}>: use_libextunixba
+<src/extunixba.{cma,cmxa}>: stubs_extunixba
 <src/*.ml{,i}>: pkg_bigarray
 "src/memalign.c": pkg_unix
 "src/memalign.c": pkg_bigarray
@@ -44,7 +44,7 @@
 "src/fexecve.c": oasis_library_extunix_ccopt
 "src/sendmsg.c": oasis_library_extunix_ccopt
 "src/setresuid.c": oasis_library_extunix_ccopt
-<src/extunix.{cma,cmxa}>: use_libextunix
+<src/extunix.{cma,cmxa}>: stubs_extunix
 <src/*.ml{,i}>: pkg_unix
 "src/eventfd.c": pkg_unix
 "src/dirfd.c": pkg_unix
