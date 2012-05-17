@@ -1039,7 +1039,6 @@ let mkostemp ?(suffix="") ?(flags=[]) prefix =
   in
   (fd, s)
 
-let mkstemp ?(suffix="") prefix = mkostemp ~suffix:suffix prefix
 END
 
 (** {2 Byte order conversion} *)
