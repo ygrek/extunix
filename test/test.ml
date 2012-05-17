@@ -240,8 +240,8 @@ let test_endian () =
   require "int32_to_host";
   require "int64_from_host";
   require "int64_to_host";
-  let module B = EndianBig in
-  let module L = EndianLittle in
+  let module B = BigEndian in
+  let module L = LittleEndian in
   let u16 = 0xABCD in
   let i16 = -0x1234 in
   let i32 = 0x89ABCDEFl in
@@ -280,8 +280,8 @@ let test_endian_string () =
   require "unsafe_set_int31";
   require "unsafe_set_int32";
   require "unsafe_set_int64";
-  let module B = EndianBig in
-  let module L = EndianLittle in
+  let module B = BigEndian in
+  let module L = LittleEndian in
   let src = (* FF FF FEDC FEDC FEDCBA98 FEDCBA9876543210 *)
     "\255\255\254\220\254\220\254\220\186\152\254\220\186\152\118\084\050\016"
   in

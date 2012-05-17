@@ -37,14 +37,9 @@ let test_endian_bigarray () =
   require "unsafe_set_int31";
   require "unsafe_set_int32";
   require "unsafe_set_int64";
-  let module B = EndianBig in
-  let module L = EndianLittle in
-  let src =
-    Bigarray.Array1.create
-      Bigarray.int8_unsigned
-      Bigarray.c_layout
-      18
-  in
+  let module B = BigEndian in
+  let module L = LittleEndian in
+  let src = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout 18 in
   ignore (List.fold_left (fun off x -> Bigarray.Array1.set src off x; off + 1)
 	    0
 	    [0xFF;
@@ -65,12 +60,7 @@ let test_endian_bigarray () =
   assert_equal (L.get_int16  src  4) (-0x2302);
   assert_equal (L.get_int32  src  6) (0x98BADCFEl);
   assert_equal (L.get_int64  src 10) (0x1032547698BADCFEL);
-  let b =
-    Bigarray.Array1.create
-      Bigarray.int8_unsigned
-      Bigarray.c_layout
-      18
-  in
+  let b = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout 18 in
   B.set_uint8  b  0 0xFF;
   B.set_int8   b  1 (-0x01);
   B.set_uint16 b  2 0xFEDC;
@@ -78,12 +68,7 @@ let test_endian_bigarray () =
   B.set_int32  b  6 (0xFEDCBA98l);
   B.set_int64  b 10 (0xFEDCBA9876543210L);
   assert_equal b src;
-  let l =
-    Bigarray.Array1.create
-      Bigarray.int8_unsigned
-      Bigarray.c_layout
-      18
-  in
+  let l = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout 18 in
   L.set_uint8  l  0 0xFF;
   L.set_int8   l  1 (-0x01);
   L.set_uint16 l  2 0xDCFE;
@@ -108,21 +93,11 @@ let test_pread_bigarray () =
     let size = 65536 in
     let s = String.make size 'x' in
     assert_equal (Unix.write fd s 0 size) size;
-    let t =
-      Bigarray.Array1.create
-	Bigarray.int8_unsigned
-	Bigarray.c_layout
-	size
-    in
+    let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (pread fd 0 t) size;
     cmp_buf t 'x' "pread read bad data";
     ignore (single_pread fd 0 t);
-    let t =
-      Bigarray.Array1.create
-	Bigarray.int8_unsigned
-	Bigarray.c_layout
-	size
-    in
+    let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (LargeFile.pread fd Int64.zero t) size;
     cmp_buf t 'x' "Largefile.pread read bad data";
     ignore (LargeFile.single_pread fd Int64.zero t);
@@ -155,12 +130,7 @@ let test_pwrite_bigarray () =
   in
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
-    let s =
-      Bigarray.Array1.create
-	Bigarray.int8_unsigned
-	Bigarray.c_layout
-	size
-    in
+    let s = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     for i = 0 to size - 1 do
       Bigarray.Array1.set s i (int_of_char 'x');
     done;
@@ -181,17 +151,12 @@ let test_pwrite_bigarray () =
   with exn -> Unix.close fd; Unix.unlink name; raise exn
 
 let test_substr () =
-  let arr =
-    Bigarray.Array1.create
-      Bigarray.int8_unsigned
-      Bigarray.c_layout
-      12
-  in
+  let arr = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout 12 in
   set_substr arr 0 "Hell";
   set_substr arr 4 "o World!";
   assert_equal (get_substr arr 0 6) "Hello ";
-  assert_equal (get_substr arr 6 6) "World!"  
-    
+  assert_equal (get_substr arr 6 6) "World!"
+
 let test_read_bigarray () =
   require "read";
   let name = Filename.temp_file "extunix" "read" in
@@ -202,12 +167,7 @@ let test_read_bigarray () =
     let size = 65536 in
     let s = String.make size 'x' in
     assert_equal (Unix.write fd s 0 size) size;
-    let t =
-      Bigarray.Array1.create
-	Bigarray.int8_unsigned
-	Bigarray.c_layout
-	size
-    in
+    let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
     assert_equal (read fd t) size;
     cmp_buf t 'x' "read read bad data";
@@ -236,12 +196,7 @@ let test_write_bigarray () =
   in
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
-    let s =
-      Bigarray.Array1.create
-	Bigarray.int8_unsigned
-	Bigarray.c_layout
-	size
-    in
+    let s = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     for i = 0 to size - 1 do
       Bigarray.Array1.set s i (int_of_char 'x');
     done;

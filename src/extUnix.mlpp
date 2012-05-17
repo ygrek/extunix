@@ -940,7 +940,7 @@ let mkostemp ?(suffix="") ?(flags=[]) prefix =
 let mkstemp ?(suffix="") prefix = mkostemp ~suffix:suffix prefix
 END
 
-module EndianBig = struct
+module BigEndian = struct
 
 HAVE ENDIAN
   (** {2 big endian functions}
@@ -1126,7 +1126,7 @@ END
 
 end
 
-module EndianLittle = struct
+module LittleEndian = struct
 
 HAVE ENDIAN
   (** {2 little endian functions}
@@ -1312,9 +1312,7 @@ END
 
 end
 
-module EndianNet = EndianBig
-
-module EndianHost = struct
+module HostEndian = struct
 
   (** {2 host endian functions}
 
