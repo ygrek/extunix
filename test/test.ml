@@ -484,6 +484,13 @@ let test_mkostemp () =
   in
   Unix.unlink name
 
+let test_memalign () =
+  require "memalign";
+  ignore (memalign 512 512);
+  ignore (memalign 1024 2048);
+  ignore (memalign 2048 16384);
+  ignore (memalign 4096 65536)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -514,6 +521,7 @@ let () =
     "write" >:: test_write;
     "mkstemp" >:: test_mkstemp;
     "mkostemp" >:: test_mkostemp;
+    "memalign" >:: test_memalign;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

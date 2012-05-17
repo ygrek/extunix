@@ -45,20 +45,9 @@ Library extunix
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
-            endian.c, read_cred.c, fexecve.c, sendmsg.c
-  BuildDepends: unix
-
-Library extunixba
-  Path: src
-  Modules: ExtUnixBA
-  InternalModules: ExtUnixBAAll, ExtUnixBASpecific
-  if flag(strict) && ccomp_type(cc)
-    CCOpt: -std=c89 -pedantic -Wno-long-long -Wextra
-  CSources: config.h,
+            endian.c, read_cred.c, fexecve.c, sendmsg.c,
             memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c
   BuildDepends: unix, bigarray
-  FindlibParent: extunix
-  FindlibName: bigarray
 
 Executable test
   Path: test/
@@ -74,7 +63,7 @@ Executable testba
   Custom: true
   CompiledObject: best
   MainIs: testba.ml
-  BuildDepends: extunix, extunix.bigarray, oUnit (>= 1.0.3)
+  BuildDepends: extunix, oUnit (>= 1.0.3)
 
 Test main
   Command: $test && $testba
@@ -88,8 +77,8 @@ Document api
   Format: HTML
   Index: index.html
   XOCamlbuildPath:      src/
-  XOCamlbuildLibraries: extunix, extunix.bigarray
-  XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific, ExtUnixBAAll, ExtUnixBASpecific
+  XOCamlbuildLibraries: extunix
+  XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific
 
 #Document changelog
 #  Title: Changelog

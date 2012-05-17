@@ -4,6 +4,10 @@
     if the wrapped C function is not available on this platform *)
 exception Not_available of string
 
+(** type of buffer used by BA submodules *)
+type buffer =
+    (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+
 HAVE FSYNC
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 END
@@ -88,6 +92,7 @@ HAVE FADVISE
 
 {b Author:} Sylvain Le Gall *)
 
+(** access pattern *)
 type advice =
   | POSIX_FADV_NORMAL     (** Indicates that the application has no advice to
                               give about its access pattern for the specified
@@ -102,8 +107,7 @@ type advice =
   | POSIX_FADV_DONTNEED   (** The specified data will not be accessed in the
                               near future.  *)
 
-(**/**) (*camlp4 misplaces comments*) (**/**)
-
+(** predeclare an access pattern for file data *)
 external fadvise: Unix.file_descr -> int -> int -> advice -> unit = "caml_extunix_fadvise"
 
 END
@@ -397,21 +401,21 @@ let intr_write fd buf ofs len =
   else unsafe_intr_write fd buf ofs len
 END
 
-(** File operations on large files *)
+(** {2 File operations on large files} *)
+
+(** File operations on large files. This sub-module provides 64-bit
+    variants of the functions ExtUnix.fadvise (for predeclaring an
+    access pattern for file data), ExtUnix.fallocate (for allocating
+    disk space for a file), ExtUnix.all_pread, ExtUnix.single_pread,
+    ExtUnix.pread, ExtUnix.intr_pread, ExtUnix.all_pwrite,
+    ExtUnix.single_pwrite, ExtUnix.pwrite and ExtUnix.intr_pwrite
+    (for reading from or writing to a file descriptor at a given
+    offset). These alternate functions represent positions and sizes
+    by 64-bit integers (type int64) instead of regular integers
+    (type int), thus allowing operating on files whose sizes are
+    greater than max_int. *)
 module LargeFile =
 struct
-
-  (** File operations on large files. This sub-module provides 64-bit
-      variants of the functions ExtUnix.fadvise (for predeclaring an
-      access pattern for file data), ExtUnix.fallocate (for allocating
-      disk space for a file), ExtUnix.all_pread, ExtUnix.single_pread,
-      ExtUnix.pread, ExtUnix.intr_pread, ExtUnix.all_pwrite,
-      ExtUnix.single_pwrite, ExtUnix.pwrite and ExtUnix.intr_pwrite
-      (for reading from or writing to a file descriptor at a given
-      offset). These alternate functions represent positions and sizes
-      by 64-bit integers (type int64) instead of regular integers
-      (type int), thus allowing operating on files whose sizes are
-      greater than max_int. *)
 
   HAVE FADVISE
   external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
@@ -453,7 +457,7 @@ struct
 
   HAVE PWRITE
   external unsafe_all_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_all_pwrite64"
-    
+
   let all_pwrite fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.all_pwrite"
@@ -467,20 +471,88 @@ struct
     else unsafe_single_pwrite fd off buf ofs len
 
   external unsafe_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pwrite64"
-    
+
   let pwrite fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.pwrite"
     else unsafe_pwrite fd off buf ofs len
 
   external unsafe_intr_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_intr_pwrite64"
-    
+
   let intr_pwrite fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.intr_pwrite"
     else unsafe_intr_pwrite fd off buf ofs len
   END
-end
+
+  (** {2 Bigarray variants} *)
+
+  (** *)
+  module BA = struct
+
+  HAVE PREAD
+  external unsafe_all_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_all_pread64"
+
+  let all_pread fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.all_pread"
+    else unsafe_all_pread fd off buf
+
+  external unsafe_single_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_single_pread64"
+
+  let single_pread fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.single_pread"
+    else unsafe_single_pread fd off buf
+
+  external unsafe_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_pread64"
+
+  let pread fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.pread"
+    else unsafe_pread fd off buf
+
+  external unsafe_intr_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_intr_pread64"
+
+  let intr_pread fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.intr_pread"
+    else unsafe_intr_pread fd off buf
+  END
+
+  HAVE PWRITE
+  external unsafe_all_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_all_pwrite64"
+
+  let all_pwrite fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.all_pwrite"
+    else unsafe_all_pwrite fd off buf
+
+  external unsafe_single_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_single_pwrite64"
+
+  let single_pwrite fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.single_pwrite"
+    else unsafe_single_pwrite fd off buf
+
+  external unsafe_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_pwrite64"
+
+  let pwrite fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.pwrite"
+    else unsafe_pwrite fd off buf
+
+  external unsafe_intr_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_intr_pwrite64"
+
+  let intr_pwrite fd off buf =
+    if off < Int64.zero
+    then invalid_arg "ExtUnix.LargeFile.intr_pwrite"
+    else unsafe_intr_pwrite fd off buf
+  END
+
+  end (* module BA *)
+
+end (* module LargeFile *)
 
 (** {2 ioctl} *)
 
@@ -518,6 +590,7 @@ end (* module Ioctl *)
 (** {2 Miscellaneous} *)
 
 HAVE TTYNAME
+(** @return name of terminal *)
 external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
 END
 
@@ -557,6 +630,20 @@ external setregid : int -> int -> unit = "caml_extunix_setregid"
 
 END
 
+HAVE SETRESUID
+
+(** [setresuid ruid euid suid] sets real, effective and saved user IDs of the calling process.
+    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
+    @see "setresuid(2)" manual *)
+external setresuid: int -> int -> int -> unit = "caml_extunix_setresuid"
+
+(** [setresgid rgid egid sgid] sets real, effective and saved group IDs of the calling process.
+    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged. 
+    @see "setresgid(2)" manual *)
+external setresgid: int -> int -> int -> unit = "caml_extunix_setresgid"
+
+END
+
 HAVE REALPATH
 (** [realpath path]
     @return the canonicalized absolute pathname of [path]
@@ -587,6 +674,9 @@ let file_descr_of_int : int -> Unix.file_descr =
     fun _ -> raise (Not_available "file_descr_of_int")
   else
     Obj.magic
+
+(** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
+external sys_exit : int -> 'a = "caml_sys_exit"
 
 HAVE SIGNALFD
 
@@ -652,22 +742,6 @@ external ssi_addr         : ssi -> int64 = "caml_extunix_ssi_addr"
 
 END
 
-HAVE PTRACE
-
-(** {2 ptrace} *)
-
-external ptrace_traceme : unit -> unit = "caml_extunix_ptrace_traceme"
-external ptrace_peekdata : int -> nativeint -> nativeint = "caml_extunix_ptrace_peekdata"
-external ptrace_peektext : int -> nativeint -> nativeint = "caml_extunix_ptrace_peektext"
-
-type ptrace_request =
-  | PTRACE_ATTACH
-  | PTRACE_DETACH
-
-external ptrace : int -> ptrace_request -> unit = "caml_extunix_ptrace"
-
-END
-
 HAVE RESOURCE
 
 (** 
@@ -676,6 +750,7 @@ HAVE RESOURCE
   {b Author:} Sylvain Le Gall <sylvain\@le-gall.net>
 *)
 
+(** priority target *)
 type which_prio_t =
   | PRIO_PROCESS of int (** Priority for a process id *)
   | PRIO_PGRP of int    (** Priority for a process group id *)
@@ -692,6 +767,7 @@ type resource =
   | RLIMIT_STACK  (** Limit on stack size. *)
   | RLIMIT_AS     (** Limit on address space size. *)
 
+(** get resource name *)
 let string_of_resource = function
   | RLIMIT_CORE   -> "RLIMIT_CORE"
   | RLIMIT_CPU    -> "RLIMIT_CPU"
@@ -767,12 +843,11 @@ external setrlimit : resource -> soft:Rlimit.t -> hard:Rlimit.t -> unit = "caml_
 
 END
 
-(** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
-external sys_exit : int -> 'a = "caml_sys_exit"
+(** {2 Memory management} *)
 
 HAVE MLOCKALL
-(**  {2 Memory management} *)
 
+(** mlockall flag *)
 type mlockall_flag = MCL_CURRENT | MCL_FUTURE
 
 (** Lock all pages mapped into the address space of the calling process. *)
@@ -780,6 +855,17 @@ external mlockall : mlockall_flag list -> unit = "caml_extunix_mlockall"
 
 (** Unlock all pages mapped into the address space of the calling process. *)
 external munlockall : unit -> unit = "caml_extunix_munlockall"
+
+END
+
+HAVE MEMALIGN
+
+(** [memalign alignment size] creates a {!Bigarray.Array1.t} of [size] bytes,
+    which data is aligned to [alignment] (must be a power of 2)
+
+    {b Author:} Goswin von Brederlow
+*)
+external memalign: int -> int -> buffer = "caml_extunix_memalign"
 
 END
 
@@ -863,9 +949,23 @@ external malloc_info : unit -> string = "caml_extunix_malloc_info"
 
 END
 
-HAVE SETENV
+HAVE PTRACE
+
+external ptrace_traceme : unit -> unit = "caml_extunix_ptrace_traceme"
+external ptrace_peekdata : int -> nativeint -> nativeint = "caml_extunix_ptrace_peekdata"
+external ptrace_peektext : int -> nativeint -> nativeint = "caml_extunix_ptrace_peektext"
+
+type ptrace_request =
+  | PTRACE_ATTACH
+  | PTRACE_DETACH
+
+external ptrace : int -> ptrace_request -> unit = "caml_extunix_ptrace"
+
+END
 
 (** {2 Environment manipulation} *)
+
+HAVE SETENV
 
 (** [setenv name value overwrite] adds the variable [name] to the environment with the value [value], if [name]
 does not already exist or [overwrite] is true *)
@@ -883,6 +983,8 @@ HAVE CLEARENV
 external clearenv : unit -> unit = "caml_extunix_clearenv"
 
 END
+
+(** {2 Temporary directories} *)
 
 HAVE MKDTEMP
 
@@ -940,13 +1042,14 @@ let mkostemp ?(suffix="") ?(flags=[]) prefix =
 let mkstemp ?(suffix="") prefix = mkostemp ~suffix:suffix prefix
 END
 
+(** {2 Byte order conversion} *)
+
+(** {2 big endian functions}
+
+    {b Author:} Goswin von Brederlow *)
 module BigEndian = struct
 
 HAVE ENDIAN
-  (** {2 big endian functions}
-
-      {b Author:} Goswin von Brederlow *)
-
   (** Conversion functions from host to big endian byte order and back *)
 
   (** Conversion of 16bit integers *)
@@ -1126,12 +1229,12 @@ END
 
 end
 
+(** {2 little endian functions}
+
+    {b Author:} Goswin von Brederlow *)
 module LittleEndian = struct
 
 HAVE ENDIAN
-  (** {2 little endian functions}
-
-      {b Author:} Goswin von Brederlow *)
 
   (** Conversion functions from host to little endian byte order and back *)
 
@@ -1312,11 +1415,10 @@ END
 
 end
 
+(** {2 host endian functions}
+
+    {b Author:} Goswin von Brederlow *)
 module HostEndian = struct
-
-  (** {2 host endian functions}
-
-      {b Author:} Goswin von Brederlow *)
 
   (** [unsafe_get_X str off] extract integer of type [X] from string
       [str] starting at offset [off]. Unsigned types are 0 extended
@@ -1506,19 +1608,655 @@ let recvmsg_nofd fd =
 
 END
 
-HAVE SETRESUID
+(** {2 Bigarray variants} *)
 
-(** [setresuid ruid euid suid] sets real, effective and saved user IDs of the calling process.
-    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
-    @see "setresuid(2)" manual *)
-external setresuid: int -> int -> int -> unit = "caml_extunix_setresuid"
+(** *)
+module BA = struct
 
-(** [setresgid rgid egid sgid] sets real, effective and saved group IDs of the calling process.
-    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged. 
-    @see "setresgid(2)" manual *)
-external setresgid: int -> int -> int -> unit = "caml_extunix_setresgid"
+HAVE PREAD
+(** {2 pread}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_pread fd off buf] reads up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [all_pread] repeats the read operation until all characters have
+    been read or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK or End-of-file but
+    only ever returns 0 on End-of-file. Continues the read operation
+    on EINTR. Raises an Unix.Unix_error exception in all other
+    cases. *)
+external unsafe_all_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_all_pread"
+
+let all_pread fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.all_pread"
+  else unsafe_all_pread fd off buf
+
+(** [single_pread fd off buf] reads up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [single_pread] attempts to read only once. Returns the number of
+    characters read or raises an Unix.Unix_error exception. Unlike the
+    string variant of the same name there is no limit on the number of
+    characters read. *)
+external unsafe_single_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_single_pread"
+
+let single_pread fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.single_pread"
+  else unsafe_single_pread fd off buf
+
+(** [pread fd off buf] reads up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [pread] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Continues
+    the read operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external unsafe_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_pread"
+
+let pread fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.pread"
+  else unsafe_pread fd off buf
+
+(** [intr_pread fd off buf] reads up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [intr_pread] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external unsafe_intr_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_intr_pread"
+
+let intr_pread fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.intr_pread"
+  else unsafe_intr_pread fd off buf
+END
+
+HAVE PWRITE
+(** {2 pwrite}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_pwrite fd off buf] writes up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [all_pwrite] repeats the write operation until all characters have
+    been written or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
+    the write operation on EINTR. Raises an Unix.Unix_error exception
+    in all other cases. *)
+external unsafe_all_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_all_pwrite"
+
+let all_pwrite fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.all_pwrite"
+  else unsafe_all_pwrite fd off buf
+
+(** [single_pwrite fd off buf] writes up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [single_pwrite] attempts to write only once. Returns the number of
+    characters written or raises an Unix.Unix_error exception. Unlike
+    the string variant of the same name there is no limit on the
+    number of characters written. *)
+external unsafe_single_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_single_pwrite"
+
+let single_pwrite fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.single_pwrite"
+  else unsafe_single_pwrite fd off buf
+
+(** [pwrite fd off buf] writes up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [pwrite] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Continues
+    the write operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external unsafe_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_pwrite"
+
+let pwrite fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.pwrite"
+  else unsafe_pwrite fd off buf
+
+(** [intr_pwrite fd off buf] writes up to [size of buf] bytes from file
+    descriptor [fd] at offset [off] (from the start of the file) into
+    the buffer [buf]. The file offset is not changed.
+
+    [intr_pwrite] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external unsafe_intr_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_intr_pwrite"
+
+let intr_pwrite fd off buf =
+  if off < 0
+  then invalid_arg "ExtUnix.intr_pwrite"
+  else unsafe_intr_pwrite fd off buf
+END
+
+HAVE READ
+(** {2 read}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_read fd buf] reads up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [all_read] repeats the read operation until all characters have
+    been read or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK or End-of-file but
+    only ever returns 0 on End-of-file. Continues the read operation
+    on EINTR. Raises an Unix.Unix_error exception in all other
+    cases. *)
+external all_read: Unix.file_descr -> buffer -> int = "caml_extunixba_all_read"
+
+(** [single_read fd buf] reads up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [single_read] attempts to read only once. Returns the number of
+    characters read or raises an Unix.Unix_error exception. Unlike the
+    string variant of the same name there is no limit on the number of
+    characters read. *)
+external single_read: Unix.file_descr -> buffer -> int = "caml_extunixba_single_read"
+
+(** [read fd buf] reads up to [size of buf] bytes from file descriptor
+    [fd] into the buffer [buf].
+
+    [read] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Continues
+    the read operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external read: Unix.file_descr -> buffer -> int = "caml_extunixba_read"
+
+(** [intr_read fd buf] reads up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [intr_read] repeats the read operation until all characters have
+    been read or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be read before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external intr_read: Unix.file_descr -> buffer -> int = "caml_extunixba_intr_read"
+END
+
+HAVE WRITE
+(** {2 write}
+
+    {b Author:} Goswin von Brederlow *)
+
+(** [all_write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+    
+    [all_write] repeats the write operation until all characters have
+    been written or an error occurs. Returns less than the number of
+    characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
+    the write operation on EINTR. Raises an Unix.Unix_error exception
+    in all other cases. *)
+external all_write: Unix.file_descr -> buffer -> int = "caml_extunixba_all_write"
+
+(** [single_write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [single_write] attempts to write only once. Returns the number of
+    characters written or raises an Unix.Unix_error exception. Unlike
+    the string variant of the same name there is no limit on the
+    number of characters written. *)
+external single_write: Unix.file_descr -> buffer -> int = "caml_extunixba_single_write"
+
+(** [write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [write] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Continues
+    the write operation on EINTR. Returns the number of characters
+    written in all other cases. *)
+external write: Unix.file_descr -> buffer -> int = "caml_extunixba_write"
+
+(** [intr_write fd buf] writes up to [size of buf] bytes from file
+    descriptor [fd] into the buffer [buf].
+
+    [intr_write] repeats the write operation until all characters have
+    been written or an error occurs. Raises an Unix.Unix_error exception
+    if 0 characters could be written before an error occurs. Does NOT
+    continue on EINTR. Returns the number of characters written in all
+    other cases. *)
+external intr_write: Unix.file_descr -> buffer -> int = "caml_extunixba_intr_write"
+END
+
+(** {2 Byte order conversion} *)
+
+(** {2 big endian functions}
+
+    {b Author:} Goswin von Brederlow *)
+module BigEndian = struct
+
+HAVE ENDIAN
+  (** [unsafe_get_X buf off] extract integer of type [X] from a
+      buffer [buf] starting at offset [off]. Unsigned types are 0
+      extended and signed types are sign extended to fill the ocaml
+      type.  Bounds checking is not performed. Use with caution and
+      only when the program logic guarantees that the access is within
+      bounds.
+
+      Note: The 31bit functions extract a 32bit integer and return it
+      as ocaml int. On 32bit platforms this can overflow as ocaml
+      integers are 31bit signed there. No error is reported if this
+      occurs. Use with care. *)
+  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8"
+  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8"
+  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_bu16"
+  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_bs16"
+  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_bu31"
+  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_bs31"
+  external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_bs32"
+  external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_bs64"
+
+  (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
+  let get_uint8 buf off =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint8 buf off
+
+  let get_int8 buf off =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int8 buf off
+
+  let get_uint16 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint16 buf off
+
+  let get_int16 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int16 buf off
+
+  let get_uint31 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint31 buf off
+
+  let get_int31 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int31 buf off
+
+  let get_int32 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int32 buf off
+
+  let get_int64 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int64 buf off
+
+  (** [unsafe_set_X buf off v] stores the integer [v] as type [X] in a
+      buffer [buf] starting at offset [off]. Bounds checking is not
+      performed. Use with caution and only when the program logic
+      guarantees that the access is within bounds.
+
+      Note: The 31bit functions store an ocaml int as 32bit
+      integer. On 32bit platforms ocaml integers are 31bit signed and
+      will be sign extended to 32bit first. Use with care. *)
+  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8"
+  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8"
+  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_b16"
+  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_b16"
+  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_b31"
+  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_b31"
+  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_b32"
+  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_b64"
+
+  (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
+  let set_uint8 buf off v =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint8 buf off v
+
+  let set_int8 buf off v =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int8 buf off v
+
+  let set_uint16 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint16 buf off v
+
+  let set_int16 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int16 buf off v
+
+  let set_uint31 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint31 buf off v
+
+  let set_int31 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int31 buf off v
+
+  let set_int32 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int32 buf off v
+
+  let set_int64 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int64 buf off v
 
 END
+
+end
+
+(** {2 little endian functions}
+
+    {b Author:} Goswin von Brederlow *)
+module LittleEndian = struct
+
+HAVE ENDIAN
+
+  (** [unsafe_get_X buf off] extract integer of type [X] from a
+      buffer [buf] starting at offset [off]. Unsigned types are 0
+      extended and signed types are sign extended to fill the ocaml
+      type.  Bounds checking is not performed. Use with caution and
+      only when the program logic guarantees that the access is within
+      bounds.
+
+      Note: The 31bit functions extract a 32bit integer and return it
+      as ocaml int. On 32bit platforms this can overflow as ocaml
+      integers are 31bit signed there. No error is reported if this
+      occurs. Use with care. *)
+  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8"
+  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8"
+  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_lu16"
+  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_ls16"
+  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_lu31"
+  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_ls31"
+  external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_ls32"
+  external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_ls64"
+
+  (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
+  let get_uint8 buf off =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint8 buf off
+
+  let get_int8 buf off =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int8 buf off
+
+  let get_uint16 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint16 buf off
+
+  let get_int16 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int16 buf off
+
+  let get_uint31 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint31 buf off
+
+  let get_int31 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int31 buf off
+
+  let get_int32 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int32 buf off
+
+  let get_int64 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int64 buf off
+
+  (** [unsafe_set_X buf off v] stores the integer [v] as type [X] in a
+      buffer [buf] starting at offset [off]. Bounds checking is not
+      performed. Use with caution and only when the program logic
+      guarantees that the access is within bounds.
+
+      Note: The 31bit functions store an ocaml int as 32bit
+      integer. On 32bit platforms ocaml integers are 31bit signed and
+      will be sign extended to 32bit first. Use with care. *)
+  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8"
+  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8"
+  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_l16"
+  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_l16"
+  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_l31"
+  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_l31"
+  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_l32"
+  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_l64"
+
+  (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
+  let set_uint8 buf off v =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint8 buf off v
+
+  let set_int8 buf off v =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int8 buf off v
+
+  let set_uint16 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint16 buf off v
+
+  let set_int16 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int16 buf off v
+
+  let set_uint31 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint31 buf off v
+
+  let set_int31 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int31 buf off v
+
+  let set_int32 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int32 buf off v
+
+  let set_int64 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int64 buf off v
+
+END
+
+end
+
+(** {2 host endian functions}
+
+    {b Author:} Goswin von Brederlow *)
+module HostEndian = struct
+
+  (** [unsafe_get_X buf off] extract integer of type [X] from a
+      buffer [buf] starting at offset [off]. Unsigned types are 0
+      extended and signed types are sign extended to fill the ocaml
+      type.  Bounds checking is not performed. Use with caution and
+      only when the program logic guarantees that the access is within
+      bounds.
+
+      Note: The 31bit functions extract a 32bit integer and return it
+      as ocaml int. On 32bit platforms this can overflow as ocaml
+      integers are 31bit signed there. No error is reported if this
+      occurs. Use with care. *)
+  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8"
+  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8"
+  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_hu16"
+  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_hs16"
+  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_hu31"
+  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_hs31"
+  external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_hs32"
+  external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_hs64"
+
+  (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
+  let get_uint8 buf off =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint8 buf off
+
+  let get_int8 buf off =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int8 buf off
+
+  let get_uint16 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint16 buf off
+
+  let get_int16 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int16 buf off
+
+  let get_uint31 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint31 buf off
+
+  let get_int31 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int31 buf off
+
+  let get_int32 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int32 buf off
+
+  let get_int64 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int64 buf off
+
+  (** [unsafe_set_X buf off v] stores the integer [v] as type [X] in a
+      buffer [buf] starting at offset [off]. Bounds checking is not
+      performed. Use with caution and only when the program logic
+      guarantees that the access is within bounds.
+
+      Note: The 31bit functions store an ocaml int as 32bit
+      integer. On 32bit platforms ocaml integers are 31bit signed and
+      will be sign extended to 32bit first. Use with care. *)
+  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8"
+  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8"
+  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_h16"
+  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_h16"
+  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_h31"
+  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_h31"
+  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_h32"
+  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_h64"
+
+  (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
+  let set_uint8 buf off v =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint8 buf off v
+
+  let set_int8 buf off v =
+    if off < 0 || off >= Bigarray.Array1.dim buf
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int8 buf off v
+
+  let set_uint16 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint16 buf off v
+
+  let set_int16 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 2
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int16 buf off v
+
+  let set_uint31 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint31 buf off v
+
+  let set_int31 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int31 buf off v
+
+  let set_int32 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 4
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int32 buf off v
+
+  let set_int64 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int64 buf off v
+
+end
+
+(** [unsafe_get_substr buf off len] extracts the substring from buffer
+    [buf] starting at offset [off] and length [len]. Bounds checking
+    is not performed. Use with caution and only when the program logic
+    guarantees that the access is within bounds.*)
+external unsafe_get_substr : buffer -> int -> int -> string = "caml_extunixba_get_substr"
+
+(** [get_substr buf off len] same as [unsafe_get_substr] but with
+    bounds checking. *)
+let get_substr buf off len =
+  if off < 0 || len < 0 || off > Bigarray.Array1.dim buf - len
+  then raise (Invalid_argument "index out of bounds");
+  unsafe_get_substr buf off len
+
+(** [unsafe_set_substr buf off str] stores the string in buffer [buf]
+    starting at offset [off]. Bounds checking is not performed. Use
+    with caution and only when the program logic guarantees that the
+    access is within bounds.*)
+external unsafe_set_substr : buffer -> int -> string -> unit = "caml_extunixba_set_substr"
+
+(** [set_substr buf off str] same as [unsafe_set_substr] but with
+    bounds checking. *)
+let set_substr buf off str =
+  if off < 0 || off > Bigarray.Array1.dim buf - String.length str
+  then raise (Invalid_argument "index out of bounds");
+  unsafe_set_substr buf off str
+
+end (* module BA *)
 
 (* NB Should be after all 'external' definitions *)
 

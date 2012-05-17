@@ -1,22 +1,19 @@
 0.0.4 - 21 Apr 2012
+* ExtUnix now depends on Bigarray and provides variants of 
+  some bindings operating on bigarray buffers (BA submodule)
 * New bindings :
   * timegm
   * malloc_stats
   * malloc_info
   * read_credentials
   * fexecve
-  * sendmsg / readmsg
-  * all_pread, single_pread, pread, intr_pread
-  * all_pread64, single_pread64, pread64, intr_pread64
-  * all_pwrite, single_pwrite, pwrite, intr_pwrite
-  * all_pwrite64, single_pwrite64, pwrite64, intr_pwrite64
-  * all_read, single_read, pread, intr_read
-  * all_read64, single_read64, pread64, intr_read64
-  * all_write, single_write, pwrite, intr_write
-  * all_write64, single_write64, pwrite64, intr_write64
-  * mkstemp
-  * setresuid, setresgid
-  * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
+  * sendmsg readmsg
+  * pread pwrite (+ LargeFile and BA variants)
+  * read write (+ LargeFile and BA variants)
+  * mkstemp mkostemp
+  * setresuid setresgid
+  * posix_memalign
+  * New submodules: BigEndian LittleEndian HostEndian
     * New bindings
       * uint16_from_host uint16_to_host
       *  int16_from_host  int16_to_host
@@ -24,24 +21,7 @@
       *  int31_from_host  int31_to_host
       *  int32_from_host  int32_to_host
       *  int64_from_host  int64_to_host
-    * New string functions
-      * get_uint8  set_uint8  get_int8  set_int8
-      * get_uint16 set_uint16 get_int16 set_int16
-      * get_uint31 set_uint31 get_int31 set_int31
-      * get_int32  set_int32
-      * get_int64 set_int64
-* New library ExtUnixBA
-  * posix_memalign
-  * all_pread, single_pread, pread, intr_pread
-  * all_pread64, single_pread64, pread64, intr_pread64
-  * all_pwrite, single_pwrite, pwrite, intr_pwrite
-  * all_pwrite64, single_pwrite64, pwrite64, intr_pwrite64
-  * all_read, single_read, pread, intr_read
-  * all_read64, single_read64, pread64, intr_read64
-  * all_write, single_write, pwrite, intr_write
-  * all_write64, single_write64, pwrite64, intr_write64
-  * New submodules: EndianBig, EndianLittle, EndianNet, EndianHost
-    * New bigarray functions
+    * New string and bigarray functions
       * get_uint8  set_uint8  get_int8  set_int8
       * get_uint16 set_uint16 get_int16 set_int16
       * get_uint31 set_uint31 get_int31 set_int31

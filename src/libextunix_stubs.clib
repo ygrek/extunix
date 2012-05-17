@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 17c15673ddca92c60cc1435555a7111b)
+# DO NOT EDIT (digest: 6bec7a2ca4f1bd8be22d33b2a15f23a3)
 eventfd.o
 dirfd.o
 fsync.o
@@ -24,4 +24,8 @@ endian.o
 read_cred.o
 fexecve.o
 sendmsg.o
+memalign.o
+endianba.o
+pread_pwrite_ba.o
+bigarray.o
 # OASIS_STOP
