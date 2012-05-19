@@ -1569,7 +1569,7 @@ external fexecve: Unix.file_descr -> string array -> string array -> 'a = "caml_
 
 HAVE SENDMSG
 
-(** {2 sendmsg / readmsg }
+(** {2 sendmsg / recvmsg }
 
     {b Author:} Andre Nathan *)
 
