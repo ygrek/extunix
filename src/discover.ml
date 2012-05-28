@@ -18,7 +18,7 @@ type t = YES of (string * arg list) | NO of string
 
 let ocamlc = ref "ocamlc"
 let ext_obj = ref ".o"
-let verbose = ref false
+let verbose = ref 1
 let disabled = ref []
 
 let print_define b s = bprintf b "#define %s\n" s
@@ -70,12 +70,14 @@ let build_code args =
   pr "int main() { return 0; }";
   Buffer.contents b
 
+let dev_null = match Sys.os_type with "Win32" -> "NUL" | _ -> "/dev/null"
+
 let execute code =
   let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
   output_string ch code;
   flush ch;
   close_out ch;
-  let cmd = sprintf "%s -c %s" !ocamlc (Filename.quote tmp) in
+  let cmd = sprintf "%s -c %s%s" !ocamlc (Filename.quote tmp) (if !verbose >= 1 then "" else " 2> " ^ dev_null) in
   let ret = Sys.command cmd in
   Sys.remove tmp;
   (* assumption: C compiler puts object file in current directory *)
@@ -89,7 +91,7 @@ let discover (name,test) =
     let code = build_code args in
     match execute code, other with
     | false, [] -> 
-        if !verbose then prerr_endline code;
+        if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
     | true, _ -> print_endline "ok"; YES (name,args)
@@ -269,7 +271,8 @@ let () =
   let args0 = [
     "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
     "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
-    "-v", Arg.Set verbose, " Show code for failed tests";
+    "-v", Arg.Unit (fun () -> verbose := 2), " Show code for failed tests";
+    "-q", Arg.Unit (fun () -> verbose := 0), " Do not show stderr from children";
   ] in
   let args1 = List.map (fun (name,_) ->
     assert (not (String.contains name ' '));
