@@ -19,14 +19,7 @@ type t = YES of (string * arg list) | NO of string
 let ocamlc = ref "ocamlc"
 let ext_obj = ref ".o"
 let verbose = ref false
-
-let () =
-  let args = [
-    "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
-    "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
-    "-v", Arg.Set verbose, " Show code for failed tests";
-  ] in
-  Arg.parse args (failwith) ("Options are:")
+let disabled = ref []
 
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
@@ -101,6 +94,9 @@ let discover (name,test) =
     | false, (x::xs) -> loop x xs
     | true, _ -> print_endline "ok"; YES (name,args)
   in
+  match List.mem name !disabled with
+  | true -> print_endline "disabled"; NO name
+  | false ->
   match test with
   | L l -> loop l []
   | ANY (x::xs) -> loop x xs
@@ -160,8 +156,7 @@ let main config =
   show_c "src/config.h" result;
   show_ml "src/config.ml" result
 
-let () = 
-  main 
+let features =
   [
     "EVENTFD", L[
       I "sys/eventfd.h";
@@ -269,4 +264,20 @@ let () =
     "MKOSTEMPS", L[ I "stdlib.h"; S"mkostemps"; ];
     "SETRESUID", L[ I"sys/types.h"; I"unistd.h"; S"setresuid"; S"setresgid" ];
   ]
+
+let () = 
+  let args0 = [
+    "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
+    "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
+    "-v", Arg.Set verbose, " Show code for failed tests";
+  ] in
+  let args1 = List.map (fun (name,_) ->
+    assert (not (String.contains name ' '));
+    "--disable-" ^ String.lowercase name,
+    Arg.Unit (fun () -> disabled := name :: !disabled),
+    " disable " ^ name) features 
+  in
+  let args = Arg.align (args0 @ args1) in
+  Arg.parse args failwith ("Options are:");
+  main features
 
