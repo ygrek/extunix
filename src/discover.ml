@@ -9,6 +9,7 @@ type arg =
   | S of string (* check symbol available *)
   | V of string (* check value available (enum) *)
   | D of string (* check symbol defined *)
+  | F of string * string (* check structure type available and specified field present in it *)
 
 type test =
   | L of arg list
@@ -66,6 +67,7 @@ let build_code args =
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
+    | F (s,f) -> pr "size_t var_%d = (size_t)&((struct %s*)0)->%s" (fresh ()) s f
     end args;
   pr "int main() { return 0; }";
   Buffer.contents b
