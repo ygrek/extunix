@@ -31,7 +31,7 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
 
   if (sendfd_val != Val_none) {
     int sendfd = Int_val(Some_val(sendfd_val));
-#if defined(CMSG_SPACE) && !defined(NO_MSGHDR_MSG_CONTROL)
+#if defined(CMSG_SPACE)
     union {
       struct cmsghdr cmsg; /* for alignment */
       char control[CMSG_SPACE(sizeof sendfd)];
@@ -84,7 +84,7 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   struct iovec iov[1];
   char buf[4096];
 
-#if defined(CMSG_SPACE) && !defined(NO_MSGHDR_MSG_CONTROL)
+#if defined(CMSG_SPACE)
   union {
     struct cmsghdr cmsg; /* just for alignment */
     char control[CMSG_SPACE(sizeof recvfd)];
@@ -113,7 +113,7 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
 
   res = caml_alloc(2, 0);
 
-#if defined(CMSG_SPACE) && !defined(NO_MSGHDR_MSG_CONTROL)
+#if defined(CMSG_SPACE)
   cmsgp = CMSG_FIRSTHDR(&msg);
   if (cmsgp == NULL) {
     Store_field(res, 0, Val_none);

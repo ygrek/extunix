@@ -259,7 +259,10 @@ let features =
 		 D"htobe64"; D"htole64"; D"be64toh"; D"le64toh"; ];
     "READ_CREDENTIALS", L[ I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
     "FEXECVE", L[ I "unistd.h"; S"fexecve"; ];
-    "SENDMSG", L[ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg" ];
+    "SENDMSG", ANY[
+      [ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; D"CMSG_SPACE"; ];
+      [ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; F("msghdr","msg_accrights"); ];
+    ];
     "PREAD", L[ I "unistd.h"; S"pread"; ];
     "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
     "READ", L[ I "unistd.h"; S"read"; ];
