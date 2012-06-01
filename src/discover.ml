@@ -9,6 +9,7 @@ type arg =
   | S of string (* check symbol available *)
   | V of string (* check value available (enum) *)
   | D of string (* check symbol defined *)
+  | F of string * string (* check structure type available and specified field present in it *)
 
 type test =
   | L of arg list
@@ -18,15 +19,8 @@ type t = YES of (string * arg list) | NO of string
 
 let ocamlc = ref "ocamlc"
 let ext_obj = ref ".o"
-let verbose = ref false
-
-let () =
-  let args = [
-    "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
-    "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
-    "-v", Arg.Set verbose, " Show code for failed tests";
-  ] in
-  Arg.parse args (failwith) ("Options are:")
+let verbose = ref 1
+let disabled = ref []
 
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
@@ -73,16 +67,19 @@ let build_code args =
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
+    | F (s,f) -> pr "size_t var_%d = (size_t)&((struct %s*)0)->%s" (fresh ()) s f
     end args;
   pr "int main() { return 0; }";
   Buffer.contents b
+
+let dev_null = match Sys.os_type with "Win32" -> "NUL" | _ -> "/dev/null"
 
 let execute code =
   let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
   output_string ch code;
   flush ch;
   close_out ch;
-  let cmd = sprintf "%s -c %s" !ocamlc (Filename.quote tmp) in
+  let cmd = sprintf "%s -c %s%s" !ocamlc (Filename.quote tmp) (if !verbose >= 1 then "" else " 2> " ^ dev_null) in
   let ret = Sys.command cmd in
   Sys.remove tmp;
   (* assumption: C compiler puts object file in current directory *)
@@ -96,11 +93,14 @@ let discover (name,test) =
     let code = build_code args in
     match execute code, other with
     | false, [] -> 
-        if !verbose then prerr_endline code;
+        if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
     | true, _ -> print_endline "ok"; YES (name,args)
   in
+  match List.mem name !disabled with
+  | true -> print_endline "disabled"; NO name
+  | false ->
   match test with
   | L l -> loop l []
   | ANY (x::xs) -> loop x xs
@@ -160,8 +160,7 @@ let main config =
   show_c "src/config.h" result;
   show_ml "src/config.ml" result
 
-let () = 
-  main 
+let features =
   [
     "EVENTFD", L[
       I "sys/eventfd.h";
@@ -260,7 +259,10 @@ let () =
 		 D"htobe64"; D"htole64"; D"be64toh"; D"le64toh"; ];
     "READ_CREDENTIALS", L[ I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
     "FEXECVE", L[ I "unistd.h"; S"fexecve"; ];
-    "SENDMSG", L[ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg" ];
+    "SENDMSG", ANY[
+      [ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; D"CMSG_SPACE"; ];
+      [ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; F("msghdr","msg_accrights"); ];
+    ];
     "PREAD", L[ I "unistd.h"; S"pread"; ];
     "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
     "READ", L[ I "unistd.h"; S"read"; ];
@@ -269,4 +271,21 @@ let () =
     "MKOSTEMPS", L[ I "stdlib.h"; S"mkostemps"; ];
     "SETRESUID", L[ I"sys/types.h"; I"unistd.h"; S"setresuid"; S"setresgid" ];
   ]
+
+let () = 
+  let args0 = [
+    "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
+    "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
+    "-v", Arg.Unit (fun () -> verbose := 2), " Show code for failed tests";
+    "-q", Arg.Unit (fun () -> verbose := 0), " Do not show stderr from children";
+  ] in
+  let args1 = List.map (fun (name,_) ->
+    assert (not (String.contains name ' '));
+    "--disable-" ^ String.lowercase name,
+    Arg.Unit (fun () -> disabled := name :: !disabled),
+    " disable " ^ name) features 
+  in
+  let args = Arg.align (args0 @ args1) in
+  Arg.parse args failwith ("Options are:");
+  main features
 
