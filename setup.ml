@@ -1398,7 +1398,7 @@ module OASISExecutable = struct
       if not is_native_exec && 
          not exec.exec_custom && 
          bs.bs_c_sources <> [] then
-        Some (dir^"/dll"^cs.cs_name^(ext_dll ()))
+        Some (dir^"/dll"^cs.cs_name^"_stubs"^(ext_dll ()))
       else
         None
   
@@ -5612,7 +5612,7 @@ let setup_t =
                "(C) 2010 ygrek";
                "(C) 2009 Sylvain Le Gall";
                "(C) 2008-2009 Talend Inc.";
-               "(C) 2010 Stéphane Glondu";
+               "(C) 2010 St\195\169phane Glondu";
                "(C) 2005 Joshua Smith";
                "(C) 2010 Niki Yoshiuchi";
                "(C) 2001 Gerd Stolpmann";
@@ -5624,7 +5624,7 @@ let setup_t =
             [
                "ygrek";
                "Sylvain Le Gall";
-               "Stéphane Glondu";
+               "St\195\169phane Glondu";
                "Kaustuv Chaudhuri";
                "Joshua Smith";
                "Niki Yoshiuchi";
@@ -5890,7 +5890,7 @@ let setup_t =
                         [
                            "ygrek";
                            "Sylvain Le Gall";
-                           "Stéphane Glondu";
+                           "St\195\169phane Glondu";
                            "Kaustuv Chaudhuri";
                            "Joshua Smith";
                            "Niki Yoshiuchi";
