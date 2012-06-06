@@ -1,7 +1,6 @@
-OASISFormat:  0.1
+OASISFormat:  0.3
 Name:         extunix
 Version:      0.0.4
-#LicenseFile:  ?
 License:      LGPL-2.1 with OCaml linking exception
 Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan
 Copyrights:
@@ -16,7 +15,7 @@ Copyrights:
               (C) 2012 Andre Nathan
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
-Plugins:      DevFiles (0.2), META (0.2)
+Plugins:      DevFiles (0.3), META (0.3)
 
 Synopsis: Extended functions for OCaml Unix module 
 Description:
@@ -52,6 +51,7 @@ Library extunix
 Executable test
   Path: test/
   Install: false
+  Build$: flag(tests)
   Custom: true
   CompiledObject: best
   MainIs: test.ml
@@ -60,6 +60,7 @@ Executable test
 Executable testba
   Path: test/
   Install: false
+  Build$: flag(tests)
   Custom: true
   CompiledObject: best
   MainIs: testba.ml

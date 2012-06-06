@@ -26,7 +26,7 @@ Installation
 
 Dependencies :
   * ocaml and ocamlfind for build and installation
-  * oUnit for tests
+  * (optional) oUnit for tests (configure with --enable-tests)
 
 Build and install :
 
@@ -53,6 +53,11 @@ Usage example :
   # module U = ExtUnix.Specific;;
   # U.ttyname Unix.stdout;;
   - : string = "/dev/pts/8"
+
+Run unit tests :
+
+  ./configure --enable-tests
+  make test
 
 Guidelines
 ----------
