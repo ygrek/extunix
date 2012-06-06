@@ -142,6 +142,10 @@ CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixle
 /* FIXME: also in atfile.c, move to common file */
 #include <fcntl.h>
 
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
+
 static int open_flag_table[] = {
   O_RDONLY, O_WRONLY, O_RDWR, O_NONBLOCK, O_APPEND, O_CREAT, O_TRUNC, O_EXCL,
   O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC
