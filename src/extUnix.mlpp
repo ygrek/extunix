@@ -8,6 +8,13 @@ exception Not_available of string
 type buffer =
     (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
+type open_flag = Unix.open_flag
+(*
+  = O_RDONLY | O_WRONLY | O_RDWR | O_NONBLOCK | O_APPEND | O_CREAT
+  | O_TRUNC | O_EXCL | O_NOCTTY | O_DSYNC | O_SYNC | O_RSYNC
+  | O_SHARE_DELETE
+*)
+
 HAVE FSYNC
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 END
@@ -52,7 +59,7 @@ let at_fdcwd = at_fdcwd ()
 *)
 
 type at_flag = AT_EACCESS | AT_SYMLINK_NOFOLLOW | AT_REMOVEDIR | AT_SYMLINK_FOLLOW
-external openat : Unix.file_descr -> string -> Unix.open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
+external openat : Unix.file_descr -> string -> open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
 external fstatat : Unix.file_descr -> string -> Unix.stats = "caml_extunix_fstatat"
 (** Supported flags : [AT_REMOVEDIR] *)
 external unlinkat : Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_unlinkat"
@@ -912,7 +919,7 @@ HAVE PTS
 *)
 
 (** This function opens a pseudo-terminal device. *)
-external posix_openpt : Unix.open_flag list -> 
+external posix_openpt : open_flag list -> 
   Unix.file_descr = "caml_extunix_posix_openpt"
 
 (** This function grants access to the slave pseudo-terminal. *)
@@ -1020,7 +1027,7 @@ END
 HAVE MKOSTEMPS
 
 (** internal use only *)
-external internal_mkostemps : string -> int -> Unix.open_flag list -> Unix.file_descr = "caml_extunix_internal_mkostemps"
+external internal_mkostemps : string -> int -> open_flag list -> Unix.file_descr = "caml_extunix_internal_mkostemps"
 
 (** [mkostemp ?(suffix="") ?(flags=[]) prefix] generates a unique temporary
     filename in the form [prefix]XXXXXX[suffix], creates and opens the

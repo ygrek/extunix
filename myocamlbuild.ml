@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 53404550c29aebd17a493195fbd6ab74) *)
+(* DO NOT EDIT (digest: fb60549298b6a2b0ba86ed7d3fdec341) *)
 module OASISGettext = struct
 (* # 21 "src/oasis/OASISGettext.ml" *)
   
@@ -550,7 +550,7 @@ open Ocamlbuild_plugin;;
 let package_default =
   {
      MyOCamlbuildBase.lib_ocaml = [("extunix", ["src"])];
-     lib_c = [("extunix", "src/", ["src/config.h"])];
+     lib_c = [("extunix", "src/", ["src/config.h"; "src/common.h"])];
      flags =
        [
           (["oasis_library_extunix_ccopt"; "compile"],

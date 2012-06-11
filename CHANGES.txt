@@ -6,6 +6,7 @@
 * Fix FTBFS on kfreebsd-* (Debian patch)
 * Unit tests are disabled by default and oUnit is now an optional dependency,
   configure with --enable-tests to build tests
+* OCaml 4 compatibility (Unix.open_flag)
 
 0.0.4 - 19 May 2012
 * ExtUnix now depends on Bigarray and provides variants of 

@@ -45,7 +45,8 @@ Library extunix
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
             endian.c, read_cred.c, fexecve.c, sendmsg.c,
-            memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c
+            memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
+            common.c, common.h
   BuildDepends: unix, bigarray
 
 Executable test
