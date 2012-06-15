@@ -131,3 +131,16 @@ Checklist for release
 * Upload (forge and oasis-db) and update download links on web page
 * Commit
 
+Development
+-----------
+
+Many people contribute to extunix. Please submit your patches and/or feature requests
+to project bugtracker at :
+
+     https://forge.ocamlcore.org/tracker/?group_id=175
+
+Current maintainer is reachable at :
+
+    mailto:ygrek@autistici.org
+    xmpp:ygrek@jabber.kiev.ua
+
