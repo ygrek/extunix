@@ -139,19 +139,20 @@ CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixle
 
 #if defined(EXTUNIX_HAVE_MKOSTEMPS)
 
+#include "common.h"
+
 /* FIXME: also in atfile.c, move to common file */
 #include <fcntl.h>
 
-static int open_flag_table[] = {
-  O_RDONLY, O_WRONLY, O_RDWR, O_NONBLOCK, O_APPEND, O_CREAT, O_TRUNC, O_EXCL,
-  O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC
-};
+#ifndef O_CLOEXEC
+# define O_CLOEXEC 0
+#endif
 
 CAMLprim value caml_extunix_internal_mkostemps(value v_template, value v_suffixlen, value v_flags)
 {
   CAMLparam3(v_template, v_suffixlen, v_flags);
   char *template = String_val(v_template);
-  int flags = caml_convert_flag_list(v_flags, open_flag_table) | O_CLOEXEC;
+  int flags = extunix_open_flags(v_flags) | O_CLOEXEC;
   int suffixlen = Int_val(v_suffixlen);
   int ret;
   

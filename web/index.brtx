@@ -12,8 +12,8 @@
 {*}{link http://oasis.ocamlcore.org/dev/view/extunix/|OASIS DB}
 {*}{link https://forge.ocamlcore.org/frs/?group_id=175|Download}
 {begin list}
-  {*}{link https://forge.ocamlcore.org/frs/download.php/878/ocaml-extunix-0.0.4.tar.gz|ocaml-extunix-0.0.4.tar.gz}
-  ({link https://forge.ocamlcore.org/frs/download.php/879/ocaml-extunix-0.0.4.tar.gz.asc|sig}), 19 May 2012
+  {*}{link https://forge.ocamlcore.org/frs/download.php/903/ocaml-extunix-0.0.5.tar.gz|ocaml-extunix-0.0.5.tar.gz}
+  ({link https://forge.ocamlcore.org/frs/download.php/904/ocaml-extunix-0.0.5.tar.gz.asc|sig}), 16 Jun 2012
 {end}
 {*}{link https://forge.ocamlcore.org/tracker/?group_id=175|Bug tracker}
 #{*}{link http://build.ygrek.org.ua/jenkins/job/extunix/|Jenkins CI automatic builds}
@@ -29,7 +29,7 @@
 {end}
 
 {bypass end}<hr/>{end}
-{p}2012-05-19
+{p}2012-06-16
 {bypass end}
 <a href="http://oasis.forge.ocamlcore.org/">
   <img

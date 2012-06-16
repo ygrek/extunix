@@ -1,7 +1,6 @@
-OASISFormat:  0.1
+OASISFormat:  0.3
 Name:         extunix
-Version:      0.0.4
-#LicenseFile:  ?
+Version:      0.0.5
 License:      LGPL-2.1 with OCaml linking exception
 Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan
 Copyrights:
@@ -16,7 +15,7 @@ Copyrights:
               (C) 2012 Andre Nathan
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
-Plugins:      DevFiles (0.2), META (0.2)
+Plugins:      DevFiles (0.3), META (0.3)
 
 Synopsis: Extended functions for OCaml Unix module 
 Description:
@@ -46,12 +45,14 @@ Library extunix
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
             endian.c, read_cred.c, fexecve.c, sendmsg.c,
-            memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c
+            memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
+            common.c, common.h
   BuildDepends: unix, bigarray
 
 Executable test
   Path: test/
   Install: false
+  Build$: flag(tests)
   Custom: true
   CompiledObject: best
   MainIs: test.ml
@@ -60,6 +61,7 @@ Executable test
 Executable testba
   Path: test/
   Install: false
+  Build$: flag(tests)
   Custom: true
   CompiledObject: best
   MainIs: testba.ml
@@ -71,7 +73,7 @@ Test main
 
 Document api
   Title: API reference for extunix
-  Type: ocamlbuild (0.2)
+  Type: ocamlbuild (0.3)
   Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan
   BuildTools: ocamldoc
   Format: HTML

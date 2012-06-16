@@ -26,7 +26,7 @@ Installation
 
 Dependencies :
   * ocaml and ocamlfind for build and installation
-  * oUnit for tests
+  * (optional) oUnit for tests (configure with --enable-tests)
 
 Build and install :
 
@@ -53,6 +53,11 @@ Usage example :
   # module U = ExtUnix.Specific;;
   # U.ttyname Unix.stdout;;
   - : string = "/dev/pts/8"
+
+Run unit tests :
+
+  ./configure --enable-tests
+  make test
 
 Guidelines
 ----------
@@ -125,4 +130,17 @@ Checklist for release
 * `make release`
 * Upload (forge and oasis-db) and update download links on web page
 * Commit
+
+Development
+-----------
+
+Many people contribute to extunix. Please submit your patches and/or feature requests
+to project bugtracker at :
+
+     https://forge.ocamlcore.org/tracker/?group_id=175
+
+Current maintainer is reachable at :
+
+    mailto:ygrek@autistici.org
+    xmpp:ygrek@jabber.kiev.ua
 

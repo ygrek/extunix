@@ -4,31 +4,13 @@
 
 #if defined(EXTUNIX_HAVE_PTS)
 
-/* otherlibs/unix/open.c */
-
-#ifndef O_NONBLOCK
-#define O_NONBLOCK O_NDELAY
-#endif
-#ifndef O_DSYNC
-#define O_DSYNC 0
-#endif
-#ifndef O_SYNC
-#define O_SYNC 0
-#endif
-#ifndef O_RSYNC
-#define O_RSYNC 0
-#endif
-
-static int open_flag_table[] = {
-  O_RDONLY, O_WRONLY, O_RDWR, O_NONBLOCK, O_APPEND, O_CREAT, O_TRUNC, O_EXCL,
-  O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC
-};
+#include "common.h"
 
 CAMLprim value caml_extunix_posix_openpt(value flags)
 {
 	CAMLparam1(flags);
 	int ret, cv_flags;
-	cv_flags = caml_convert_flag_list(flags, open_flag_table);
+	cv_flags = extunix_open_flags(flags);
 	ret = posix_openpt(cv_flags);
 	if(ret == -1)
 		uerror("posix_openpt", Nothing);
