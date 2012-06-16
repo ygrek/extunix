@@ -163,9 +163,7 @@ let all_pread fd off buf ofs len =
     changed.
 
     [single_pread] attempts to read only once. Returns the number of
-    characters read or raises an Unix.Unix_error exception. Unlike the
-    string variant of the same name there is no limit on the number of
-    characters read. *)
+    characters read or raises an Unix.Unix_error exception. *)
 external unsafe_single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
 
 let single_pread fd off buf ofs len =
@@ -233,9 +231,7 @@ let all_pwrite fd off buf ofs len =
     changed.
 
     [single_pwrite] attempts to write only once. Returns the number of
-    characters written or raises an Unix.Unix_error exception. Unlike
-    the string variant of the same name there is no limit on the
-    number of characters written. *)
+    characters written or raises an Unix.Unix_error exception. *)
 external unsafe_single_pwrite: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pwrite"
 
 let single_pwrite fd off buf ofs len =
@@ -302,9 +298,7 @@ let all_read fd buf ofs len =
     descriptor [fd] into the string [buf] at offset [ofs].
 
     [single_read] attempts to read only once. Returns the number of
-    characters read or raises an Unix.Unix_error exception. Unlike the
-    string variant of the same name there is no limit on the number of
-    characters read. *)
+    characters read or raises an Unix.Unix_error exception. *)
 external unsafe_single_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_single_read"
 
 let single_read fd buf ofs len =
@@ -367,9 +361,7 @@ let all_write fd buf ofs len =
     descriptor [fd] into the string [buf] at offset [ofs].
 
     [single_write] attempts to write only once. Returns the number of
-    characters written or raises an Unix.Unix_error exception. Unlike
-    the string variant of the same name there is no limit on the
-    number of characters written. *)
+    characters written or raises an Unix.Unix_error exception. *)
 external unsafe_single_write: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_single_write"
 
 let single_write fd buf ofs len =
