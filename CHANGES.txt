@@ -1,4 +1,4 @@
-0.0.5 - 16 June 2012
+0.0.5 - 16 Jun 2012
 * src/discover.ml :
   * New option -q to suppress stderr
   * --disable-* options to exclude selected features from build
