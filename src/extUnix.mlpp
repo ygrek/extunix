@@ -1003,8 +1003,12 @@ END
 
 HAVE MKSTEMPS
 
+(**/**)
+
 (** internal use only *)
 external internal_mkstemps : string -> int -> Unix.file_descr = "caml_extunix_internal_mkstemps"
+
+(**/**)
 
 (** [mkstemp ?(suffix="") prefix] generates a unique temporary
     filename in the form [prefix]XXXXXX[suffix], creates and opens the
@@ -1026,8 +1030,12 @@ END
 
 HAVE MKOSTEMPS
 
+(**/**)
+
 (** internal use only *)
 external internal_mkostemps : string -> int -> open_flag list -> Unix.file_descr = "caml_extunix_internal_mkostemps"
+
+(**/**)
 
 (** [mkostemp ?(suffix="") ?(flags=[]) prefix] generates a unique temporary
     filename in the form [prefix]XXXXXX[suffix], creates and opens the
