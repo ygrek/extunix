@@ -581,44 +581,21 @@ let dispatch_default = MyOCamlbuildBase.dispatch_default package_default;;
 # 582 "myocamlbuild.ml"
 (* OASIS_STOP *)
 
-let my_dispatch = MyOCamlbuildBase.dispatch_combine 
-      [
-        MyOCamlbuildBase.dispatch package_default;
-        MyOCamlbuildFindlib.dispatch;
-        begin function
-        | After_rules ->
-            let gen gen_all prod =
-              rule ("generate " ^ if gen_all then "all" else "specific")
-              ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/config.cmo"] 
-              ~prod
-              (fun _ _ -> Cmd 
-                (S([P"camlp4o";
-                  T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
-                  A "src/config.cmo"; A"src/pa_have.cmo";
-                  A"pr_o.cmo";
-                  A"-impl"; A"src/extUnix.mlpp";
-                  A"-o"; A prod;
-                  ] @ if gen_all then [A"-gen-all"] else [])))
-            in
-            gen true "src/extUnixAll.ml";
-            gen false "src/extUnixSpecific.ml";
-            let gen gen_all prod =
-              rule ("generate " ^ if gen_all then "BAall" else "BAspecific")
-              ~deps:["src/extUnixBA.mlpp";"src/pa_have.cmo";"src/config.cmo"] 
-              ~prod
-              (fun _ _ -> Cmd 
-                (S([P"camlp4o";
-                  T (tags_of_pathname "src/extUnixBA.mlpp"++"ocaml"++"pp");
-                  A "src/config.cmo"; A"src/pa_have.cmo";
-                  A"pr_o.cmo";
-                  A"-impl"; A"src/extUnixBA.mlpp";
-                  A"-o"; A prod;
-                  ] @ if gen_all then [A"-gen-all"] else [])))
-            in
-            gen true "src/extUnixBAAll.ml";
-            gen false "src/extUnixBASpecific.ml";
-        | _ -> ()
-        end;
-      ]
+let gen gen_all prod =
+  rule ("generate " ^ if gen_all then "all" else "specific")
+  ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/config.cmo"]
+  ~prod
+  (fun _ _ -> Cmd
+    (S([P"camlp4o";
+      T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
+      A "src/config.cmo"; A"src/pa_have.cmo";
+      A"pr_o.cmo";
+      A"-impl"; A"src/extUnix.mlpp";
+      A"-o"; A prod;
+      ] @ if gen_all then [A"-gen-all"] else [])))
 ;;
-Ocamlbuild_plugin.dispatch my_dispatch;;
+
+gen true "src/extUnixAll.ml";;
+gen false "src/extUnixSpecific.ml";;
+
+Ocamlbuild_plugin.dispatch dispatch_default;;
