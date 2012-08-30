@@ -1,3 +1,7 @@
+? - ?
+* New string and bigarray functions :
+  * get_uint63 set_uint63 get_int63 set_int63
+
 0.0.5 - 16 Jun 2012
 * src/discover.ml :
   * New option -q to suppress stderr

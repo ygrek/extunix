@@ -23,6 +23,8 @@ let test_endian_bigarray () =
   require "unsafe_get_uint8";
   require "unsafe_get_uint16";
   require "unsafe_get_uint31";
+  require "unsafe_get_uint63";
+  require "unsafe_get_int63";
   require "unsafe_set_uint8";
   require "unsafe_set_uint16";
   require "unsafe_set_uint31";
@@ -30,6 +32,8 @@ let test_endian_bigarray () =
   require "unsafe_set_int16";
   require "unsafe_set_int31";
   require "unsafe_set_int32";
+  require "unsafe_set_uint63";
+  require "unsafe_set_int63";
   require "unsafe_set_int64";
   let module B = BigEndian in
   let module L = LittleEndian in
@@ -54,6 +58,21 @@ let test_endian_bigarray () =
   assert_equal (L.get_int16  src  4) (-0x2302);
   assert_equal (L.get_int32  src  6) (0x98BADCFEl);
   assert_equal (L.get_int64  src 10) (0x1032547698BADCFEL);
+  if Sys.word_size = 64 then
+  begin
+    assert_equal (B.get_uint31  src  6) 0xFEDCBA98;
+    assert_equal (B.get_int31   src  6) 0x7FFFFFFFFEDCBA98;
+    assert_equal (B.get_int31   src  6) (-0x1234568);
+    assert_equal (B.get_uint63  src 10) 0x7EDCBA9876543210;
+    assert_equal (B.get_int63   src 10) 0x7EDCBA9876543210;
+    assert_equal (B.get_int63   src 10) (-0x123456789ABCDF0);
+    assert_equal (L.get_uint31  src  6) 0x98BADCFE;
+    assert_equal (L.get_int31   src  6) 0x7FFFFFFF98BADCFE;
+    assert_equal (L.get_int31   src  6) (-0x67452302);
+    assert_equal (L.get_uint63  src 10) 0x1032547698BADCFE;
+    assert_equal (L.get_int63   src 10) 0x1032547698BADCFE;
+    assert_equal (L.get_int63   src 10) (-0x6FCDAB8967452302);
+  end;
   let b = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout 18 in
   B.set_uint8  b  0 0xFF;
   B.set_int8   b  1 (-0x01);

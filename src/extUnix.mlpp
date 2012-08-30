@@ -1122,7 +1122,9 @@ HAVE ENDIAN
       Note: The 31bit functions extract a 32bit integer and return it
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
-      occurs. Use with care. *)
+      occurs. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
   external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8" "noalloc"
   external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8" "noalloc"
   external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_bu16" "noalloc"
@@ -1130,6 +1132,8 @@ HAVE ENDIAN
   external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_bu31" "noalloc"
   external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_bs31" "noalloc"
   external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_bs32"
+  external unsafe_get_uint63 : string -> int -> int = "caml_extunix_get_bu63" "noalloc"
+  external unsafe_get_int63  : string -> int -> int = "caml_extunix_get_bs63" "noalloc"
   external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_bs64"
 
   (** [get_X str off] same as [unsafe_get_X] but with bounds checking. *)
@@ -1168,6 +1172,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 str off
 
+  let get_uint63 str off =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint63 str off
+
+  let get_int63 str off =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int63 str off
+
   let get_int64 str off =
     if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
@@ -1180,7 +1194,9 @@ HAVE ENDIAN
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. *)
+      will be sign extended to 32bit first. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
   external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
   external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
   external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
@@ -1188,6 +1204,8 @@ HAVE ENDIAN
   external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
   external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
   external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_b32" "noalloc"
+  external unsafe_set_uint63 : string -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
+  external unsafe_set_int63  : string -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
   external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_b64" "noalloc"
 
   (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
@@ -1225,6 +1243,16 @@ HAVE ENDIAN
     if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
+
+  let set_uint63 str off v =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint63 str off v
+
+  let set_int63 str off v =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int63 str off v
 
   let set_int64 str off v =
     if off < 0 || off > String.length str - 8
@@ -1316,6 +1344,8 @@ HAVE ENDIAN
   external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_lu31" "noalloc"
   external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_ls31" "noalloc"
   external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_ls32"
+  external unsafe_get_uint63 : string -> int -> int = "caml_extunix_get_lu63" "noalloc"
+  external unsafe_get_int63  : string -> int -> int = "caml_extunix_get_ls63" "noalloc"
   external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_ls64"
 
   (** [get_X str off] same as [unsafe_get_X] but with bounds checking. *)
@@ -1354,6 +1384,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 str off
 
+  let get_uint63 str off =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint63 str off
+
+  let get_int63 str off =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int63 str off
+
   let get_int64 str off =
     if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
@@ -1374,6 +1414,8 @@ HAVE ENDIAN
   external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
   external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
   external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_l32" "noalloc"
+  external unsafe_set_uint63 : string -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
+  external unsafe_set_int63  : string -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
   external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_l64" "noalloc"
 
   (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
@@ -1412,6 +1454,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
+  let set_uint63 str off v =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint63 str off v
+
+  let set_int63 str off v =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int63 str off v
+
   let set_int64 str off v =
     if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
@@ -1435,7 +1487,9 @@ module HostEndian = struct
       Note: The 31bit functions extract a 32bit integer and return it
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
-      occurs. Use with care. *)
+      occurs. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
   external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8" "noalloc"
   external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8" "noalloc"
   external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_hu16" "noalloc"
@@ -1443,6 +1497,8 @@ module HostEndian = struct
   external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_hu31" "noalloc"
   external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_hs31" "noalloc"
   external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_hs32"
+  external unsafe_get_uint63 : string -> int -> int = "caml_extunix_get_hu63" "noalloc"
+  external unsafe_get_int63  : string -> int -> int = "caml_extunix_get_hs63" "noalloc"
   external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_hs64"
 
   (** [get_X str off] same as [unsafe_get_X] but with bounds checking. *)
@@ -1481,6 +1537,16 @@ module HostEndian = struct
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 str off
 
+  let get_uint63 str off =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint63 str off
+
+  let get_int63 str off =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int63 str off
+
   let get_int64 str off =
     if off < 0 || off > String.length str - 8
     then raise (Invalid_argument "index out of bounds");
@@ -1493,7 +1559,9 @@ module HostEndian = struct
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. *)
+      will be sign extended to 32bit first. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
   external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
   external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
   external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
@@ -1501,6 +1569,8 @@ module HostEndian = struct
   external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
   external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
   external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_h32" "noalloc"
+  external unsafe_set_uint63 : string -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
+  external unsafe_set_int63  : string -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
   external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_h64" "noalloc"
 
   (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
@@ -1538,6 +1608,16 @@ module HostEndian = struct
     if off < 0 || off > String.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
+
+  let set_uint63 str off v =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint63 str off v
+
+  let set_int63 str off v =
+    if off < 0 || off > String.length str - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int63 str off v
 
   let set_int64 str off v =
     if off < 0 || off > String.length str - 8
@@ -1867,14 +1947,18 @@ HAVE ENDIAN
       Note: The 31bit functions extract a 32bit integer and return it
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
-      occurs. Use with care. *)
-  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8"
-  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8"
-  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_bu16"
-  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_bs16"
-  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_bu31"
-  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_bs31"
+      occurs. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
+  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8" "noalloc"
+  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8" "noalloc"
+  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_bu16" "noalloc"
+  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_bs16" "noalloc"
+  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_bu31" "noalloc"
+  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_bs31" "noalloc"
   external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_bs32"
+  external unsafe_get_uint63 : buffer -> int -> int = "caml_extunixba_get_bu63" "noalloc"
+  external unsafe_get_int63  : buffer -> int -> int = "caml_extunixba_get_bs63" "noalloc"
   external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_bs64"
 
   (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
@@ -1913,6 +1997,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 buf off
 
+  let get_uint63 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint63 buf off
+
+  let get_int63 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int63 buf off
+
   let get_int64 buf off =
     if off < 0 || off > Bigarray.Array1.dim buf - 8
     then raise (Invalid_argument "index out of bounds");
@@ -1925,15 +2019,19 @@ HAVE ENDIAN
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8"
-  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8"
-  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_b16"
-  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_b16"
-  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_b31"
-  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_b31"
-  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_b32"
-  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_b64"
+      will be sign extended to 32bit first. Use with care. 
+      Note: The same applies to 63bit function.
+  *)
+  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_b16" "noalloc"
+  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_b16" "noalloc"
+  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_b31" "noalloc"
+  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_b31" "noalloc"
+  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_b32" "noalloc"
+  external unsafe_set_uint63 : buffer -> int -> int -> unit = "caml_extunixba_set_b63" "noalloc"
+  external unsafe_set_int63  : buffer -> int -> int -> unit = "caml_extunixba_set_b63" "noalloc"
+  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_b64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 buf off v =
@@ -1971,6 +2069,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 buf off v
 
+  let set_uint63 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint63 buf off v
+
+  let set_int63 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int63 buf off v
+
   let set_int64 buf off v =
     if off < 0 || off > Bigarray.Array1.dim buf - 8
     then raise (Invalid_argument "index out of bounds");
@@ -1997,14 +2105,18 @@ HAVE ENDIAN
       Note: The 31bit functions extract a 32bit integer and return it
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
-      occurs. Use with care. *)
-  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8"
-  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8"
-  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_lu16"
-  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_ls16"
-  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_lu31"
-  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_ls31"
+      occurs. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
+  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8" "noalloc"
+  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8" "noalloc"
+  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_lu16" "noalloc"
+  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_ls16" "noalloc"
+  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_lu31" "noalloc"
+  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_ls31" "noalloc"
   external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_ls32"
+  external unsafe_get_uint63 : buffer -> int -> int = "caml_extunixba_get_lu63" "noalloc"
+  external unsafe_get_int63  : buffer -> int -> int = "caml_extunixba_get_ls63" "noalloc"
   external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_ls64"
 
   (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
@@ -2043,6 +2155,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 buf off
 
+  let get_uint63 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint63 buf off
+
+  let get_int63 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int63 buf off
+
   let get_int64 buf off =
     if off < 0 || off > Bigarray.Array1.dim buf - 8
     then raise (Invalid_argument "index out of bounds");
@@ -2055,15 +2177,19 @@ HAVE ENDIAN
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8"
-  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8"
-  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_l16"
-  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_l16"
-  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_l31"
-  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_l31"
-  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_l32"
-  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_l64"
+      will be sign extended to 32bit first. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
+  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_l16" "noalloc"
+  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_l16" "noalloc"
+  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_l31" "noalloc"
+  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_l31" "noalloc"
+  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_l32" "noalloc"
+  external unsafe_set_uint63 : buffer -> int -> int -> unit = "caml_extunixba_set_l63" "noalloc"
+  external unsafe_set_int63  : buffer -> int -> int -> unit = "caml_extunixba_set_l63" "noalloc"
+  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_l64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 buf off v =
@@ -2101,6 +2227,16 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 buf off v
 
+  let set_uint63 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint63 buf off v
+
+  let set_int63 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int63 buf off v
+
   let set_int64 buf off v =
     if off < 0 || off > Bigarray.Array1.dim buf - 8
     then raise (Invalid_argument "index out of bounds");
@@ -2125,14 +2261,18 @@ module HostEndian = struct
       Note: The 31bit functions extract a 32bit integer and return it
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
-      occurs. Use with care. *)
-  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8"
-  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8"
-  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_hu16"
-  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_hs16"
-  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_hu31"
-  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_hs31"
+      occurs. Use with care.
+      Note: The same applies to 63bit functions.
+  *)
+  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8" "noalloc"
+  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8" "noalloc"
+  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_hu16" "noalloc"
+  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_hs16" "noalloc"
+  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_hu31" "noalloc"
+  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_hs31" "noalloc"
   external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_hs32"
+  external unsafe_get_uint63 : buffer -> int -> int = "caml_extunixba_get_hu63" "noalloc"
+  external unsafe_get_int63  : buffer -> int -> int = "caml_extunixba_get_hs63" "noalloc"
   external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_hs64"
 
   (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
@@ -2171,6 +2311,16 @@ module HostEndian = struct
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int32 buf off
 
+  let get_uint63 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_uint63 buf off
+
+  let get_int63 buf off =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_get_int63 buf off
+
   let get_int64 buf off =
     if off < 0 || off > Bigarray.Array1.dim buf - 8
     then raise (Invalid_argument "index out of bounds");
@@ -2183,15 +2333,19 @@ module HostEndian = struct
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8"
-  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8"
-  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_h16"
-  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_h16"
-  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_h31"
-  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_h31"
-  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_h32"
-  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_h64"
+      will be sign extended to 32bit first. Use with care. 
+      Note: The same applies to 63bit functions.
+  *)
+  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_h16" "noalloc"
+  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_h16" "noalloc"
+  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_h31" "noalloc"
+  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_h31" "noalloc"
+  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_h32" "noalloc"
+  external unsafe_set_uint63 : buffer -> int -> int -> unit = "caml_extunixba_set_h63" "noalloc"
+  external unsafe_set_int63  : buffer -> int -> int -> unit = "caml_extunixba_set_h63" "noalloc"
+  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_h64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 buf off v =
@@ -2228,6 +2382,16 @@ module HostEndian = struct
     if off < 0 || off > Bigarray.Array1.dim buf - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 buf off v
+
+  let set_uint63 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_uint63 buf off v
+
+  let set_int63 buf off v =
+    if off < 0 || off > Bigarray.Array1.dim buf - 8
+    then raise (Invalid_argument "index out of bounds");
+    unsafe_set_int63 buf off v
 
   let set_int64 buf off v =
     if off < 0 || off > Bigarray.Array1.dim buf - 8
