@@ -9,34 +9,31 @@
 #define CONV(name, type, conv, type_val, val_type)	\
 CAMLprim value caml_extunix_##name(value v_x)		\
 {							\
-  CAMLparam1(v_x);					\
   type x = type_val(v_x);				\
   x = conv(x);						\
-  CAMLreturn(val_type(x));				\
+  return (val_type(x));				\
 }
 
 /* Get an intX_t out of a string */
 #define GET(name, type, conv, Val_type)					\
 CAMLprim value caml_extunix_get_##name(value v_str, value v_off) {	\
-  CAMLparam2(v_str, v_off);						\
   char *str = String_val(v_str);					\
   size_t off = Long_val(v_off);						\
   type x;								\
   memcpy(&x, str + off, sizeof(x));					\
   x = conv(x);								\
-  CAMLreturn(Val_type(x));							\
+  return (Val_type(x));							\
 }
 
 /* Store an intX_t in a string */
 #define SET(name, type, conv, Type_val)					\
 CAMLprim value caml_extunix_set_##name(value v_str, value v_off, value v_x) { \
-  CAMLparam3(v_str, v_off, v_x);					\
   char *str = String_val(v_str);					\
   size_t off = Long_val(v_off);						\
   type x = Type_val(v_x);						\
   x = conv(x);								\
   memcpy(str + off, &x, sizeof(x));					\
-  CAMLreturn(Val_unit);							\
+  return Val_unit;							\
 }
 
 #if defined(EXTUNIX_HAVE_ENDIAN)

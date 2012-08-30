@@ -1061,19 +1061,19 @@ HAVE ENDIAN
   (** Conversion of 16bit integers *)
   (** [uint16_from_host u16] converts an unsigned 16bit integer from host to
       big endian byte order *)
-  external uint16_from_host : int -> int = "caml_extunix_htobe16"
+  external uint16_from_host : int -> int = "caml_extunix_htobe16" "noalloc"
 
   (** [int16_from_host i16] converts a signed 16bit integer from host to
       big endian byte order *)
-  external int16_from_host : int -> int = "caml_extunix_htobe16_signed"
+  external int16_from_host : int -> int = "caml_extunix_htobe16_signed" "noalloc"
 
   (** [uint16_to_host u16] converts an unsigned 16bit integer from big
       endian to host byte order *)
-  external uint16_to_host : int -> int = "caml_extunix_be16toh"
+  external uint16_to_host : int -> int = "caml_extunix_be16toh" "noalloc"
 
   (** [int16_to_host i16] converts a signed 16bit integer from big
       endian to host byte order *)
-  external int16_to_host : int -> int = "caml_extunix_be16toh_signed"
+  external int16_to_host : int -> int = "caml_extunix_be16toh_signed" "noalloc"
 
   (** Conversion of 31bit integeres
       On 64bit platforms this actualy converts 32bit integers without
@@ -1081,19 +1081,19 @@ HAVE ENDIAN
       garbage. For use on 64bit platforms only! *)
   (** [uint31_from_host u31] converts an unsigned 31bit integer from
       host to big endian byte order *)
-  external uint31_from_host : int -> int = "caml_extunix_htobe31"
+  external uint31_from_host : int -> int = "caml_extunix_htobe31" "noalloc"
 
   (** [int31_from_host i31] converts a signed 31bit integer from host to
       big endian byte order *)
-  external int31_from_host : int -> int = "caml_extunix_htobe31_signed"
+  external int31_from_host : int -> int = "caml_extunix_htobe31_signed" "noalloc"
 
   (** [uint31_to_host u31] converts an unsigned 31bit integer from big
       endian to host byte order *)
-  external uint31_to_host : int -> int = "caml_extunix_be31toh"
+  external uint31_to_host : int -> int = "caml_extunix_be31toh" "noalloc"
 
   (** [int31_to_host i31] converts a signed 31bit integer from big
       endian to host byte order *)
-  external int31_to_host : int -> int = "caml_extunix_be31toh_signed"
+  external int31_to_host : int -> int = "caml_extunix_be31toh_signed" "noalloc"
 
   (** Conversion of 32bit integers *)
   (** [int32_from_host int32] converts a 32bit integer from host to big
@@ -1123,12 +1123,12 @@ HAVE ENDIAN
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
       occurs. Use with care. *)
-  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8"
-  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8"
-  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_bu16"
-  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_bs16"
-  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_bu31"
-  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_bs31"
+  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8" "noalloc"
+  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8" "noalloc"
+  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_bu16" "noalloc"
+  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_bs16" "noalloc"
+  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_bu31" "noalloc"
+  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_bs31" "noalloc"
   external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_bs32"
   external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_bs64"
 
@@ -1181,14 +1181,14 @@ HAVE ENDIAN
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
       will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8"
-  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8"
-  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_b16"
-  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_b16"
-  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_b31"
-  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_b31"
-  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_b32"
-  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_b64"
+  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
+  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
+  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
+  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
+  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_b32" "noalloc"
+  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_b64" "noalloc"
 
   (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
@@ -1247,19 +1247,19 @@ HAVE ENDIAN
   (** Conversion of 16bit integers *)
   (** [uint16_from_host u16] converts an unsigned 16bit integer from host to
       little endian byte order *)
-  external uint16_from_host : int -> int = "caml_extunix_htole16"
+  external uint16_from_host : int -> int = "caml_extunix_htole16" "noalloc"
 
   (** [int16_from_host i16] converts a signed 16bit integer from host to
       little endian byte order *)
-  external int16_from_host : int -> int = "caml_extunix_htole16_signed"
+  external int16_from_host : int -> int = "caml_extunix_htole16_signed" "noalloc"
 
   (** [uint16_to_host u16] converts an unsigned 16bit integer from little
       endian to host byte order *)
-  external uint16_to_host : int -> int = "caml_extunix_le16toh"
+  external uint16_to_host : int -> int = "caml_extunix_le16toh" "noalloc"
 
   (** [int16_to_host i16] converts a signed 16bit integer from little
       endian to host byte order *)
-  external int16_to_host : int -> int = "caml_extunix_le16toh_signed"
+  external int16_to_host : int -> int = "caml_extunix_le16toh_signed" "noalloc"
 
   (** Conversion of 31bit integeres
       On 64bit platforms this actualy converts 32bit integers without
@@ -1267,19 +1267,19 @@ HAVE ENDIAN
       garbage. For use on 64bit platforms only! *)
   (** [uint31_from_host u31] converts an unsigned 31bit integer from
       host to little endian byte order *)
-  external uint31_from_host : int -> int = "caml_extunix_htole31"
+  external uint31_from_host : int -> int = "caml_extunix_htole31" "noalloc"
 
   (** [int31_from_host i31] converts a signed 31bit integer from host to
       little endian byte order *)
-  external int31_from_host : int -> int = "caml_extunix_htole31_signed"
+  external int31_from_host : int -> int = "caml_extunix_htole31_signed" "noalloc"
 
   (** [uint31_to_host u31] converts an unsigned 31bit integer from little
       endian to host byte order *)
-  external uint31_to_host : int -> int = "caml_extunix_le31toh"
+  external uint31_to_host : int -> int = "caml_extunix_le31toh" "noalloc"
 
   (** [int31_to_host i31] converts a signed 31bit integer from little
       endian to host byte order *)
-  external int31_to_host : int -> int = "caml_extunix_le31toh_signed"
+  external int31_to_host : int -> int = "caml_extunix_le31toh_signed" "noalloc"
 
   (** Conversion of 32bit integers *)
   (** [int32_from_host int32] converts a 32bit integer from host to little
@@ -1309,12 +1309,12 @@ HAVE ENDIAN
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
       occurs. Use with care. *)
-  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8"
-  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8"
-  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_lu16"
-  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_ls16"
-  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_lu31"
-  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_ls31"
+  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8" "noalloc"
+  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8" "noalloc"
+  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_lu16" "noalloc"
+  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_ls16" "noalloc"
+  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_lu31" "noalloc"
+  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_ls31" "noalloc"
   external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_ls32"
   external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_ls64"
 
@@ -1367,14 +1367,14 @@ HAVE ENDIAN
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
       will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8"
-  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8"
-  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_l16"
-  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_l16"
-  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_l31"
-  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_l31"
-  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_l32"
-  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_l64"
+  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
+  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
+  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
+  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
+  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_l32" "noalloc"
+  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_l64" "noalloc"
 
   (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
@@ -1436,12 +1436,12 @@ module HostEndian = struct
       as ocaml int. On 32bit platforms this can overflow as ocaml
       integers are 31bit signed there. No error is reported if this
       occurs. Use with care. *)
-  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8"
-  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8"
-  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_hu16"
-  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_hs16"
-  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_hu31"
-  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_hs31"
+  external unsafe_get_uint8  : string -> int -> int = "caml_extunix_get_u8" "noalloc"
+  external unsafe_get_int8   : string -> int -> int = "caml_extunix_get_s8" "noalloc"
+  external unsafe_get_uint16 : string -> int -> int = "caml_extunix_get_hu16" "noalloc"
+  external unsafe_get_int16  : string -> int -> int = "caml_extunix_get_hs16" "noalloc"
+  external unsafe_get_uint31 : string -> int -> int = "caml_extunix_get_hu31" "noalloc"
+  external unsafe_get_int31  : string -> int -> int = "caml_extunix_get_hs31" "noalloc"
   external unsafe_get_int32  : string -> int -> int32 = "caml_extunix_get_hs32"
   external unsafe_get_int64  : string -> int -> int64 = "caml_extunix_get_hs64"
 
@@ -1494,14 +1494,14 @@ module HostEndian = struct
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
       will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8"
-  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8"
-  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_h16"
-  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_h16"
-  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_h31"
-  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_h31"
-  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_h32"
-  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_h64"
+  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
+  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
+  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
+  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
+  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_h32" "noalloc"
+  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_h64" "noalloc"
 
   (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
