@@ -55,16 +55,17 @@ static value stat_aux(/*int use_64,*/ struct stat *buf)
   CAMLreturn(v);
 }
 
-CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name)
+CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name, value v_flags)
 {
-  CAMLparam2(v_dirfd, v_name);
+  CAMLparam3(v_dirfd, v_name, v_flags);
   int ret;
   struct stat buf;
   char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
+  int flags = caml_convert_flag_list(v_flags, at_flags_table);
 
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
-  ret = fstatat(Int_val(v_dirfd), p, &buf, 0);
+  ret = fstatat(Int_val(v_dirfd), p, &buf, flags);
   caml_leave_blocking_section();
   caml_stat_free(p);
   if (ret != 0) uerror("fstatat", v_name);

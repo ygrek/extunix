@@ -60,7 +60,7 @@ let at_fdcwd = at_fdcwd ()
 
 type at_flag = AT_EACCESS | AT_SYMLINK_NOFOLLOW | AT_REMOVEDIR | AT_SYMLINK_FOLLOW
 external openat : Unix.file_descr -> string -> open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
-external fstatat : Unix.file_descr -> string -> Unix.stats = "caml_extunix_fstatat"
+external fstatat : Unix.file_descr -> string -> at_flag list -> Unix.stats = "caml_extunix_fstatat"
 (** Supported flags : [AT_REMOVEDIR] *)
 external unlinkat : Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_unlinkat"
 external renameat : Unix.file_descr -> string -> Unix.file_descr -> string -> unit = "caml_extunix_renameat"
