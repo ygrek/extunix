@@ -68,6 +68,7 @@ external mkdirat : Unix.file_descr -> string -> int -> unit = "caml_extunix_mkdi
 (** Supported flags : [AT_SYMLINK_FOLLOW] *)
 external linkat : Unix.file_descr -> string -> Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_linkat"
 external symlinkat : string -> Unix.file_descr -> string -> unit = "caml_extunix_symlinkat"
+external readlinkat : Unix.file_descr -> string -> string = "caml_extunix_readlinkat"
 END
 
 HAVE UNAME

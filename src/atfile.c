@@ -143,5 +143,54 @@ CAMLprim value caml_extunix_openat(value v_dirfd, value path, value flags, value
   CAMLreturn (Val_int(ret));
 }
 
+char *readlinkat_malloc (int dirfd, const char *filename)
+{
+  int size = 100;
+  int nchars;
+  char *buffer = NULL;
+  char *tmp;
+
+  while (1)
+    {
+      tmp = (char *) realloc (buffer, size);
+      if (tmp == NULL)
+      {
+        free(buffer); /* if failed, dealloc is not performed */
+        return NULL;
+      }
+      buffer = tmp;
+      nchars = readlinkat (dirfd, filename, buffer, size);
+      if (nchars < 0)
+      {
+          free (buffer);
+          return NULL;
+      }
+      if (nchars < size)
+      {
+        buffer[nchars] = '\0';
+        return buffer;
+      }
+      size *= 2;
+    }
+}
+
+CAMLprim value caml_extunix_readlinkat(value v_dirfd, value v_name)
+{
+  CAMLparam2(v_dirfd, v_name);
+  CAMLlocal1(v_link);
+  char* res;
+  char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
+  strcpy(p, String_val(v_name));
+
+  caml_enter_blocking_section();
+  res = readlinkat_malloc(Int_val(v_dirfd), p);
+  caml_leave_blocking_section();
+  caml_stat_free(p);
+  if (res == NULL) uerror("readlinkat", v_name);
+  v_link = caml_copy_string(res);
+  free(res);
+  CAMLreturn(v_link);
+}
+
 #endif
 

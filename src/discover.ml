@@ -173,7 +173,7 @@ let features =
       I "sys/types.h"; I "sys/stat.h";
       I "unistd.h"; I "stdio.h";
       D "S_IFREG";
-      S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat"; S "linkat"; S "symlinkat";
+      S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat"; S "linkat"; S "symlinkat"; S "readlinkat";
     ];
     "DIRFD", L[
       I "sys/types.h";
