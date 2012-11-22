@@ -25,8 +25,12 @@ static int file_kind_table[] = {
 #define AT_SYMLINK_FOLLOW 0
 #endif
 
+#ifndef AT_NO_AUTOMOUNT
+#define AT_NO_AUTOMOUNT 0
+#endif
+
 static int at_flags_table[] = {
-    AT_EACCESS, AT_SYMLINK_NOFOLLOW, AT_REMOVEDIR, AT_SYMLINK_FOLLOW,
+    AT_EACCESS, AT_SYMLINK_NOFOLLOW, AT_REMOVEDIR, AT_SYMLINK_FOLLOW, AT_NO_AUTOMOUNT,
 };
 
 static value stat_aux(/*int use_64,*/ struct stat *buf)
@@ -62,6 +66,7 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name, value v_flags)
   struct stat buf;
   char* p = caml_stat_alloc(caml_string_length(v_name) + 1);
   int flags = caml_convert_flag_list(v_flags, at_flags_table);
+  flags &= (AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT); /* only allowed flags here */
 
   strcpy(p, String_val(v_name));
   caml_enter_blocking_section();
