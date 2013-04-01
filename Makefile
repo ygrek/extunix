@@ -43,6 +43,5 @@ NAME=ocaml-extunix-$(VERSION)
 .PHONY: release
 release:
 	git tag -a -m $(VERSION) v$(VERSION)
-	git archive --prefix=$(NAME)/ v$(VERSION) | tar --delete $(NAME)/web | gzip > $(NAME).tar.gz
+	git archive --prefix=$(NAME)/ v$(VERSION) | gzip > $(NAME).tar.gz
 	gpg -a -b $(NAME).tar.gz
-
