@@ -1,4 +1,4 @@
-? - ?
+0.0.6 - 1 Apr 2013
 * New string and bigarray functions :
   * get_uint63 set_uint63 get_int63 set_int63
 * fstatat: flags parameter was omitted
