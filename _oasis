@@ -2,7 +2,7 @@ OASISFormat:  0.3
 Name:         extunix
 Version:      0.0.5
 License:      LGPL-2.1 with OCaml linking exception
-Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan
+Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd
 Copyrights:
               (C) 2010 ygrek,
               (C) 2009 Sylvain Le Gall,
@@ -12,7 +12,8 @@ Copyrights:
               (C) 2010 Niki Yoshiuchi,
               (C) 2001 Gerd Stolpmann,
               (C) 2012 Goswin von Brederlow,
-              (C) 2012 Andre Nathan
+              (C) 2012 Andre Nathan,
+              (C) 2013 Zhenya Lykhovyd
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.3), META (0.3)
@@ -74,7 +75,7 @@ Test main
 Document api
   Title: API reference for extunix
   Type: ocamlbuild (0.3)
-  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan
+  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd
   BuildTools: ocamldoc
   Format: HTML
   Index: index.html
