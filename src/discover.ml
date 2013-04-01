@@ -192,6 +192,13 @@ let features =
       S "ioctl";
       T "struct ifconf"; T "struct ifreq";
     ];
+    "IFADDRS", L[
+      I "sys/types.h";
+      I "ifaddrs.h";
+      S "getifaddrs";
+      S "freeifaddrs";
+      T "struct ifaddrs";
+    ];
     "INET_NTOA", L[
       I "sys/socket.h";
       I "netinet/in.h";

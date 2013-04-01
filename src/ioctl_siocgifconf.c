@@ -1,6 +1,8 @@
 
 #define EXTUNIX_WANT_SIOCGIFCONF
 #define EXTUNIX_WANT_INET_NTOA
+
+#define EXTUNIX_WANT_IFADDRS
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_SIOCGIFCONF)
@@ -39,3 +41,43 @@ CAMLprim value caml_extunix_ioctl_siocgifconf(value v_sock)
 
 #endif
 
+#if defined(EXTUNIX_HAVE_IFADDRS)
+
+CAMLprim value caml_extunix_getifaddrs(value v)
+{
+    CAMLparam1(v);
+    CAMLlocal3(lst,item,cons);
+
+    struct ifaddrs *ifaddrs = NULL;
+    struct ifaddrs *iter = NULL;
+
+    lst = Val_emptylist;
+
+    if (0 != getifaddrs(&ifaddrs))
+    {
+      if (ifaddrs) freeifaddrs(ifaddrs);
+      uerror("getifaddrs", Nothing);
+    }
+
+    iter = ifaddrs; /* store head for further free */
+
+    while(iter != NULL)
+    {
+      if (iter->ifa_addr != NULL && iter->ifa_addr->sa_family == AF_INET)
+      {
+        cons = caml_alloc(2, 0);
+        item = caml_alloc(2, 0);
+        Store_field(item, 0, caml_copy_string(iter->ifa_name));
+        Store_field(item, 1, caml_copy_string(inet_ntoa(((struct sockaddr_in *)iter->ifa_addr)->sin_addr)));
+        Store_field(cons, 0, item); /* head */
+        Store_field(cons, 1, lst);  /* tail */
+        lst = cons;
+      }
+      iter = iter->ifa_next;
+    }
+
+    freeifaddrs(ifaddrs);
+    CAMLreturn(lst);
+}
+
+#endif

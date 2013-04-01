@@ -4,6 +4,7 @@
 * fstatat: flags parameter was omitted
 * New bindings :
   * readlinkat
+  * getifaddrs
 
 0.0.5 - 16 Jun 2012
 * src/discover.ml :
