@@ -292,6 +292,13 @@ let features =
     "MKSTEMPS", L[ I "stdlib.h"; S"mkstemps"; ];
     "MKOSTEMPS", L[ I "stdlib.h"; S"mkostemps"; ];
     "SETRESUID", L[ I"sys/types.h"; I"unistd.h"; S"setresuid"; S"setresgid" ];
+    "SYSCONF", L[
+      I "unistd.h";
+      S "sysconf";
+      (* check for standard values and extensions *)
+      D "_SC_VERSION"; D "_SC_2_VERSION";
+      D "_SC_PHYS_PAGES"; D "_SC_AVPHYS_PAGES"; D "_SC_NPROCESSORS_CONF"; D "_SC_NPROCESSORS_ONLN";
+    ];
   ]
 
 let () = 

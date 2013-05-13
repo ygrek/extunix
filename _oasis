@@ -2,7 +2,7 @@ OASISFormat:  0.3
 Name:         extunix
 Version:      0.0.6
 License:      LGPL-2.1 with OCaml linking exception
-Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd
+Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy, Roman Vorobets
 Copyrights:
               (C) 2010 ygrek,
               (C) 2009 Sylvain Le Gall,
@@ -14,7 +14,8 @@ Copyrights:
               (C) 2012 Goswin von Brederlow,
               (C) 2012 Andre Nathan,
               (C) 2013 Zhenya Lykhovyd,
-              (C) 2013 Mehdi Dogguy
+              (C) 2013 Mehdi Dogguy,
+              (C) 2013 Roman Vorobets
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.3), META (0.3)
@@ -48,7 +49,7 @@ Library extunix
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
             endian.c, read_cred.c, fexecve.c, sendmsg.c,
             memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
-            common.c, common.h
+            sysconf.c, common.c, common.h
   BuildDepends: unix, bigarray
 
 Executable test
@@ -76,7 +77,7 @@ Test main
 Document api
   Title: API reference for extunix
   Type: ocamlbuild (0.3)
-  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy
+  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy, Roman Vorobets
   BuildTools: ocamldoc
   Format: HTML
   Index: index.html

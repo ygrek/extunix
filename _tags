@@ -44,6 +44,7 @@
 "src/endianba.c": oasis_library_extunix_ccopt
 "src/pread_pwrite_ba.c": oasis_library_extunix_ccopt
 "src/bigarray.c": oasis_library_extunix_ccopt
+"src/sysconf.c": oasis_library_extunix_ccopt
 "src/common.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix_stubs
 <src/*.ml{,i}>: pkg_unix
@@ -104,6 +105,8 @@
 "src/pread_pwrite_ba.c": pkg_bigarray
 "src/bigarray.c": pkg_unix
 "src/bigarray.c": pkg_bigarray
+"src/sysconf.c": pkg_unix
+"src/sysconf.c": pkg_bigarray
 "src/common.c": pkg_unix
 "src/common.c": pkg_bigarray
 # Executable test

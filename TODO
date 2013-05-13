@@ -12,6 +12,6 @@
 Wanted functions:
 * sysconf: get system configuration constants. In particular, PAGESIZE,
   _SC_PHYS_PAGES, _SC_AVPHYS_PAGES, _SC_NPROCESSORS_CONF, _SC_NPROCESSORS_ONLN 
-  (see Jane Street Core)
+  (see Jane Street Core) (DONE)
 * sysinfo (see Jane Street Core)
 * mkdtemp (see Jane Street Core) (DONE)

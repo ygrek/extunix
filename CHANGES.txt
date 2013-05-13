@@ -1,5 +1,7 @@
 ? - ?
 * statvfs: add f_flags - decoded f_flag field
+* New bindings :
+  * sysconf
 
 0.0.6 - 1 Apr 2013
 * New string and bigarray functions :

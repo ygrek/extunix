@@ -28,5 +28,6 @@ memalign.o
 endianba.o
 pread_pwrite_ba.o
 bigarray.o
+sysconf.o
 common.o
 # OASIS_STOP

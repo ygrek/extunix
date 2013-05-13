@@ -1717,6 +1717,56 @@ let recvmsg_nofd fd =
 
 END
 
+HAVE SYSCONF
+
+(** {2 sysconf}
+
+{b Author:} Roman Vorobets *)
+
+(** name of the variable *)
+type sysconf_name =
+  | ARG_MAX               (** The maximum length of the arguments to the exec(3)
+                              family of functions.  *)
+  | CHILD_MAX             (** The max number of simultaneous processes per user
+                              ID.  *)
+  | HOST_NAME_MAX         (** Max length of a hostname, not including the
+                              terminating null byte, as returned by
+                              gethostname(2).  *)
+  | LOGIN_NAME_MAX        (** Maximum length of a login name, including the
+                              terminating null byte.  *)
+  | CLK_TCK               (** The number of clock ticks per second.  *)
+  | OPEN_MAX              (** The maximum number of files that a process can
+                              have open at any time.  *)
+  | PAGESIZE              (** Size of a page in bytes.  *)
+  | RE_DUP_MAX            (** The number of repeated occurrences of a BRE
+                              permitted by regexec(3) and regcomp(3).  *)
+  | STREAM_MAX            (** The  maximum number of streams that a process can
+                              have open at any time.  *)
+  | SYMLOOP_MAX           (** The maximum number of symbolic links seen in a
+                              pathname before resolution returns ELOOP.  *)
+  | TTY_NAME_MAX          (** The maximum length of terminal device name,
+                              including the terminating null byte.  *)
+  | TZNAME_MAX            (** The maximum number of bytes in a timezone name.  *)
+  | POSIX_VERSION         (** Indicates the year and month the POSIX.1 standard
+                              was approved in the format YYYYMML; the value
+                              199009L indicates the Sept. 1990 revision.  *)
+  | LINE_MAX              (** The maximum length of a utility's input line,
+                              either from standard input or from a file.  This
+                              includes space for a trailing newline.  *)
+  | POSIX2_VERSION        (** Indicates the version of the POSIX.2 standard in
+                              the format of YYYYMML.  *)
+  | PHYS_PAGES            (** The number of pages of physical memory.  Note that
+                              it is possible for the product of this value and the
+                              value of [PAGE_SIZE] to overflow. *)
+  | AVPHYS_PAGES          (** The number of currently available pages of physical memory. *)
+  | NPROCESSORS_CONF      (** The number of processors configured. *)
+  | NPROCESSORS_ONLN      (** The number of processors currently online (available). *)
+
+(** get configuration information at runtime *)
+external sysconf: sysconf_name -> int64 = "caml_extunix_sysconf"
+
+END
+
 (** {2 Bigarray variants} *)
 
 (** *)
