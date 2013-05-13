@@ -34,6 +34,21 @@ external dirfd : Unix.dir_handle -> Unix.file_descr = "caml_extunix_dirfd"
 END
 
 HAVE STATVFS
+(** file system flags *)
+type st_flag =
+  | ST_RDONLY       (** Mount read-only. *)
+  | ST_NOSUID       (** Ignore suid and sgid bits. *)
+  | ST_NODEV        (** Disallow access to device special files. *)
+  | ST_NOEXEC       (** Disallow program execution. *)
+  | ST_SYNCHRONOUS  (** Writes are synced at once. *)
+  | ST_MANDLOCK     (** Allow mandatory locks on an FS. *)
+  | ST_WRITE        (** Write on file/directory/symlink. *)
+  | ST_APPEND       (** Append-only file. *)
+  | ST_IMMUTABLE    (** Immutable file. *)
+  | ST_NOATIME      (** Do not update access times. *)
+  | ST_NODIRATIME   (** Do not update directory access times. *)
+  | ST_RELATIME     (** Update atime relative to mtime/ctime. *)
+
 type statvfs = {
   f_bsize : int; (** file system block size *)
   f_blocks : int64; (** size of file system in blocks *)
@@ -43,7 +58,8 @@ type statvfs = {
   f_ffree : int64; (** free inodes *)
   f_favail : int64; (** free inodes for unprivileged users *)
   f_fsid : int64; (** file system ID *)
-  f_flag : int; (** mount flags *)
+  f_flag : int; (** mount flags (raw value) *)
+  f_flags : st_flag list; (** mount flags (decoded) *)
   f_namemax : int; (** maximum filename length *)
 }
 external statvfs : string -> statvfs = "caml_extunix_statvfs"

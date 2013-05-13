@@ -196,6 +196,9 @@ let features =
       I "sys/statvfs.h";
       T "struct statvfs";
       S "statvfs"; S "fstatvfs";
+      D "ST_RDONLY"; D "ST_NOSUID";
+      Z "ST_NODEV"; Z "ST_NOEXEC"; Z "ST_SYNCHRONOUS"; Z "ST_MANDLOCK"; Z "ST_WRITE";
+      Z "ST_APPEND"; Z "ST_IMMUTABLE"; Z "ST_NOATIME"; Z "ST_NODIRATIME"; Z "ST_RELATIME";
     ];
     "SIOCGIFCONF", L[
       I "sys/ioctl.h";

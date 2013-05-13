@@ -13,7 +13,8 @@ Copyrights:
               (C) 2001 Gerd Stolpmann,
               (C) 2012 Goswin von Brederlow,
               (C) 2012 Andre Nathan,
-              (C) 2013 Zhenya Lykhovyd
+              (C) 2013 Zhenya Lykhovyd,
+              (C) 2013 Mehdi Dogguy
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.3), META (0.3)
@@ -75,7 +76,7 @@ Test main
 Document api
   Title: API reference for extunix
   Type: ocamlbuild (0.3)
-  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd
+  Authors: ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy
   BuildTools: ocamldoc
   Format: HTML
   Index: index.html
