@@ -1,13 +1,21 @@
-(** *)
+(**
+  Discover features available on this platform.
+
+  There are two stages: actual discover by means of trying to compile snippets of test code
+  and generation of config file listing all the discovered features
+*)
+
+#warnings "+a-4"
 
 open Printf
 
 type arg = 
-  | I of string (* check #include available *)
+  | I of string (* check header file (#include) available (promoted to config) *)
   | T of string (* check type available *)
-  | DEFINE of string (* define *)
-  | S of string (* check symbol available *)
-  | V of string (* check value available (enum) *)
+  | DEFINE of string (* define symbol prior to including header files (promoted to config) *)
+  | Z of string (* define symbol to zero if not defined after the includes (promoted to config) *)
+  | S of string (* check symbol available (e.g. function name) *)
+  | V of string (* check value available (e.g. enum member) *)
   | D of string (* check symbol defined *)
   | F of string * string (* check structure type available and specified field present in it *)
 
@@ -24,8 +32,10 @@ let disabled = ref []
 
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
+let print_zdefine b s = bprintf b "#ifndef %s\n#define %s 0\n#endif\n" s s
 let filter_map f l = List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l
 let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
+let get_zdefines = filter_map (function Z s -> Some s | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
 
 let config_defines = [
@@ -61,9 +71,10 @@ let build_code args =
   List.iter (print_include b) (get_includes args);
 (*  pr "#include <stddef.h>"; (* size_t *)*)
   List.iter begin function
-    | I s -> ()
+    | I _ -> ()
     | T s -> pr "%s var_%d;" s (fresh ())
-    | DEFINE s -> ()
+    | DEFINE _ -> ()
+    | Z _ -> () (* no test required *)
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
@@ -133,11 +144,12 @@ let show_c file result =
     | YES (name,args) ->
         pr "";
         pr "#define EXTUNIX_HAVE_%s" name;
-        match get_includes args with
-        | [] -> ()
-        | l ->
+        match get_includes args, get_zdefines args with
+        | [],[] -> ()
+        | includes,zdefines ->
           pr "#if defined(EXTUNIX_WANT_%s)" name;
-          List.iter (print_include b) l;
+          List.iter (print_include b) includes;
+          List.iter (print_zdefine b) zdefines;
           pr "#endif";
   end result;
   pr "";
