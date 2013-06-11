@@ -60,18 +60,18 @@ let test_endian_bigarray () =
   assert_equal (L.get_int64  src 10) (0x1032547698BADCFEL);
   if Sys.word_size = 64 then
   begin
-    assert_equal (B.get_uint31  src  6) 0xFEDCBA98;
-    assert_equal (B.get_int31   src  6) 0x7FFFFFFFFEDCBA98;
+    assert_equal (B.get_uint31  src  6) (Int64.to_int 0xFEDCBA98L);
+    assert_equal (B.get_int31   src  6) (Int64.to_int 0x7FFFFFFFFEDCBA98L);
     assert_equal (B.get_int31   src  6) (-0x1234568);
-    assert_equal (B.get_uint63  src 10) 0x7EDCBA9876543210;
-    assert_equal (B.get_int63   src 10) 0x7EDCBA9876543210;
-    assert_equal (B.get_int63   src 10) (-0x123456789ABCDF0);
-    assert_equal (L.get_uint31  src  6) 0x98BADCFE;
-    assert_equal (L.get_int31   src  6) 0x7FFFFFFF98BADCFE;
+    assert_equal (B.get_uint63  src 10) (Int64.to_int 0x7EDCBA9876543210L);
+    assert_equal (B.get_int63   src 10) (Int64.to_int 0x7EDCBA9876543210L);
+    assert_equal (B.get_int63   src 10) (Int64.to_int (-0x123456789ABCDF0L));
+    assert_equal (L.get_uint31  src  6) (Int64.to_int 0x98BADCFEL);
+    assert_equal (L.get_int31   src  6) (Int64.to_int 0x7FFFFFFF98BADCFEL);
     assert_equal (L.get_int31   src  6) (-0x67452302);
-    assert_equal (L.get_uint63  src 10) 0x1032547698BADCFE;
-    assert_equal (L.get_int63   src 10) 0x1032547698BADCFE;
-    assert_equal (L.get_int63   src 10) (-0x6FCDAB8967452302);
+    assert_equal (L.get_uint63  src 10) (Int64.to_int 0x1032547698BADCFEL);
+    assert_equal (L.get_int63   src 10) (Int64.to_int 0x1032547698BADCFEL);
+    assert_equal (L.get_int63   src 10) (Int64.to_int (-0x6FCDAB8967452302L));
   end;
   let b = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout 18 in
   B.set_uint8  b  0 0xFF;
