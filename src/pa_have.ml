@@ -1,9 +1,9 @@
 (**
-  New toplevel statement (structure item): HAVE <uident> <structure_items> END
-  if (Config.have "<uident>") is true then enclosed structure items are left as is,
+  New toplevel statement (structure item): HAVE <uident> { OR <uident> }* <structure_items> END
+  if (Config.have "<uident>") is true (for any of the uident's provided) then enclosed structure items are left as is,
   otherwise:
-    if -gen-all was specified then external structure items are rewritten to raise exception when called,
-    otherwise they are dropped altogether
+    if -gen-all was specified then external declarations in the scope are rewritten to raise exception when called,
+    otherwise all contents is dropped altogether
 *)
 
 module Have(Syntax : Camlp4.Sig.Camlp4Syntax) =
@@ -45,23 +45,32 @@ struct
 
   let show name s = if !verbose then Printf.eprintf "%-20s %s\n%!" name s
 
+  let check name = match Config.have name with
+    | None -> failwith ("Unregistered feature : " ^ name)
+    | Some have -> have
+
   EXTEND Gram
     GLOBAL: str_item;
     str_item:
-      [ [ "HAVE"; name=UIDENT; si=str_items; "END" ->
-          match Config.have name with
-          | None -> failwith ("Unregistered feature : " ^ name)
-          | Some have ->
-            let _ = map_str_item (record_external have) <:str_item< $si$ >> in
-            match have, !all with
-            | true, _ -> show name "ok"; si
-            | false, true -> show name "rewrite"; map_str_item invalid_external <:str_item< $si$ >>
-            | false, false -> show name "drop"; <:str_item<>> ]
+      [ [ "HAVE"; names=alternatives_list; si=str_items; "END" ->
+          let have = List.for_all check names in
+          let name = String.concat " or " names in
+          let _ = map_str_item (record_external have) <:str_item< $si$ >> in
+          match have, !all with
+          | true, _ -> show name "ok"; si
+          | false, true -> show name "rewrite"; map_str_item invalid_external <:str_item< $si$ >>
+          | false, false -> show name "drop"; <:str_item<>> ]
       | [ "SHOW"; "ME"; "THE"; "MONEY" ->
           if !all then
             <:str_item< value have = fun [ $make_have _loc$ ] >>
           else
             <:str_item<>> ]
+      ];
+    alternatives_list:
+      [ [ name=UIDENT ->
+          [ name ] ]
+      | [ rest=alternatives_list; "OR"; name=UIDENT ->
+          name :: rest ]
       ]
     ;
   END
@@ -79,4 +88,3 @@ let name = "Have"
 end
 
 module M = Camlp4.Register.OCamlSyntaxExtension(Id)(Have)
-
