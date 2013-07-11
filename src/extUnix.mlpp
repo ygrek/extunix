@@ -952,7 +952,15 @@ END
 
 HAVE EXECINFO
 
-(** @return a backtrace for the calling program *)
+(** @return a backtrace for the calling program
+
+  {b NB} native function [backtrace] may fail to unwind the OCaml callstack
+  correctly or even segfault. Do not use lightly.
+
+  See {{:https://forge.ocamlcore.org/tracker/index.php?func=detail&aid=1290}bug #1290},
+  {{:http://caml.inria.fr/mantis/view.php?id=5334}PR#5344}
+  and {{:http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=637360}Debian bug #637380} for details.
+*)
 external backtrace : unit -> string array = "caml_extunix_backtrace"
 
 END

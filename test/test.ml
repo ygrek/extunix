@@ -188,9 +188,9 @@ let test_pts () =
 
 let test_execinfo () =
   require "backtrace";
-  (* backtrace may not work out of the box on all archs, see PR#5334 *)
+  (* Disabled - may not work out of the box on all archs or even segfault *)
 (*   assert_bool "backtrace" ([||] <> backtrace ()) *)
-  let (_:string array) = backtrace () in
+(*   let (_:string array) = backtrace () in *)
   ()
 
 let test_statvfs () =
