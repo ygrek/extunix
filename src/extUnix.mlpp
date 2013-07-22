@@ -1775,6 +1775,73 @@ external sysconf: sysconf_name -> int64 = "caml_extunix_sysconf"
 
 END
 
+HAVE SPLICE OR TEE OR VMSPLICE
+
+(**
+  {2 splice}
+
+  {b Author:} Pierre Chambart <pierre.chambart\@ocamlpro.com>
+*)
+
+(** splice functions flags *)
+type splice_flag =
+  | SPLICE_F_MOVE     (** Attempt to move pages instead of copying. Only a hint
+                          to the kernel *)
+  | SPLICE_F_NONBLOCK (** Do not block on I/O *)
+  | SPLICE_F_MORE     (** Announce that more data will be coming. Hint used by
+                          sockets *)
+  | SPLICE_F_GIFT     (** The user pages are a gift to the kernel. The
+                          application may not modify this memory ever, or page
+                          cache and on-disk data may differ. Gifting pages to
+                          the kernel means that a subsequent splice(2)
+                          SPLICE_F_MOVE can successfully move the pages; if
+                          this flag is not specified, then a subsequent
+                          splice(2) SPLICE_F_MOVE must copy the pages. Data
+                          must also be properly page aligned, both in memory
+                          and length.
+
+                          Only use for [vmsplice]. *)
+
+END
+
+HAVE SPLICE
+(** [splice fd_in off_in fd_out off_out len flags] moves data between two file
+    descriptors without copying between kernel address space and user address
+    space. It transfers up to [len] bytes of data from the file descriptor
+    [fd_in] to the file descriptor [fd_out], where one of the descriptors
+    must refer to a pipe.
+
+    If [fd_in] refers to a pipe, then [off_in] must be [None]. If [fd_in] does
+    not refer to a pipe and [off_in] is [None], then bytes are read from [fd_in]
+    starting from the current file offset, and the current file offset is
+    adjusted appropriately. If [fd_in] does not refer to a pipe and [off_in]
+    is [Some n], then [n] mspecifies the starting offset from which bytes will
+    be read from [fd_in]; in this case, the current file offset of [fd_in] is not
+    changed. Analogous statements apply for [fd_out] and [off_out].
+
+    @return the number of bytes spliced to or from the pipe. A return value of 0
+    means that there was no data to transfer, and it would not make sense to
+    block, because there are no writers connected to the write end of the pipe
+    referred to by fd_in.
+*)
+external splice : Unix.file_descr -> int option -> Unix.file_descr -> int option -> int -> splice_flag list -> int = "caml_extunix_splice_bytecode" "caml_extunix_splice"
+END
+
+HAVE TEE
+
+(** [tee fd_in fd_out len flags] duplicates up to [len] bytes of data from the
+    pipe [fd_in] to the pipe [fd_out]. It does not consume the data that is
+    duplicated from [fd_in]; therefore, that data can be copied by a subsequent
+    splice.
+
+    @return the number of bytes that were duplicated between the input and
+    output. A return value of 0 means that there was no data to transfer, and
+    it would not make sense to block, because there are no writers connected
+    to the write end of the pipe referred to by fd_in.
+*)
+external tee : Unix.file_descr -> Unix.file_descr -> int -> splice_flag list -> int = "caml_extunix_tee"
+END
+
 (** {2 Bigarray variants} *)
 
 (** *)
@@ -2167,7 +2234,7 @@ HAVE ENDIAN
 
 END
 
-end
+end (* module BigEndian *)
 
 (** {2 little endian functions}
 
@@ -2325,7 +2392,7 @@ HAVE ENDIAN
 
 END
 
-end
+end (* module LittleEndian *)
 
 (** {2 host endian functions}
 
@@ -2479,7 +2546,7 @@ module HostEndian = struct
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 buf off v
 
-end
+end (* module HostEndian *)
 
 (** [unsafe_get_substr buf off len] extracts the substring from buffer
     [buf] starting at offset [off] and length [len]. Bounds checking
@@ -2507,6 +2574,26 @@ let set_substr buf off str =
   then raise (Invalid_argument "index out of bounds");
   unsafe_set_substr buf off str
 
+HAVE VMSPLICE
+
+(**
+  {2 splice}
+
+  {b Author:} Pierre Chambart <pierre.chambart\@ocamlpro.com>
+*)
+
+(** I/O vector. Used to send multiple data using a single system call *)
+type iov = {
+  iov_buf : buffer;
+  iov_off : int;
+  iov_len : int;
+}
+
+(** [vmsplice fd iovs flags] sends the data described by [iovs] to the pipe [fd]
+    @return the number of bytes transferred to the pipe. *)
+external vmsplice : Unix.file_descr -> iov array -> splice_flag list -> int = "caml_extunixba_vmsplice"
+END
+
 end (* module BA *)
 
 (* NB Should be after all 'external' definitions *)
@@ -2521,4 +2608,3 @@ end (* module BA *)
   e.g. [have "eventfd"]
 *)
 SHOW ME THE MONEY
-

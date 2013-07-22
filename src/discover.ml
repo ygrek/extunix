@@ -299,6 +299,9 @@ let features =
       D "_SC_VERSION"; D "_SC_2_VERSION";
       D "_SC_PHYS_PAGES"; D "_SC_AVPHYS_PAGES"; D "_SC_NPROCESSORS_CONF"; D "_SC_NPROCESSORS_ONLN";
     ];
+    "SPLICE", L[ I "fcntl.h"; S"splice"; ];
+    "TEE", L[ I "fcntl.h"; S"tee"; ];
+    "VMSPLICE", L[ I "fcntl.h"; S"vmsplice"; ];
   ]
 
 let () = 
