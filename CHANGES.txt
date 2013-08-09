@@ -3,6 +3,7 @@
 * New bindings :
   * sysconf
   * splice tee vmsplice
+* OCaml 4.01 compatibility (Unix.open_flag)
 
 0.0.6 - 1 Apr 2013
 * New string and bigarray functions :
