@@ -25,7 +25,17 @@ static int open_flag_table[] = {
   O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC, 0 /* O_SHARE_DELETE */, O_CLOEXEC,
 };
 
-int extunix_open_flags(value v_flags)
+int extunix_open_flags(value list)
 {
-  return caml_convert_flag_list(v_flags, open_flag_table);
+  int res;
+  int flag;
+  res = 0;
+  while (list != Val_int(0))
+  {
+    flag = Int_val(Field(list, 0));
+    if (flag >= 0 && (size_t)flag < sizeof(open_flag_table)/sizeof(open_flag_table[0])) /* new flags - ignore */
+      res |= open_flag_table[flag];
+    list = Field(list, 1);
+  }
+  return res;
 }
