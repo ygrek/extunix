@@ -507,6 +507,21 @@ let test_memalign () =
   ignore (memalign 2048 16384);
   ignore (memalign 4096 65536)
 
+let test_sockopt () =
+  require "setsockopt_int";
+  require "getsockopt_int";
+  let fd = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
+  Unix.setsockopt fd Unix.SO_KEEPALIVE true;
+  setsockopt_int fd TCP_KEEPCNT 5;
+  setsockopt_int fd TCP_KEEPIDLE 30;
+  setsockopt_int fd TCP_KEEPINTVL 10;
+  let test msg opt v =
+    assert_equal ~printer:string_of_int ~msg v (getsockopt_int fd opt)
+  in
+  test "TCP_KEEPCNT" TCP_KEEPCNT 5;
+  test "TCP_KEEPIDLE" TCP_KEEPIDLE 30;
+  test "TCP_KEEPINTVL" TCP_KEEPINTVL 10
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -538,6 +553,7 @@ let () =
     "mkstemp" >:: test_mkstemp;
     "mkostemp" >:: test_mkostemp;
     "memalign" >:: test_memalign;
+    "sockopt" >:: test_sockopt;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
 

@@ -50,7 +50,7 @@ Library extunix
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
             endian.c, read_cred.c, fexecve.c, sendmsg.c,
             memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
-            splice.c, sysconf.c, common.c, common.h
+            splice.c, sysconf.c, common.c, common.h, sockopt.c
   BuildDepends: unix, bigarray
 
 Executable test

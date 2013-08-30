@@ -673,11 +673,6 @@ HAVE FCNTL
 external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
 END
 
-HAVE IFADDRS
-(** @return the list of [PF_INET] interfaces and corresponding addresses ({b may change}) *)
-external getifaddrs : unit -> (string * string) list = "caml_extunix_getifaddrs"
-END
-
 HAVE TCPGRP
 external tcgetpgrp : Unix.file_descr -> int = "caml_extunix_tcgetpgrp"
 external tcsetpgrp : Unix.file_descr -> int -> unit = "caml_extunix_tcsetpgrp"
@@ -699,6 +694,32 @@ let file_descr_of_int : int -> Unix.file_descr =
 
 (** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
 external sys_exit : int -> 'a = "caml_sys_exit"
+
+(** {2 Network} *)
+
+HAVE IFADDRS
+
+(** @return the list of [PF_INET] interfaces and corresponding addresses ({b may change}) *)
+external getifaddrs : unit -> (string * string) list = "caml_extunix_getifaddrs"
+
+END
+
+HAVE SOCKOPT
+
+(** Extra socket options with integer value not covered in {!Unix} module *)
+type socket_int_option =
+| TCP_KEEPCNT (** The maximum number of keepalive probes TCP should send before dropping the connection *)
+| TCP_KEEPIDLE (** The  time  (in  seconds)  the connection needs to remain idle before TCP starts sending
+                   keepalive probes, if the socket option SO_KEEPALIVE has been set on this socket *)
+| TCP_KEEPINTVL (** The time (in seconds) between individual keepalive probes *)
+
+(** Set an integer-valued option in the given socket *)
+external setsockopt_int : Unix.file_descr -> socket_int_option -> int -> unit = "caml_extunix_setsockopt_int"
+
+(** Get the current value for the integer-valued option in the given socket *)
+external getsockopt_int : Unix.file_descr -> socket_int_option -> int = "caml_extunix_getsockopt_int"
+
+END
 
 HAVE SIGNALFD
 
