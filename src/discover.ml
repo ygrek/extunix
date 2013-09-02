@@ -33,7 +33,7 @@ let disabled = ref []
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
 let print_zdefine b s = bprintf b "#ifndef %s\n#define %s 0\n#endif\n" s s
-let filter_map f l = List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l
+let filter_map f l = List.rev (List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l)
 let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_zdefines = filter_map (function Z s -> Some s | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
@@ -250,6 +250,11 @@ let features =
     "FDATASYNC", ANY[
       [I "unistd.h"; S "fdatasync";];
       [D "WIN32"; S "FlushFileBuffers"; ];
+    ];
+    "SYNC", L[ I "unistd.h"; S "sync"];
+    "SYNCFS", ANY[
+      [I "unistd.h"; S "syncfs"];
+      [DEFINE "EXTUNIX_USE_SYS_SYNCFS"; I "unistd.h"; I "sys/syscall.h"; S"syscall"; V"SYS_syncfs"];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
     "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; ];

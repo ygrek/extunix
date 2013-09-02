@@ -15,7 +15,39 @@ type open_flag = Unix.open_flag
   | O_SHARE_DELETE | O_CLOEXEC
 *)
 
+HAVE EVENTFD
+external eventfd : int -> Unix.file_descr = "caml_extunix_eventfd"
+external eventfd_read : Unix.file_descr -> int64 = "caml_extunix_eventfd_read"
+external eventfd_write : Unix.file_descr -> int64 -> unit = "caml_extunix_eventfd_write"
+END
+
+HAVE UNAME
+
+(** uname
+    {b Author:} Sylvain Le Gall [sylvain\@le-gall.net]
+  *)
+module Uname = struct
+type t =
+    {
+      sysname:    string;
+      nodename:   string;
+      release:    string;
+      version:    string;
+      machine:    string;
+    }
+
+let to_string t =
+  String.concat " " [ t.sysname; t.nodename; t.release; t.version; t.machine ]
+end
+
+external uname : unit -> Uname.t = "caml_extunix_uname"
+
+END
+
+(** {2 Filesystem} *)
+
 HAVE FSYNC
+(** synchronize a file's in-core state with storage device *)
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 END
 
@@ -23,10 +55,14 @@ HAVE FDATASYNC
 external fdatasync : Unix.file_descr -> unit = "caml_extunix_fdatasync"
 END
 
-HAVE EVENTFD
-external eventfd : int -> Unix.file_descr = "caml_extunix_eventfd"
-external eventfd_read : Unix.file_descr -> int64 = "caml_extunix_eventfd_read"
-external eventfd_write : Unix.file_descr -> int64 -> unit = "caml_extunix_eventfd_write"
+HAVE SYNC
+(** causes all buffered modifications to file metadata and data to be written to the underlying file systems *)
+external sync : unit -> unit = "caml_extunix_sync"
+END
+
+HAVE SYNCFS
+(** like {!sync}, but synchronizes just the file system containing file referred to by the open file descriptor [fd] *)
+external syncfs : Unix.file_descr -> unit = "caml_extunix_syncfs"
 END
 
 HAVE DIRFD
@@ -88,32 +124,36 @@ external symlinkat : string -> Unix.file_descr -> string -> unit = "caml_extunix
 external readlinkat : Unix.file_descr -> string -> string = "caml_extunix_readlinkat"
 END
 
-HAVE UNAME
+(** @raise Not_available if OS does not represent file descriptors as numbers *)
+let int_of_file_descr : Unix.file_descr -> int =
+  if Obj.is_block (Obj.repr Unix.stdin) then
+    fun _ -> raise (Not_available "int_of_file_descr")
+  else
+    Obj.magic
 
-(** uname
-    {b Author:} Sylvain Le Gall [sylvain\@le-gall.net]
-  *)
-module Uname = struct
-type t =
-    {
-      sysname:    string;
-      nodename:   string;
-      release:    string;
-      version:    string;
-      machine:    string;
-    }
+(** @raise Not_available if OS does not represent file descriptors as numbers *)
+let file_descr_of_int : int -> Unix.file_descr =
+  if Obj.is_block (Obj.repr Unix.stdin) then
+    fun _ -> raise (Not_available "file_descr_of_int")
+  else
+    Obj.magic
 
-let to_string t =
-  String.concat " " [ t.sysname; t.nodename; t.release; t.version; t.machine ]
-end
-
-external uname : unit -> Uname.t = "caml_extunix_uname"
-
+HAVE FCNTL
+(** @return whether file descriptor is open *)
+external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
 END
+
+HAVE REALPATH
+(** [realpath path]
+    @return the canonicalized absolute pathname of [path]
+    @see "realpath(2)" manual *)
+external realpath : string -> string = "caml_extunix_realpath"
+END
+
 
 HAVE FADVISE
 
-(** {2 posix_fadvise}
+(** {3 posix_fadvise}
 
 {b Author:} Sylvain Le Gall *)
 
@@ -139,7 +179,7 @@ END
 
 HAVE FALLOCATE
 
-(** {2 posix_fallocate} *)
+(** {3 posix_fallocate} *)
 (** Allocate disk space for file
 
     {b Author:} Sylvain Le Gall
@@ -154,7 +194,7 @@ external fallocate: Unix.file_descr -> int -> int -> unit = "caml_extunix_falloc
 END
 
 HAVE PREAD
-(** {2 pread}
+(** {3 pread}
 
     {b Author:} Goswin von Brederlow *)
 
@@ -223,7 +263,7 @@ let intr_pread fd off buf ofs len =
 END
 
 HAVE PWRITE
-(** {2 pwrite}
+(** {3 pwrite}
 
     {b Author:} Goswin von Brederlow *)
 
@@ -292,7 +332,7 @@ let intr_pwrite fd off buf ofs len =
 END
 
 HAVE READ
-(** {2 read}
+(** {3 read}
 
     {b Author:} Goswin von Brederlow *)
 
@@ -336,7 +376,7 @@ external unsafe_read: Unix.file_descr -> string -> int -> int -> int = "caml_ext
 
 let read fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > String.length buf - len
-  then invalid_arg "ExtUnix.pread"
+  then invalid_arg "ExtUnix.read"
   else unsafe_read fd buf ofs len
 
 (** [intr_read fd buf ofs len] reads up to [len] bytes from file
@@ -356,7 +396,7 @@ let intr_read fd buf ofs len =
 END
 
 HAVE WRITE
-(** {2 write}
+(** {3 write}
 
     {b Author:} Goswin von Brederlow *)
 
@@ -399,7 +439,7 @@ external unsafe_write: Unix.file_descr -> string -> int -> int -> int = "caml_ex
 
 let write fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > String.length buf - len
-  then invalid_arg "ExtUnix.pwrite"
+  then invalid_arg "ExtUnix.write"
   else unsafe_write fd buf ofs len
 
 (** [intr_write fd buf ofs len] writes up to [len] bytes from file
@@ -661,36 +701,10 @@ external setresgid: int -> int -> int -> unit = "caml_extunix_setresgid"
 
 END
 
-HAVE REALPATH
-(** [realpath path]
-    @return the canonicalized absolute pathname of [path]
-    @see "realpath(2)" manual *)
-external realpath : string -> string = "caml_extunix_realpath"
-END
-
-HAVE FCNTL
-(** @return whether file desctiptor is open *)
-external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
-END
-
 HAVE TCPGRP
 external tcgetpgrp : Unix.file_descr -> int = "caml_extunix_tcgetpgrp"
 external tcsetpgrp : Unix.file_descr -> int -> unit = "caml_extunix_tcsetpgrp"
 END
-
-(** @raise Not_available if OS does not represent file descriptors as numbers *)
-let int_of_file_descr : Unix.file_descr -> int =
-  if Obj.is_block (Obj.repr Unix.stdin) then
-    fun _ -> raise (Not_available "int_of_file_descr")
-  else
-    Obj.magic
-
-(** @raise Not_available if OS does not represent file descriptors as numbers *)
-let file_descr_of_int : int -> Unix.file_descr =
-  if Obj.is_block (Obj.repr Unix.stdin) then
-    fun _ -> raise (Not_available "file_descr_of_int")
-  else
-    Obj.magic
 
 (** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
 external sys_exit : int -> 'a = "caml_sys_exit"
@@ -1704,7 +1718,7 @@ HAVE FEXECVE
 *)
 external fexecve: Unix.file_descr -> string array -> string array -> 'a = "caml_extunix_fexecve"
 
-  END
+END
 
 HAVE SENDMSG
 
