@@ -953,6 +953,14 @@ external tzname : bool -> string = "caml_extunix_tzname"
 
 END
 
+HAVE TIMEZONE
+
+(** @return timezone (seconds  West  of UTC) and daylight (whether there is time during
+  the year when daylight saving time applies in this timezone) *)
+external timezone : unit -> int * bool = "caml_extunix_timezone"
+
+END
+
 HAVE TIMEGM
 
 (** Inverse of [Unix.gmtime] *)

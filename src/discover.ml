@@ -265,7 +265,8 @@ let features =
       V "PRIO_PROCESS"; V "RLIMIT_NOFILE"; V "RLIM_INFINITY";
       ];
     "MLOCKALL", L[ I "sys/mman.h"; S "mlockall"; S "munlockall"; V "MCL_CURRENT"; V "MCL_FUTURE"; ];
-    "STRTIME", L[ I "time.h"; S"strptime"; S"strftime"; S"asctime_r"; S"tzname"; ];
+    "STRTIME", L[ I "time.h"; S"strptime"; S"strftime"; S"asctime_r"; S"tzset"; S"tzname"; ];
+    "TIMEZONE", L[ I "time.h"; S"tzset"; S"timezone"; S"daylight" ];
     "PTS", L[
       I "fcntl.h"; I "stdlib.h";
       S "posix_openpt"; S "grantpt"; S "unlockpt"; S "ptsname";

@@ -5,6 +5,7 @@
   * splice tee vmsplice
   * setsockopt_int getsockopt_int (TCP keepalive)
   * sync syncfs
+  * timezone
 * OCaml 4.01 compatibility (Unix.open_flag)
 
 0.0.6 - 1 Apr 2013

@@ -1,5 +1,6 @@
 
 #define EXTUNIX_WANT_STRTIME
+#define EXTUNIX_WANT_TIMEZONE
 #define EXTUNIX_WANT_TIMEGM
 #include "config.h"
 
@@ -79,7 +80,23 @@ CAMLprim value caml_extunix_strftime(value v_fmt, value v_t)
 CAMLprim value caml_extunix_tzname(value v_isdst)
 {
   int i = Bool_val(v_isdst) ? 1 : 0;
+  tzset();
   return caml_copy_string(tzname[i]);
+}
+
+#endif
+
+#if defined(EXTUNIX_WANT_TIMEZONE)
+
+CAMLprim value caml_extunix_timezone(value v_unit)
+{
+  CAMLparam1(v_unit);
+  CAMLlocal1(v);
+  tzset();
+  v = caml_alloc_tuple(2);
+  Store_field(v, 0, Val_int(timezone));
+  Store_field(v, 1, Val_bool(daylight != 0));
+  CAMLreturn(v);
 }
 
 #endif
