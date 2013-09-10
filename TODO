@@ -1,17 +1,23 @@
+TODO
+====
+
 * comments: mark "emulated" (windows) functions
 * unsetenv winapi? see http://old.nabble.com/-patch--(msvc)-use-more-modern-facilities-for-setenv()-unsetenv()-td15877005.html
+* investigate F_FULLFSYNC fcntl and fsync on Mac OS
+* sysinfo (see Jane Street Core)
+* nanosleep
+* fdtruncate win32
+* waitid
+
+DONE
+====
 
 * INRIA request for extended UNIX:
-  http://caml.inria.fr/mantis/view.php?id=5063 (DONE)
-  http://caml.inria.fr/mantis/view.php?id=2533 (DONE)
-  http://caml.inria.fr/mantis/view.php?id=3851 (DONE)
-  http://caml.inria.fr/mantis/view.php?id=480 (DONE)
-
-* investigate F_FULLFSYNC fcntl and fsync on Mac OS
-
-Wanted functions:
+  http://caml.inria.fr/mantis/view.php?id=5063
+  http://caml.inria.fr/mantis/view.php?id=2533
+  http://caml.inria.fr/mantis/view.php?id=3851
+  http://caml.inria.fr/mantis/view.php?id=480
+* mkdtemp (see Jane Street Core)
 * sysconf: get system configuration constants. In particular, PAGESIZE,
   _SC_PHYS_PAGES, _SC_AVPHYS_PAGES, _SC_NPROCESSORS_CONF, _SC_NPROCESSORS_ONLN 
-  (see Jane Street Core) (DONE)
-* sysinfo (see Jane Street Core)
-* mkdtemp (see Jane Street Core) (DONE)
+  (see Jane Street Core)
