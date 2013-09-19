@@ -4,9 +4,18 @@
     if the wrapped C function is not available on this platform *)
 exception Not_available of string
 
-(** type of buffer used by BA submodules *)
-type buffer =
-    (int, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
+(** type of bigarray used by BA submodules that read from files into
+    bigarrays or write bigarrays into files.  The only constraint here
+    is [Bigarray.c_layout].  Naming: "bigarray with C layout" -> "carray". *)
+type ('a, 'b) carray =
+    ('a, 'b, Bigarray.c_layout) Bigarray.Array1.t
+
+(** type of bigarray used by BA submodules that work with endianness
+    and memory.  Constraints are: 1. [Bigarray.c_layout],
+    2. bigarray contains 8-bit integers.  Naming: "bigarray with C layout
+    and 8-bit elements" -> "carray8". *)
+type 'a carray8 =
+    ('a, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
 type open_flag = Unix.open_flag
 (*
@@ -548,28 +557,28 @@ struct
   module BA = struct
 
   HAVE PREAD
-  external unsafe_all_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_all_pread64"
+  external unsafe_all_pread: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_all_pread64"
 
   let all_pread fd off buf =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.all_pread"
     else unsafe_all_pread fd off buf
 
-  external unsafe_single_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_single_pread64"
+  external unsafe_single_pread: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_single_pread64"
 
   let single_pread fd off buf =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.single_pread"
     else unsafe_single_pread fd off buf
 
-  external unsafe_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_pread64"
+  external unsafe_pread: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_pread64"
 
   let pread fd off buf =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.pread"
     else unsafe_pread fd off buf
 
-  external unsafe_intr_pread: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_intr_pread64"
+  external unsafe_intr_pread: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_intr_pread64"
 
   let intr_pread fd off buf =
     if off < Int64.zero
@@ -578,28 +587,28 @@ struct
   END
 
   HAVE PWRITE
-  external unsafe_all_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_all_pwrite64"
+  external unsafe_all_pwrite: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_all_pwrite64"
 
   let all_pwrite fd off buf =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.all_pwrite"
     else unsafe_all_pwrite fd off buf
 
-  external unsafe_single_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_single_pwrite64"
+  external unsafe_single_pwrite: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_single_pwrite64"
 
   let single_pwrite fd off buf =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.single_pwrite"
     else unsafe_single_pwrite fd off buf
 
-  external unsafe_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_pwrite64"
+  external unsafe_pwrite: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_pwrite64"
 
   let pwrite fd off buf =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.pwrite"
     else unsafe_pwrite fd off buf
 
-  external unsafe_intr_pwrite: Unix.file_descr -> int64 -> buffer -> int = "caml_extunixba_intr_pwrite64"
+  external unsafe_intr_pwrite: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_intr_pwrite64"
 
   let intr_pwrite fd off buf =
     if off < Int64.zero
@@ -922,7 +931,7 @@ HAVE MEMALIGN
 
     {b Author:} Goswin von Brederlow
 *)
-external memalign: int -> int -> buffer = "caml_extunix_memalign"
+external memalign: int -> int -> Bigarray.int8_unsigned_elt carray8 = "caml_extunix_memalign"
 
 END
 
@@ -1905,7 +1914,7 @@ HAVE PREAD
     only ever returns 0 on End-of-file. Continues the read operation
     on EINTR. Raises an Unix.Unix_error exception in all other
     cases. *)
-external unsafe_all_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_all_pread"
+external unsafe_all_pread: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_all_pread"
 
 let all_pread fd off buf =
   if off < 0
@@ -1920,7 +1929,7 @@ let all_pread fd off buf =
     characters read or raises an Unix.Unix_error exception. Unlike the
     string variant of the same name there is no limit on the number of
     characters read. *)
-external unsafe_single_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_single_pread"
+external unsafe_single_pread: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_single_pread"
 
 let single_pread fd off buf =
   if off < 0
@@ -1936,7 +1945,7 @@ let single_pread fd off buf =
     if 0 characters could be read before an error occurs. Continues
     the read operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external unsafe_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_pread"
+external unsafe_pread: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_pread"
 
 let pread fd off buf =
   if off < 0
@@ -1952,7 +1961,7 @@ let pread fd off buf =
     if 0 characters could be read before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external unsafe_intr_pread: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_intr_pread"
+external unsafe_intr_pread: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_intr_pread"
 
 let intr_pread fd off buf =
   if off < 0
@@ -1974,7 +1983,7 @@ HAVE PWRITE
     characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
     the write operation on EINTR. Raises an Unix.Unix_error exception
     in all other cases. *)
-external unsafe_all_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_all_pwrite"
+external unsafe_all_pwrite: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_all_pwrite"
 
 let all_pwrite fd off buf =
   if off < 0
@@ -1989,7 +1998,7 @@ let all_pwrite fd off buf =
     characters written or raises an Unix.Unix_error exception. Unlike
     the string variant of the same name there is no limit on the
     number of characters written. *)
-external unsafe_single_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_single_pwrite"
+external unsafe_single_pwrite: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_single_pwrite"
 
 let single_pwrite fd off buf =
   if off < 0
@@ -2005,7 +2014,7 @@ let single_pwrite fd off buf =
     if 0 characters could be written before an error occurs. Continues
     the write operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external unsafe_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_pwrite"
+external unsafe_pwrite: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_pwrite"
 
 let pwrite fd off buf =
   if off < 0
@@ -2021,7 +2030,7 @@ let pwrite fd off buf =
     if 0 characters could be written before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external unsafe_intr_pwrite: Unix.file_descr -> int -> buffer -> int = "caml_extunixba_intr_pwrite"
+external unsafe_intr_pwrite: Unix.file_descr -> int -> ('a, 'b) carray -> int = "caml_extunixba_intr_pwrite"
 
 let intr_pwrite fd off buf =
   if off < 0
@@ -2043,7 +2052,7 @@ HAVE READ
     only ever returns 0 on End-of-file. Continues the read operation
     on EINTR. Raises an Unix.Unix_error exception in all other
     cases. *)
-external all_read: Unix.file_descr -> buffer -> int = "caml_extunixba_all_read"
+external all_read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_all_read"
 
 (** [single_read fd buf] reads up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2052,7 +2061,7 @@ external all_read: Unix.file_descr -> buffer -> int = "caml_extunixba_all_read"
     characters read or raises an Unix.Unix_error exception. Unlike the
     string variant of the same name there is no limit on the number of
     characters read. *)
-external single_read: Unix.file_descr -> buffer -> int = "caml_extunixba_single_read"
+external single_read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_single_read"
 
 (** [read fd buf] reads up to [size of buf] bytes from file descriptor
     [fd] into the buffer [buf].
@@ -2062,7 +2071,7 @@ external single_read: Unix.file_descr -> buffer -> int = "caml_extunixba_single_
     if 0 characters could be read before an error occurs. Continues
     the read operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external read: Unix.file_descr -> buffer -> int = "caml_extunixba_read"
+external read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_read"
 
 (** [intr_read fd buf] reads up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2072,7 +2081,7 @@ external read: Unix.file_descr -> buffer -> int = "caml_extunixba_read"
     if 0 characters could be read before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external intr_read: Unix.file_descr -> buffer -> int = "caml_extunixba_intr_read"
+external intr_read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_intr_read"
 END
 
 HAVE WRITE
@@ -2088,7 +2097,7 @@ HAVE WRITE
     characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
     the write operation on EINTR. Raises an Unix.Unix_error exception
     in all other cases. *)
-external all_write: Unix.file_descr -> buffer -> int = "caml_extunixba_all_write"
+external all_write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_all_write"
 
 (** [single_write fd buf] writes up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2097,7 +2106,7 @@ external all_write: Unix.file_descr -> buffer -> int = "caml_extunixba_all_write
     characters written or raises an Unix.Unix_error exception. Unlike
     the string variant of the same name there is no limit on the
     number of characters written. *)
-external single_write: Unix.file_descr -> buffer -> int = "caml_extunixba_single_write"
+external single_write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_single_write"
 
 (** [write fd buf] writes up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2107,7 +2116,7 @@ external single_write: Unix.file_descr -> buffer -> int = "caml_extunixba_single
     if 0 characters could be written before an error occurs. Continues
     the write operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external write: Unix.file_descr -> buffer -> int = "caml_extunixba_write"
+external write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_write"
 
 (** [intr_write fd buf] writes up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2117,7 +2126,7 @@ external write: Unix.file_descr -> buffer -> int = "caml_extunixba_write"
     if 0 characters could be written before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external intr_write: Unix.file_descr -> buffer -> int = "caml_extunixba_intr_write"
+external intr_write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_intr_write"
 END
 
 (** {2 Byte order conversion} *)
@@ -2141,16 +2150,16 @@ HAVE ENDIAN
       occurs. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8" "noalloc"
-  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8" "noalloc"
-  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_bu16" "noalloc"
-  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_bs16" "noalloc"
-  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_bu31" "noalloc"
-  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_bs31" "noalloc"
-  external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_bs32"
-  external unsafe_get_uint63 : buffer -> int -> int = "caml_extunixba_get_bu63" "noalloc"
-  external unsafe_get_int63  : buffer -> int -> int = "caml_extunixba_get_bs63" "noalloc"
-  external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_bs64"
+  external unsafe_get_uint8  : 'a carray8 -> int -> int = "caml_extunixba_get_u8" "noalloc"
+  external unsafe_get_int8   : 'a carray8 -> int -> int = "caml_extunixba_get_s8" "noalloc"
+  external unsafe_get_uint16 : 'a carray8 -> int -> int = "caml_extunixba_get_bu16" "noalloc"
+  external unsafe_get_int16  : 'a carray8 -> int -> int = "caml_extunixba_get_bs16" "noalloc"
+  external unsafe_get_uint31 : 'a carray8 -> int -> int = "caml_extunixba_get_bu31" "noalloc"
+  external unsafe_get_int31  : 'a carray8 -> int -> int = "caml_extunixba_get_bs31" "noalloc"
+  external unsafe_get_int32  : 'a carray8 -> int -> int32 = "caml_extunixba_get_bs32"
+  external unsafe_get_uint63 : 'a carray8 -> int -> int = "caml_extunixba_get_bu63" "noalloc"
+  external unsafe_get_int63  : 'a carray8 -> int -> int = "caml_extunixba_get_bs63" "noalloc"
+  external unsafe_get_int64  : 'a carray8 -> int -> int64 = "caml_extunixba_get_bs64"
 
   (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
   let get_uint8 buf off =
@@ -2213,16 +2222,16 @@ HAVE ENDIAN
       will be sign extended to 32bit first. Use with care. 
       Note: The same applies to 63bit function.
   *)
-  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
-  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
-  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_b16" "noalloc"
-  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_b16" "noalloc"
-  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_b31" "noalloc"
-  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_b31" "noalloc"
-  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_b32" "noalloc"
-  external unsafe_set_uint63 : buffer -> int -> int -> unit = "caml_extunixba_set_b63" "noalloc"
-  external unsafe_set_int63  : buffer -> int -> int -> unit = "caml_extunixba_set_b63" "noalloc"
-  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_b64" "noalloc"
+  external unsafe_set_uint8  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_int8   : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_uint16 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_b16" "noalloc"
+  external unsafe_set_int16  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_b16" "noalloc"
+  external unsafe_set_uint31 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_b31" "noalloc"
+  external unsafe_set_int31  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_b31" "noalloc"
+  external unsafe_set_int32  : 'a carray8 -> int -> int32 -> unit = "caml_extunixba_set_b32" "noalloc"
+  external unsafe_set_uint63 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_b63" "noalloc"
+  external unsafe_set_int63  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_b63" "noalloc"
+  external unsafe_set_int64  : 'a carray8 -> int -> int64 -> unit = "caml_extunixba_set_b64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 buf off v =
@@ -2299,16 +2308,16 @@ HAVE ENDIAN
       occurs. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8" "noalloc"
-  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8" "noalloc"
-  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_lu16" "noalloc"
-  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_ls16" "noalloc"
-  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_lu31" "noalloc"
-  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_ls31" "noalloc"
-  external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_ls32"
-  external unsafe_get_uint63 : buffer -> int -> int = "caml_extunixba_get_lu63" "noalloc"
-  external unsafe_get_int63  : buffer -> int -> int = "caml_extunixba_get_ls63" "noalloc"
-  external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_ls64"
+  external unsafe_get_uint8  : 'a carray8 -> int -> int = "caml_extunixba_get_u8" "noalloc"
+  external unsafe_get_int8   : 'a carray8 -> int -> int = "caml_extunixba_get_s8" "noalloc"
+  external unsafe_get_uint16 : 'a carray8 -> int -> int = "caml_extunixba_get_lu16" "noalloc"
+  external unsafe_get_int16  : 'a carray8 -> int -> int = "caml_extunixba_get_ls16" "noalloc"
+  external unsafe_get_uint31 : 'a carray8 -> int -> int = "caml_extunixba_get_lu31" "noalloc"
+  external unsafe_get_int31  : 'a carray8 -> int -> int = "caml_extunixba_get_ls31" "noalloc"
+  external unsafe_get_int32  : 'a carray8 -> int -> int32 = "caml_extunixba_get_ls32"
+  external unsafe_get_uint63 : 'a carray8 -> int -> int = "caml_extunixba_get_lu63" "noalloc"
+  external unsafe_get_int63  : 'a carray8 -> int -> int = "caml_extunixba_get_ls63" "noalloc"
+  external unsafe_get_int64  : 'a carray8 -> int -> int64 = "caml_extunixba_get_ls64"
 
   (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
   let get_uint8 buf off =
@@ -2371,16 +2380,16 @@ HAVE ENDIAN
       will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
-  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
-  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_l16" "noalloc"
-  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_l16" "noalloc"
-  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_l31" "noalloc"
-  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_l31" "noalloc"
-  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_l32" "noalloc"
-  external unsafe_set_uint63 : buffer -> int -> int -> unit = "caml_extunixba_set_l63" "noalloc"
-  external unsafe_set_int63  : buffer -> int -> int -> unit = "caml_extunixba_set_l63" "noalloc"
-  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_l64" "noalloc"
+  external unsafe_set_uint8  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_int8   : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_uint16 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_l16" "noalloc"
+  external unsafe_set_int16  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_l16" "noalloc"
+  external unsafe_set_uint31 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_l31" "noalloc"
+  external unsafe_set_int31  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_l31" "noalloc"
+  external unsafe_set_int32  : 'a carray8 -> int -> int32 -> unit = "caml_extunixba_set_l32" "noalloc"
+  external unsafe_set_uint63 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_l63" "noalloc"
+  external unsafe_set_int63  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_l63" "noalloc"
+  external unsafe_set_int64  : 'a carray8 -> int -> int64 -> unit = "caml_extunixba_set_l64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 buf off v =
@@ -2455,16 +2464,16 @@ module HostEndian = struct
       occurs. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_get_uint8  : buffer -> int -> int = "caml_extunixba_get_u8" "noalloc"
-  external unsafe_get_int8   : buffer -> int -> int = "caml_extunixba_get_s8" "noalloc"
-  external unsafe_get_uint16 : buffer -> int -> int = "caml_extunixba_get_hu16" "noalloc"
-  external unsafe_get_int16  : buffer -> int -> int = "caml_extunixba_get_hs16" "noalloc"
-  external unsafe_get_uint31 : buffer -> int -> int = "caml_extunixba_get_hu31" "noalloc"
-  external unsafe_get_int31  : buffer -> int -> int = "caml_extunixba_get_hs31" "noalloc"
-  external unsafe_get_int32  : buffer -> int -> int32 = "caml_extunixba_get_hs32"
-  external unsafe_get_uint63 : buffer -> int -> int = "caml_extunixba_get_hu63" "noalloc"
-  external unsafe_get_int63  : buffer -> int -> int = "caml_extunixba_get_hs63" "noalloc"
-  external unsafe_get_int64  : buffer -> int -> int64 = "caml_extunixba_get_hs64"
+  external unsafe_get_uint8  : 'a carray8 -> int -> int = "caml_extunixba_get_u8" "noalloc"
+  external unsafe_get_int8   : 'a carray8 -> int -> int = "caml_extunixba_get_s8" "noalloc"
+  external unsafe_get_uint16 : 'a carray8 -> int -> int = "caml_extunixba_get_hu16" "noalloc"
+  external unsafe_get_int16  : 'a carray8 -> int -> int = "caml_extunixba_get_hs16" "noalloc"
+  external unsafe_get_uint31 : 'a carray8 -> int -> int = "caml_extunixba_get_hu31" "noalloc"
+  external unsafe_get_int31  : 'a carray8 -> int -> int = "caml_extunixba_get_hs31" "noalloc"
+  external unsafe_get_int32  : 'a carray8 -> int -> int32 = "caml_extunixba_get_hs32"
+  external unsafe_get_uint63 : 'a carray8 -> int -> int = "caml_extunixba_get_hu63" "noalloc"
+  external unsafe_get_int63  : 'a carray8 -> int -> int = "caml_extunixba_get_hs63" "noalloc"
+  external unsafe_get_int64  : 'a carray8 -> int -> int64 = "caml_extunixba_get_hs64"
 
   (** [get_X buf off] same as [unsafe_get_X] but with bounds checking. *)
   let get_uint8 buf off =
@@ -2527,16 +2536,16 @@ module HostEndian = struct
       will be sign extended to 32bit first. Use with care. 
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_set_uint8  : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
-  external unsafe_set_int8   : buffer -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
-  external unsafe_set_uint16 : buffer -> int -> int -> unit = "caml_extunixba_set_h16" "noalloc"
-  external unsafe_set_int16  : buffer -> int -> int -> unit = "caml_extunixba_set_h16" "noalloc"
-  external unsafe_set_uint31 : buffer -> int -> int -> unit = "caml_extunixba_set_h31" "noalloc"
-  external unsafe_set_int31  : buffer -> int -> int -> unit = "caml_extunixba_set_h31" "noalloc"
-  external unsafe_set_int32  : buffer -> int -> int32 -> unit = "caml_extunixba_set_h32" "noalloc"
-  external unsafe_set_uint63 : buffer -> int -> int -> unit = "caml_extunixba_set_h63" "noalloc"
-  external unsafe_set_int63  : buffer -> int -> int -> unit = "caml_extunixba_set_h63" "noalloc"
-  external unsafe_set_int64  : buffer -> int -> int64 -> unit = "caml_extunixba_set_h64" "noalloc"
+  external unsafe_set_uint8  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_int8   : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" "noalloc"
+  external unsafe_set_uint16 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_h16" "noalloc"
+  external unsafe_set_int16  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_h16" "noalloc"
+  external unsafe_set_uint31 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_h31" "noalloc"
+  external unsafe_set_int31  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_h31" "noalloc"
+  external unsafe_set_int32  : 'a carray8 -> int -> int32 -> unit = "caml_extunixba_set_h32" "noalloc"
+  external unsafe_set_uint63 : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_h63" "noalloc"
+  external unsafe_set_int63  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_h63" "noalloc"
+  external unsafe_set_int64  : 'a carray8 -> int -> int64 -> unit = "caml_extunixba_set_h64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 buf off v =
@@ -2595,7 +2604,7 @@ end (* module HostEndian *)
     [buf] starting at offset [off] and length [len]. Bounds checking
     is not performed. Use with caution and only when the program logic
     guarantees that the access is within bounds.*)
-external unsafe_get_substr : buffer -> int -> int -> string = "caml_extunixba_get_substr"
+external unsafe_get_substr : 'a carray8 -> int -> int -> string = "caml_extunixba_get_substr"
 
 (** [get_substr buf off len] same as [unsafe_get_substr] but with
     bounds checking. *)
@@ -2608,7 +2617,7 @@ let get_substr buf off len =
     starting at offset [off]. Bounds checking is not performed. Use
     with caution and only when the program logic guarantees that the
     access is within bounds.*)
-external unsafe_set_substr : buffer -> int -> string -> unit = "caml_extunixba_set_substr"
+external unsafe_set_substr : 'a carray8 -> int -> string -> unit = "caml_extunixba_set_substr"
 
 (** [set_substr buf off str] same as [unsafe_set_substr] but with
     bounds checking. *)
@@ -2626,15 +2635,15 @@ HAVE VMSPLICE
 *)
 
 (** I/O vector. Used to send multiple data using a single system call *)
-type iov = {
-  iov_buf : buffer;
+type 'a iov = {
+  iov_buf : 'a carray8;
   iov_off : int;
   iov_len : int;
 }
 
 (** [vmsplice fd iovs flags] sends the data described by [iovs] to the pipe [fd]
     @return the number of bytes transferred to the pipe. *)
-external vmsplice : Unix.file_descr -> iov array -> splice_flag list -> int = "caml_extunixba_vmsplice"
+external vmsplice : Unix.file_descr -> 'a iov array -> splice_flag list -> int = "caml_extunixba_vmsplice"
 END
 
 end (* module BA *)

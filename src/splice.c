@@ -96,7 +96,7 @@ CAMLprim value caml_extunixba_vmsplice(value v_fd_out, value v_iov, value v_flag
   for (i = 0; i < size; i++)
   {
     tmp = Field(v_iov,i);
-    /* field 0 is a buffer (bigarray of char)
+    /* field 0 is a 'a carray8 (bigarray of 8-bit elements)
        field 1 is the offset in the bigarray
        field 2 is the length */
     ba = Caml_ba_array_val(Field(tmp,0));
