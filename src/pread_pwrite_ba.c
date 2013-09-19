@@ -16,7 +16,7 @@ CAMLprim value caml_extunixba_pread_common(value v_fd, off_t off, value v_buf, i
     CAMLparam2(v_fd, v_buf);
     ssize_t ret;
     size_t fd = Int_val(v_fd);
-    size_t len = Caml_ba_array_val(v_buf)->dim[0];
+    size_t len = caml_ba_byte_size(Caml_ba_array_val(v_buf));
     size_t processed = 0;
     char *buf = (char*)Caml_ba_data_val(v_buf);
 
@@ -100,7 +100,7 @@ CAMLprim value caml_extunixba_pwrite_common(value v_fd, off_t off, value v_buf, 
     CAMLparam2(v_fd, v_buf);
     ssize_t ret;
     size_t fd = Int_val(v_fd);
-    size_t len = Caml_ba_array_val(v_buf)->dim[0];
+    size_t len = caml_ba_byte_size(Caml_ba_array_val(v_buf));
     size_t processed = 0;
     char *buf = (char*)Caml_ba_data_val(v_buf);
 
@@ -184,7 +184,7 @@ CAMLprim value caml_extunixba_read_common(value v_fd, value v_buf, int mode) {
     CAMLparam2(v_fd, v_buf);
     ssize_t ret;
     size_t fd = Int_val(v_fd);
-    size_t len = Caml_ba_array_val(v_buf)->dim[0];
+    size_t len = caml_ba_byte_size(Caml_ba_array_val(v_buf));
     size_t processed = 0;
     char *buf = (char*)Caml_ba_data_val(v_buf);
 
@@ -239,7 +239,7 @@ CAMLprim value caml_extunixba_write_common(value v_fd, value v_buf, int mode) {
     CAMLparam2(v_fd, v_buf);
     ssize_t ret;
     size_t fd = Int_val(v_fd);
-    size_t len = Caml_ba_array_val(v_buf)->dim[0];
+    size_t len = caml_ba_byte_size(Caml_ba_array_val(v_buf));
     size_t processed = 0;
     char *buf = (char*)Caml_ba_data_val(v_buf);
 
