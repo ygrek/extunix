@@ -1,4 +1,4 @@
-? - ?
+0.1.0 - 8 Oct 2013
 * statvfs: add f_flags - decoded f_flag field
 * New bindings :
   * sysconf
@@ -7,6 +7,7 @@
   * sync syncfs
   * timezone
 * OCaml 4.01 compatibility (Unix.open_flag)
+* relax restrictions on bigarray types
 
 0.0.6 - 1 Apr 2013
 * New string and bigarray functions :
