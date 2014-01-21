@@ -241,6 +241,7 @@ let features =
     ];
     "TTYNAME", L[ I "unistd.h"; S "ttyname"; ];
     "CTERMID", L[ I "stdio.h"; S "ctermid"; V "L_ctermid"; ];
+    "GETTID", L[ I "sys/syscall.h"; S "syscall"; V "SYS_gettid"; ];
     "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid"; S "getsid"; ];
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[

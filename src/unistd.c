@@ -10,6 +10,7 @@
 #define EXTUNIX_WANT_PWRITE
 #define EXTUNIX_WANT_READ
 #define EXTUNIX_WANT_WRITE
+#define EXTUNIX_WANT_GETTID
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_TTYNAME)
@@ -31,11 +32,21 @@ CAMLprim value caml_extunix_ttyname(value v_fd)
 
 #if defined(EXTUNIX_HAVE_CTERMID)
 
-CAMLprim value caml_extunix_ctermid(value v_unit) 
+CAMLprim value caml_extunix_ctermid(value v_unit)
 {
   char buf[L_ctermid + 1];
   UNUSED(v_unit);
   return caml_copy_string(ctermid(buf));
+}
+
+#endif
+
+#if defined(EXTUNIX_HAVE_GETTID)
+
+CAMLprim value caml_extunix_gettid(value v_unit)
+{
+  UNUSED(v_unit);
+  return Val_int(syscall(SYS_gettid));
 }
 
 #endif

@@ -665,6 +665,11 @@ HAVE CTERMID
 external ctermid : unit -> string = "caml_extunix_ctermid"
 END
 
+HAVE GETTID
+(** @return thread id *)
+external gettid : unit -> int = "caml_extunix_gettid"
+END
+
 HAVE PGID
 
 (** [setpgid pid pgid] sets the process group of the process specified by [pid] to [pgid].
