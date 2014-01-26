@@ -3,8 +3,13 @@ open OUnit
 open ExtUnix.All
 
 let with_unix_error f () =
-  try f ()
-  with Unix.Unix_error(e,f,a) -> assert_failure (Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e))
+  try
+    f ()
+  with
+  | Unix.Unix_error(e,f,a) ->
+    let message = Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e) in
+    skip_if (e = Unix.ENOSYS) message; (* libc may raise Not implemented, not an error in extunix *)
+    assert_failure message
 
 let require feature =
   match have feature with
