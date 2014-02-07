@@ -1,6 +1,7 @@
 ? - ?
 * New bindings :
   * gettid
+  * poll
 
 0.1.0 - 8 Oct 2013
 * statvfs: add f_flags - decoded f_flag field

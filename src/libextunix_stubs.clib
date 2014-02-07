@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: c0a6f60a9a7f232efedb72c2cf585c11)
+# DO NOT EDIT (digest: 2f5fc7b30bce5de06048c77e68cd2fce)
 eventfd.o
 dirfd.o
 fsync.o
@@ -32,4 +32,5 @@ splice.o
 sysconf.o
 common.o
 sockopt.o
+poll.o
 # OASIS_STOP

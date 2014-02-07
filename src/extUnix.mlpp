@@ -756,6 +756,47 @@ external getsockopt_int : Unix.file_descr -> socket_int_option -> int = "caml_ex
 
 END
 
+HAVE POLL
+
+module Poll : sig 
+
+type t = private int
+
+(** [is_set flags flag] tests whether [flag] is set in [flags] *)
+val is_set : t -> t -> bool
+val join : t list -> t
+val (or) : t -> t -> t
+
+val pollin : t
+val pollpri : t
+val pollout : t
+val pollerr : t
+val pollhup : t
+val pollnval : t
+
+(** may not be present on all platforms (=0) *)
+val pollrdhup : t
+
+(** no poll flags (=0) *)
+val none : t
+
+end = struct
+
+type t = int
+external poll_constants : unit -> (int*int*int*int*int*int*int) = "caml_extunix_poll_constants"
+let (pollin,pollpri,pollout,pollerr,pollhup,pollnval,pollrdhup) = poll_constants ()
+let none = 0
+
+let is_set xs x = xs land x = x
+let (or) a b = a lor b
+let join = List.fold_left (lor) 0
+
+end
+
+external poll : (Unix.file_descr * Poll.t) array -> float -> (Unix.file_descr * Poll.t) list = "caml_extunix_poll"
+
+END
+
 HAVE SIGNALFD
 
 (** {2 signalfd} *)

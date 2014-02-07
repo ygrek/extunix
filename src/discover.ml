@@ -314,6 +314,7 @@ let features =
       S"setsockopt"; S"getsockopt";
       V"TCP_KEEPCNT"; V"TCP_KEEPIDLE"; V"TCP_KEEPINTVL";
     ];
+    "POLL", L[ I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
   ]
 
 let () = 
