@@ -764,8 +764,10 @@ type t = private int
 
 (** [is_set flags flag] tests whether [flag] is set in [flags] *)
 val is_set : t -> t -> bool
+(** combine flags *)
 val join : t list -> t
-val (or) : t -> t -> t
+(** combine two flags *)
+val (+) : t -> t -> t
 
 val pollin : t
 val pollpri : t
@@ -788,7 +790,7 @@ let (pollin,pollpri,pollout,pollerr,pollhup,pollnval,pollrdhup) = poll_constants
 let none = 0
 
 let is_set xs x = xs land x = x
-let (or) a b = a lor b
+let (+) a b = a lor b
 let join = List.fold_left (lor) 0
 
 end
