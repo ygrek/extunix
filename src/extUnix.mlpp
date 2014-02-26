@@ -1806,7 +1806,7 @@ external recvmsg_fd: Unix.file_descr -> (Unix.file_descr option) * string = "cam
 
 (** Send a file descriptor through a UNIX domain socket. *)
 let sendfd conn_fd fd_to_send =
-  sendmsg conn_fd ~sendfd:fd_to_send ""
+  sendmsg conn_fd ~sendfd:fd_to_send "\001"
 
 (** Receive a file descriptor sent through a UNIX domain socket. *)
 let recvfd fd =
