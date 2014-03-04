@@ -1,9 +1,3 @@
-#define EXTUNIX_WANT_SENDMSG
-
-#include "config.h"
-
-#if defined(EXTUNIX_HAVE_SENDMSG)
-
 /*  Copyright © 2012 Andre Nathan <andre@digirati.com.br>   */
 
 /*
@@ -12,6 +6,12 @@
  * for the msg_controllen field of struct msghdr to avoid breaking LP64
  * systems (cf. Postfix source code).
  */
+
+#define EXTUNIX_WANT_SENDMSG
+
+#include "config.h"
+
+#if defined(EXTUNIX_HAVE_SENDMSG)
 
 #define Val_none Val_int(0)
 #define Some_val(v) Field(v,0)
@@ -53,12 +53,13 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
   }
 
   datalen = caml_string_length(data_val);
-  buf = malloc(datalen+1);
+  buf = malloc(datalen);
+  if (NULL == buf)
+    uerror("sendmsg", Nothing);
   memcpy(buf, String_val(data_val), datalen);
-  buf[datalen] = '\0';
 
   iov[0].iov_base = buf;
-  iov[0].iov_len = strlen(buf);
+  iov[0].iov_len = datalen;
   msg.msg_iov = iov;
   msg.msg_iovlen = 1;
 
@@ -138,8 +139,9 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   }
 #endif
 
-  buf[len] = '\0';
-  Store_field(res, 1, caml_copy_string(buf));
+  data = caml_alloc_string(len);
+  memcpy(String_val(data), buf, len);
+  Store_field(res, 1, data);
 
   CAMLreturn (res);
 }
