@@ -1,4 +1,5 @@
 
+open Printf
 open OUnit
 open ExtUnix.All
 
@@ -7,14 +8,14 @@ let with_unix_error f () =
     f ()
   with
   | Unix.Unix_error(e,f,a) ->
-    let message = Printf.sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e) in
+    let message = sprintf "Unix_error : %s(%s) : %s" f a (Unix.error_message e) in
     skip_if (e = Unix.ENOSYS) message; (* libc may raise Not implemented, not an error in extunix *)
     assert_failure message
 
 let require feature =
   match have feature with
   | None -> assert false
-  | Some present -> skip_if (not present) (Printf.sprintf "%S is not available" feature)
+  | Some present -> skip_if (not present) (sprintf "%S is not available" feature)
 
 let printer x = x
 
@@ -368,7 +369,7 @@ let test_sendmsg () =
       Unix.close s1;
       let fd = Unix.openfile "/bin/ls" [Unix.O_RDONLY] 0 in
       let st = Unix.fstat fd in
-      sendmsg s2 ~sendfd:fd (Printf.sprintf "%d" st.Unix.st_ino);
+      sendmsg s2 ~sendfd:fd (sprintf "%d" st.Unix.st_ino);
       Unix.close fd;
       Unix.close s2;
   | pid ->
@@ -525,7 +526,28 @@ let test_sockopt () =
   in
   test "TCP_KEEPCNT" TCP_KEEPCNT 5;
   test "TCP_KEEPIDLE" TCP_KEEPIDLE 30;
-  test "TCP_KEEPINTVL" TCP_KEEPINTVL 10
+  test "TCP_KEEPINTVL" TCP_KEEPINTVL 10;
+  Unix.close fd
+
+let test_sendmsg_bin () =
+  require "sendmsg";
+  let test_msg = "test\x00message\x01" in
+  let (s,s') = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  match Unix.fork () with
+  | 0 ->
+    Unix.close s';
+    sendmsg s ~sendfd:Unix.stdout test_msg;
+    sendfd s Unix.stdout
+  | _ ->
+    Unix.close s;
+    let (fd1,msg) = recvmsg_fd s' in
+    assert_equal ~printer:(sprintf "%S") test_msg msg;
+    match fd1 with
+    | None -> assert_failure "expected fd, got nothing"
+    | Some fd1 ->
+    Unix.close fd1;
+    let fd2 = recvfd s' in
+    Unix.close fd2
 
 let () =
   let wrap test =
@@ -559,6 +581,6 @@ let () =
     "mkostemp" >:: test_mkostemp;
     "memalign" >:: test_memalign;
     "sockopt" >:: test_sockopt;
+    "sendmsg_bin" >:: test_sendmsg_bin;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
-
