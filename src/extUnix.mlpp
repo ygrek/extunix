@@ -1798,17 +1798,18 @@ HAVE SENDMSG
     {b Author:} Andre Nathan *)
 
 (** Send a message and optionally a file descriptor through a socket. Passing
-    file descriptors requires UNIX domain sockets. *)
+    file descriptors requires UNIX domain sockets and a non-empty message. *)
 external sendmsg: Unix.file_descr -> ?sendfd:Unix.file_descr -> string -> unit = "caml_extunix_sendmsg"
 
-(** Recieve a message and possibly a file descriptor from a socket.  *)
-external recvmsg_fd: Unix.file_descr -> (Unix.file_descr option) * string = "caml_extunix_recvmsg"
+(** Recieve a message and possibly a file descriptor from a socket. *)
+external recvmsg_fd: Unix.file_descr -> Unix.file_descr option * string = "caml_extunix_recvmsg"
 
-(** Send a file descriptor through a UNIX domain socket. *)
-let sendfd conn_fd fd_to_send =
-  sendmsg conn_fd ~sendfd:fd_to_send ""
+(** [sendfd sock fd] sends a file descriptor [fd] through a UNIX domain socket [sock].
+    This will send a sentinel message at the same time, otherwise {!sendmsg} will not pass the file descriptor. *)
+let sendfd ~sock ~fd =
+  sendmsg sock ~sendfd:fd "\001"
 
-(** Receive a file descriptor sent through a UNIX domain socket. *)
+(** Receive a file descriptor sent through a UNIX domain socket, ignoring the message. *)
 let recvfd fd =
   match recvmsg_fd fd with
   | (Some recvfd, _) -> recvfd
