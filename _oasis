@@ -40,8 +40,7 @@ Flag strict
 
 Library extunix
   Path: src/
-  Modules: ExtUnix
-  InternalModules: ExtUnixAll, ExtUnixSpecific
+  Modules: ExtUnix, ExtUnixAll, ExtUnixSpecific
   if flag(strict) && ccomp_type(cc)
     CCOpt: -std=c89 -pedantic -Wno-long-long -Wextra
   CSources: config.h,
@@ -85,7 +84,6 @@ Document api
   Index: index.html
   XOCamlbuildPath:      src/
   XOCamlbuildLibraries: extunix
-  XOCamlbuildModules: ExtUnixAll, ExtUnixSpecific
 
 #Document changelog
 #  Title: Changelog
