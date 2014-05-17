@@ -1,7 +1,9 @@
-? - ?
+0.1.1 - 18 May 2014
 * New bindings :
   * gettid
   * poll
+* OCaml 4.02 compatibility (install all .cmi)
+* sendmsg/sendfd : fix sending binary data
 
 0.1.0 - 8 Oct 2013
 * statvfs: add f_flags - decoded f_flag field
