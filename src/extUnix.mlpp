@@ -1144,16 +1144,8 @@ external internal_mkstemps : string -> int -> Unix.file_descr = "caml_extunix_in
     file, and returns an open file descriptor and name for the
     file. *)
 let mkstemp ?(suffix="") prefix =
-  let prefixlen = String.length prefix in
-  let suffixlen = String.length suffix in
-  let len = prefixlen + 6 + suffixlen in
-  let s = String.create len
-  in
-  String.blit prefix 0 s 0 prefixlen;
-  String.blit "XXXXXX" 0 s prefixlen 6;
-  String.blit suffix 0 s (prefixlen + 6) suffixlen;
-  let fd = internal_mkstemps s suffixlen
-  in
+  let s = prefix ^ "XXXXXX" ^ suffix in
+  let fd = internal_mkstemps s (String.length suffix) in
   (fd, s)
 END
 
@@ -1171,16 +1163,8 @@ external internal_mkostemps : string -> int -> open_flag list -> Unix.file_descr
     file with [flags], and returns an open file descriptor and name
     for the file. *)
 let mkostemp ?(suffix="") ?(flags=[]) prefix =
-  let prefixlen = String.length prefix in
-  let suffixlen = String.length suffix in
-  let len = prefixlen + 6 + suffixlen in
-  let s = String.create len
-  in
-  String.blit prefix 0 s 0 prefixlen;
-  String.blit "XXXXXX" 0 s prefixlen 6;
-  String.blit suffix 0 s (prefixlen + 6) suffixlen;
-  let fd = internal_mkostemps s suffixlen flags
-  in
+  let s = prefix ^ "XXXXXX" ^ suffix in
+  let fd = internal_mkostemps s (String.length suffix) flags in
   (fd, s)
 
 END
