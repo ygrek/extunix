@@ -78,7 +78,7 @@ let build_code args =
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
-    | F (s,f) -> pr "size_t var_%d = (size_t)&((struct %s*)0)->%s" (fresh ()) s f
+    | F (s,f) -> pr "size_t var_%d = (size_t)&((struct %s*)0)->%s;" (fresh ()) s f
     end args;
   pr "int main() { return 0; }";
   Buffer.contents b
@@ -315,6 +315,7 @@ let features =
       V"TCP_KEEPCNT"; V"TCP_KEEPIDLE"; V"TCP_KEEPINTVL";
     ];
     "POLL", L[ I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
+    "SYSINFO", L[ I"sys/sysinfo.h"; S"sysinfo"; F ("sysinfo","mem_unit")];
   ]
 
 let () = 

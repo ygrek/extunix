@@ -730,6 +730,30 @@ END
 (** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
 external sys_exit : int -> 'a = "caml_sys_exit"
 
+HAVE SYSINFO
+(** NB all memory fields in this structure are the multiplies of [mem_unit] bytes *)
+type sysinfo = {
+  uptime : int; (** Seconds since boot *)
+  loads : (float * float * float); (** 1, 5, and 15 minute load averages *)
+  totalram : int;  (** Total usable main memory size *)
+  freeram : int;   (** Available memory size *)
+  sharedram : int; (** Amount of shared memory *)
+  bufferram : int; (** Memory used by buffers *)
+  totalswap : int; (** Total swap space size *)
+  freeswap : int;  (** swap space still available *)
+  procs : int;    (** Number of current processes *)
+  totalhigh : int; (** Total high memory size *)
+  freehigh : int;  (** Available high memory size *)
+  mem_unit : int;   (** Memory unit size in bytes *)
+}
+
+(** @retrun overall system statistics *)
+external sysinfo : unit -> sysinfo = "caml_extunix_sysinfo"
+
+(** @return seconds since boot *)
+external uptime : unit -> int = "caml_extunix_uptime"
+END
+
 (** {2 Network} *)
 
 HAVE IFADDRS
@@ -2699,3 +2723,6 @@ end (* module BA *)
   e.g. [have "eventfd"]
 *)
 SHOW ME THE MONEY
+
+(* vim: ft=ocaml
+*)

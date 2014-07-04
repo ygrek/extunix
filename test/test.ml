@@ -549,6 +549,12 @@ let test_sendmsg_bin () =
     let fd2 = recvfd s' in
     Unix.close fd2
 
+let test_sysinfo () =
+  require "sysinfo";
+  let t = sysinfo () in
+  let (_:int) = t.uptime in
+  ()
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -582,5 +588,6 @@ let () =
     "memalign" >:: test_memalign;
     "sockopt" >:: test_sockopt;
     "sendmsg_bin" >:: test_sendmsg_bin;
+    "sysinfo" >:: test_sysinfo;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))

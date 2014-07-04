@@ -4,7 +4,6 @@ TODO
 * comments: mark "emulated" (windows) functions
 * unsetenv winapi? see http://old.nabble.com/-patch--(msvc)-use-more-modern-facilities-for-setenv()-unsetenv()-td15877005.html
 * investigate F_FULLFSYNC fcntl and fsync on Mac OS
-* sysinfo (see Jane Street Core)
 * nanosleep
 * fdtruncate win32
 * waitid
@@ -21,3 +20,4 @@ DONE
 * sysconf: get system configuration constants. In particular, PAGESIZE,
   _SC_PHYS_PAGES, _SC_AVPHYS_PAGES, _SC_NPROCESSORS_CONF, _SC_NPROCESSORS_ONLN 
   (see Jane Street Core)
+* sysinfo (see Jane Street Core)
