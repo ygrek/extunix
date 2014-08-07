@@ -4,8 +4,6 @@
 
 #if defined(EXTUNIX_HAVE_PTS)
 
-#include "common.h"
-
 CAMLprim value caml_extunix_posix_openpt(value flags)
 {
 	CAMLparam1(flags);

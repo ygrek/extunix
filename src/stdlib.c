@@ -139,8 +139,6 @@ CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixle
 
 #if defined(EXTUNIX_HAVE_MKOSTEMPS)
 
-#include "common.h"
-
 /* FIXME: also in atfile.c, move to common file */
 #include <fcntl.h>
 

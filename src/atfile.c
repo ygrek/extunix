@@ -4,8 +4,6 @@
 
 #if defined(EXTUNIX_HAVE_ATFILE)
 
-#include "common.h"
-
 /* otherlibs/unix/cst2constr.h */
 extern value cst_to_constr(int n, int * tbl, int size, int deflt);
 

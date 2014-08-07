@@ -13,9 +13,6 @@
 
 #if defined(EXTUNIX_HAVE_SENDMSG)
 
-#define Val_none Val_int(0)
-#define Some_val(v) Field(v,0)
-
 CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_val)
 {
   CAMLparam3(fd_val, sendfd_val, data_val);

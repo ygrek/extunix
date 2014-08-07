@@ -9,9 +9,6 @@
 #define EXTUNIX_WANT_SIGNALFD
 #include "config.h"
 
-#define Some_val(v) Field(v,0)
-#define Val_none Val_int(0)
-
 #if defined(EXTUNIX_HAVE_SIGNALFD)
 
 extern int caml_convert_signal_number(int signo);
