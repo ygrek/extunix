@@ -1,6 +1,7 @@
 ? - ?
 * New bindings :
   * sysinfo
+  * mtrace muntrace
 
 0.1.1 - 18 May 2014
 * New bindings :

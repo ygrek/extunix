@@ -1,6 +1,7 @@
 
 #define EXTUNIX_WANT_MALLOC_INFO
 #define EXTUNIX_WANT_MALLOC_STATS
+#define EXTUNIX_WANT_MCHECK
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_MALLOC_STATS)
@@ -45,3 +46,20 @@ CAMLprim value caml_extunix_malloc_info(value v_unit)
 
 #endif
 
+#if defined(EXTUNIX_HAVE_MCHECK)
+
+CAMLprim value caml_extunix_mtrace(value v)
+{
+  UNUSED(v);
+  mtrace();
+  return Val_unit;
+}
+
+CAMLprim value caml_extunix_muntrace(value v)
+{
+  UNUSED(v);
+  muntrace();
+  return Val_unit;
+}
+
+#endif

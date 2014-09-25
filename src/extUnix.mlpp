@@ -1109,6 +1109,13 @@ external malloc_info : unit -> string = "caml_extunix_malloc_info"
 
 END
 
+HAVE MCHECK
+
+external mtrace : unit -> unit = "caml_extunix_mtrace"
+external muntrace : unit -> unit = "caml_extunix_muntrace"
+
+END
+
 HAVE PTRACE
 
 external ptrace_traceme : unit -> unit = "caml_extunix_ptrace_traceme"
