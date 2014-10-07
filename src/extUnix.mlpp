@@ -786,11 +786,19 @@ module Poll : sig
 
 type t = private int
 
-(** [is_set flags flag] tests whether [flag] is set in [flags] *)
+(** [is_set flags flag]
+  @return whether [flag] is set in [flags] *)
 val is_set : t -> t -> bool
-(** combine flags *)
+(** [is_inter flags1 flags2]
+  @return whether [flags1] and [flags2] have non-empty intersection *)
+val is_inter : t -> t -> bool
+(** @return intersection of two flags (AND) *)
+val inter : t -> t -> t
+(** @return union of two flags (OR) *)
+val union : t -> t -> t
+(** @return union of several flags (OR) *)
 val join : t list -> t
-(** combine two flags *)
+(** equivalent to [union] *)
 val (+) : t -> t -> t
 
 val pollin : t
@@ -814,7 +822,10 @@ let (pollin,pollpri,pollout,pollerr,pollhup,pollnval,pollrdhup) = poll_constants
 let none = 0
 
 let is_set xs x = xs land x = x
-let (+) a b = a lor b
+let inter x y = x land y
+let is_inter x y = x land y <> 0
+let union a b = a lor b
+let (+) = union
 let join = List.fold_left (lor) 0
 
 end
