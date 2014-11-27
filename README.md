@@ -26,20 +26,20 @@ Installation
 
 Dependencies :
   * ocaml and ocamlfind for build and installation
-  * (optional) oUnit for tests (configure with --enable-tests)
+  * (optional) oUnit for tests (configure with `--enable-tests`)
 
 Build and install :
 
-  ./configure
-  make
-  make install
+    ./configure
+    make
+    make install
 
 Alternatively use the underlying OASIS build system directly (plain ocaml,
 no sh and make needed) :
 
-  ocaml setup.ml -configure
-  ocaml setup.ml -build
-  ocaml setup.ml -install
+    ocaml setup.ml -configure
+    ocaml setup.ml -build
+    ocaml setup.ml -install
 
 See other available targets :
 
@@ -47,48 +47,50 @@ See other available targets :
 
 Usage example :
 
-  $ ocaml
-  # #use "topfind";;
-  # #require "extunix";;
-  # module U = ExtUnix.Specific;;
-  # U.ttyname Unix.stdout;;
-  - : string = "/dev/pts/8"
+    $ ocaml
+    # #use "topfind";;
+    # #require "extunix";;
+    # module U = ExtUnix.Specific;;
+    # U.ttyname Unix.stdout;;
+    - : string = "/dev/pts/8"
 
 Run unit tests :
 
-  ./configure --enable-tests
-  make test
+    ./configure --enable-tests
+    make test
 
 Guidelines
 ----------
 
 For OCaml programming style, we follow Unix module:
-  * Values and types should be named by the name of the underlying C function
-  * Raise Unix_error on runtime errors
-  * Uniformly raise Not_available exception for functions not available on the
-    current platform
-  * Be MT friendly by default - i.e. release runtime lock for blocking
-    operations, (FIXME) optionally provide ST variants
+* Values and types should be named by the name of the underlying C function
+* Raise `Unix_error` on runtime errors
+* Uniformly raise `Not_available` exception for functions not available on the
+  current platform
+* Be MT friendly by default - i.e. release runtime lock for blocking
+  operations, (FIXME) optionally provide ST variants
 
 Portability: 
-  * No shell scripting for build and install (think windows :) )
-  * Write portable C code (use compiler options to catch compatibility issues),
-    NB: msvc doesn't support C99.
-  * Provide module (ExtUnix.Specific) exposing only functions available on the
-    platform where library is built - i.e. guaranteed to not throw
-    Not_available exception (experimental).
+* No shell scripting for build and install (think windows :) )
+* Write portable C code (use compiler options to catch compatibility issues),
+  NB: msvc doesn't support C99.
+* Provide module (`ExtUnix.Specific`) exposing only functions available on the
+  platform where library is built - i.e. guaranteed to not throw
+  Not_available exception (experimental).
 
 Build infrastructure:
-  * src/discover.ml is used to discover available functions during configure
-    step.
-  * Generated config.h describes "features" discovered - it is responsible for
-    inclusion of system-specific headers - this
-    ensures coherent result at configure and build steps.
-  * Generated config.ml describes the same features for the ocaml syntax
-    extension src/pa_have.ml, which preprocesses src/extUnix.mlpp and generates
-    two modules : ExtUnixAll where bindings to missing functions are rewritten
-    to raise exception and ExtUnixSpecific which drops bindings to missing
-    functions.
+* src/discover.ml is used to discover available functions during configure
+  step.
+
+* Generated config.h describes "features" discovered - it is responsible for
+  inclusion of system-specific headers - this ensures coherent result at
+  configure and build steps.
+
+* Generated config.ml describes the same features for the ocaml syntax
+  extension src/pa_have.ml, which preprocesses src/extUnix.mlpp and generates
+  two modules : `ExtUnixAll` where bindings to missing functions are rewritten
+  to raise exception and `ExtUnixSpecific` which drops bindings to missing
+  functions.
 
 ExtUnix integration requirements
 --------------------------------
@@ -119,7 +121,7 @@ Checklist for adding new bindings
 * Add the OCaml code to src/extUnix.mlpp guarded with HAVE ... END
 * Add some tests to test/test.ml
 * Add note to CHANGES.txt
-* Run ./configure && make
+* Run `$ ./configure && make`
 
 Checklist for release
 ---------------------
