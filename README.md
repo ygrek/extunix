@@ -43,7 +43,7 @@ no sh and make needed) :
 
 See other available targets :
 
-  ocaml setup.ml -help
+    ocaml setup.ml -help
 
 Usage example :
 
@@ -121,7 +121,7 @@ Checklist for adding new bindings
 * Add the OCaml code to src/extUnix.mlpp guarded with HAVE ... END
 * Add some tests to test/test.ml
 * Add note to CHANGES.txt
-* Run `$ ./configure && make`
+* Run `./configure && make`
 
 Checklist for release
 ---------------------
@@ -137,12 +137,13 @@ Development
 -----------
 
 Many people contribute to extunix. Please submit your patches and/or feature requests
-to project bugtracker at :
+to project bugtracker at
 
-     https://forge.ocamlcore.org/tracker/?group_id=175
+  https://forge.ocamlcore.org/tracker/?group_id=175
 
 Current maintainer is reachable at :
 
-    mailto:ygrek@autistici.org
-    xmpp:ygrek@jabber.kiev.ua
+  * mailto:ygrek@autistici.org
+  * xmpp:ygrek@jabber.kiev.ua
 
+----
