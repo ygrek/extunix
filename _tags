@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 41234fe6f83260f29012012494cbae3a)
+# DO NOT EDIT (digest: cea2792c6e95cf1192920ebf541cca2c)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -51,6 +51,7 @@ true: annot, bin_annot
 "src/sockopt.c": oasis_library_extunix_ccopt
 "src/poll.c": oasis_library_extunix_ccopt
 "src/sysinfo.c": oasis_library_extunix_ccopt
+"src/mount.c": oasis_library_extunix_ccopt
 <src/extunix.{cma,cmxa}>: use_libextunix_stubs
 <src/*.ml{,i,y}>: pkg_bigarray
 <src/*.ml{,i,y}>: pkg_unix
@@ -122,6 +123,8 @@ true: annot, bin_annot
 "src/poll.c": pkg_unix
 "src/sysinfo.c": pkg_bigarray
 "src/sysinfo.c": pkg_unix
+"src/mount.c": pkg_bigarray
+"src/mount.c": pkg_unix
 # Executable test
 <test/test.{native,byte}>: pkg_bigarray
 <test/test.{native,byte}>: pkg_oUnit

@@ -2,6 +2,7 @@
 * New bindings :
   * sysinfo
   * mtrace muntrace
+  * mount, umount2
 + U.Poll.is_inter
 
 0.1.1 - 18 May 2014

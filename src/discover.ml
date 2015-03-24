@@ -319,6 +319,7 @@ let features =
     "POLL", L[ I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
     "SYSINFO", L[ I"sys/sysinfo.h"; S"sysinfo"; F ("sysinfo","mem_unit")];
     "MCHECK", L[ I"mcheck.h"; S"mtrace"; S"muntrace" ];
+    "MOUNT", L[ I"sys/mount.h"; S "mount"; S "umount2"; D "MS_REC" ]
   ]
 
 let () = 
