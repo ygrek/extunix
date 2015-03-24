@@ -648,6 +648,20 @@ external umount2: string -> umount2_flag list -> unit = "caml_extunix_umount"
 
 END
 
+(** {2 namespace} *)
+
+HAVE UNSHARE
+
+type clone_flag =
+  | CLONE_FS | CLONE_FILES | CLONE_NEWNS | CLONE_SYSVSEM | CLONE_NEWUTS
+  | CLONE_NEWIPC | CLONE_NEWUSER | CLONE_NEWPID | CLONE_NEWNET
+
+external unshare: clone_flag list -> unit = "caml_extunix_unshare"
+
+END
+
+
+
 (** {2 ioctl} *)
 
 (** Control the underlying device parameters of special files *)
