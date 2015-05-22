@@ -4,6 +4,20 @@
 
 #if defined(EXTUNIX_HAVE_SOCKOPT)
 
+#include <caml/fail.h>
+
+#ifndef TCP_KEEPCNT
+#define TCP_KEEPCNT -1
+#endif
+
+#ifndef TCP_KEEPIDLE
+#define TCP_KEEPIDLE -1
+#endif
+
+#ifndef TCP_KEEPINTVL
+#define TCP_KEEPINTVL -1
+#endif
+
 static int tcp_options[] = { 
   TCP_KEEPCNT, TCP_KEEPIDLE, TCP_KEEPINTVL,
 };
@@ -16,12 +30,16 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
   if (Int_val(k) < 0 || (unsigned int)Int_val(k) >= sizeof(tcp_options) / sizeof(tcp_options[0]))
     caml_invalid_argument("setsockopt_int");
 
-  if (0 != setsockopt(Int_val(fd), IPPROTO_TCP, tcp_options[Int_val(k)], &optval, optlen))
+  if (tcp_options[Int_val(k)] == -1)
   {
-    uerror("setsockopt_int", Nothing);
+    caml_raise_not_found();
+    return Val_unit;
   }
 
-  return Val_unit;
+  if (0 != setsockopt(Int_val(fd), IPPROTO_TCP, tcp_options[Int_val(k)], &optval, optlen))
+    uerror("setsockopt_int", Nothing);
+
+  return (Val_unit);
 }
 
 CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
@@ -32,10 +50,14 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
   if (Int_val(k) < 0 || (unsigned int)Int_val(k) >= sizeof(tcp_options) / sizeof(tcp_options[0]))
     caml_invalid_argument("getsockopt_int");
 
-  if (0 != getsockopt(Int_val(fd), IPPROTO_TCP, tcp_options[Int_val(k)], &optval, &optlen))
+  if (tcp_options[Int_val(k)] == -1)
   {
-    uerror("getsockopt_int", Nothing);
+    caml_raise_not_found();
+    return Val_unit;
   }
+
+  if (0 != getsockopt(Int_val(fd), IPPROTO_TCP, tcp_options[Int_val(k)], &optval, &optlen))
+    uerror("getsockopt_int", Nothing);
 
   return Val_int(optval);
 }
