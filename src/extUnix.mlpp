@@ -772,11 +772,22 @@ type socket_int_option =
                    keepalive probes, if the socket option SO_KEEPALIVE has been set on this socket *)
 | TCP_KEEPINTVL (** The time (in seconds) between individual keepalive probes *)
 
-(** Set an integer-valued option in the given socket *)
 external setsockopt_int : Unix.file_descr -> socket_int_option -> int -> unit = "caml_extunix_setsockopt_int"
+external getsockopt_int : Unix.file_descr -> socket_int_option -> int = "caml_extunix_getsockopt_int"
+
+(** Set an integer-valued option in the given socket *)
+let setsockopt_int sock opt v =
+  try
+    setsockopt_int sock opt v
+  with
+    Not_found -> raise (Not_available "setsockopt_int")
 
 (** Get the current value for the integer-valued option in the given socket *)
-external getsockopt_int : Unix.file_descr -> socket_int_option -> int = "caml_extunix_getsockopt_int"
+let getsockopt_int sock opt v =
+  try
+    getsockopt_int sock opt
+  with
+    Not_found -> raise (Not_available "getsockopt_int")
 
 END
 
