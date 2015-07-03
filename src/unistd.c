@@ -11,6 +11,7 @@
 #define EXTUNIX_WANT_READ
 #define EXTUNIX_WANT_WRITE
 #define EXTUNIX_WANT_GETTID
+#define EXTUNIX_WANT_CHROOT
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_TTYNAME)
@@ -461,3 +462,22 @@ value caml_extunix_intr_write(value v_fd, value v_buf, value v_ofs, value v_len)
 }
 #endif
 
+#if defined(EXTUNIX_HAVE_CHROOT)
+
+CAMLprim value caml_extunix_chroot(value v_path)
+{
+  CAMLparam1(v_path);
+  int ret;
+  char* p_path = strdup(String_val(v_path));
+
+  caml_enter_blocking_section();
+  ret = chroot(p_path);
+  caml_leave_blocking_section();
+
+  free(p_path);
+
+  if (ret != 0) uerror("chroot", v_path);
+  CAMLreturn(Val_unit);
+}
+
+#endif

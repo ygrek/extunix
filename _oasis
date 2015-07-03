@@ -73,9 +73,18 @@ Executable testba
   MainIs: testba.ml
   BuildDepends: extunix, oUnit (>= 1.0.3)
 
+Executable test_user_namespace
+  Path: test/
+  Install: false
+  Build$: flag(tests)
+  Custom: true
+  CompiledObject: best
+  MainIs: test_user_namespace.ml
+  BuildDepends: extunix, oUnit (>= 1.0.3)
+
 Test main
   Command: $test && $testba
-  TestTools: test, testba
+  TestTools: test, testba, test_user_namespace
 
 Document api
   Title: API reference for extunix

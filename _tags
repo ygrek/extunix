@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 578bde6d97169b8304949c656969af83)
+# DO NOT EDIT (digest: f5b3eb6258856293d339d83e7a87fa83)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -139,11 +139,17 @@ true: annot, bin_annot
 <test/testba.{native,byte}>: pkg_oUnit
 <test/testba.{native,byte}>: pkg_unix
 <test/testba.{native,byte}>: use_extunix
+<test/testba.{native,byte}>: custom
+# Executable test_user_namespace
+<test/test_user_namespace.{native,byte}>: pkg_bigarray
+<test/test_user_namespace.{native,byte}>: pkg_oUnit
+<test/test_user_namespace.{native,byte}>: pkg_unix
+<test/test_user_namespace.{native,byte}>: use_extunix
 <test/*.ml{,i,y}>: pkg_bigarray
 <test/*.ml{,i,y}>: pkg_oUnit
 <test/*.ml{,i,y}>: pkg_unix
 <test/*.ml{,i,y}>: use_extunix
-<test/testba.{native,byte}>: custom
+<test/test_user_namespace.{native,byte}>: custom
 # OASIS_STOP
 true: my_warnings
 "test/test.ml": warn_d

@@ -644,7 +644,15 @@ external mount: string -> string -> string ->
 type umount2_flag =
   | MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW
 
-external umount2: string -> umount2_flag list -> unit = "caml_extunix_umount"
+external umount2: string -> umount2_flag list -> unit = "caml_extunix_umount2"
+
+END
+
+HAVE CHROOT
+
+(** {3 chroot system call} *)
+
+external chroot: string -> unit = "caml_extunix_chroot"
 
 END
 
