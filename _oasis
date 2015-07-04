@@ -80,7 +80,7 @@ Executable test_user_namespace
   Custom: true
   CompiledObject: best
   MainIs: test_user_namespace.ml
-  BuildDepends: extunix, oUnit (>= 1.0.3)
+  BuildDepends: str, extunix, oUnit (>= 1.0.3)
 
 Test main
   Command: $test && $testba

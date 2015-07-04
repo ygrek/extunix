@@ -7,3 +7,4 @@ setup.log
 src/config.*
 web/index.html
 *~
+/userns_test/

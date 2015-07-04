@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: f5b3eb6258856293d339d83e7a87fa83)
+# DO NOT EDIT (digest: d581d38739f56686e18c2585b3913df3)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -143,10 +143,12 @@ true: annot, bin_annot
 # Executable test_user_namespace
 <test/test_user_namespace.{native,byte}>: pkg_bigarray
 <test/test_user_namespace.{native,byte}>: pkg_oUnit
+<test/test_user_namespace.{native,byte}>: pkg_str
 <test/test_user_namespace.{native,byte}>: pkg_unix
 <test/test_user_namespace.{native,byte}>: use_extunix
 <test/*.ml{,i,y}>: pkg_bigarray
 <test/*.ml{,i,y}>: pkg_oUnit
+<test/*.ml{,i,y}>: pkg_str
 <test/*.ml{,i,y}>: pkg_unix
 <test/*.ml{,i,y}>: use_extunix
 <test/test_user_namespace.{native,byte}>: custom
@@ -154,3 +156,5 @@ true: annot, bin_annot
 true: my_warnings
 "test/test.ml": warn_d
 "src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o
+<**/rootfs>: -traverse
+<**/rootfs>: not_hygienic
