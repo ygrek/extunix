@@ -783,7 +783,7 @@ let setsockopt_int sock opt v =
     Not_found -> raise (Not_available "setsockopt_int")
 
 (** Get the current value for the integer-valued option in the given socket *)
-let getsockopt_int sock opt v =
+let getsockopt_int sock opt =
   try
     getsockopt_int sock opt
   with
