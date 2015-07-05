@@ -156,5 +156,7 @@ true: annot, bin_annot
 true: my_warnings
 "test/test.ml": warn_d
 "src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o
-<**/rootfs>: -traverse
-<**/rootfs>: not_hygienic
+<**/rootfs*>: -traverse
+<**/rootfs*>: not_hygienic
+"userns_test/": -traverse
+"userns_test/": not_hygienic

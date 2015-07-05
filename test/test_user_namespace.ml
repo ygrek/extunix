@@ -1,15 +1,8 @@
 
 open ExtUnix.All
 
-module Opt = struct
-  let iter f = function
-    | None -> ()
-    | Some x -> f x
-end
-
 let mkdir ?(perm=0o750) dir =
   if not (Sys.file_exists dir) then Unix.mkdir dir perm
-
 
 let mount_inside ~dir ~src ~tgt ?(fstype="") ~flags ?(option="") () =
   let tgt = Filename.concat dir tgt in
@@ -28,7 +21,10 @@ let mount_base dir =
 
   mount_inside ~dir ~src:"tmpfs" ~tgt:"run" ~fstype:"tmpfs"
     ~flags:[MS_NOSUID; MS_STRICTATIME; MS_NODEV]
-    ~option:"mode=755" ()
+    ~option:"mode=755" ();
+
+  (** for aptitude *)
+  mkdir (Filename.concat dir "/run/lock")
 
 let do_chroot dest =
   Sys.chdir dest;
@@ -248,7 +244,7 @@ let just_goto_child () =
     | Unix.WSTOPPED _ -> assert false
 
 
-let go_in_userns ?dir idmap =
+let go_in_userns idmap =
   (** the usermap can be set only completely outside the namespace, so we
       keep a child for doing that when we have a pid completely inside the
       namespace *)
@@ -261,15 +257,10 @@ let go_in_userns ?dir idmap =
           ];
   (** only the child will be in the new pid namespace, the parent is in an
       intermediary state not interesting *)
-  goto_child ~exec_in_parent:call_set_usermap;
+  goto_child ~exec_in_parent:call_set_usermap
   (* Printf.printf "User: %i (%i)\n%!" (Unix.getuid ()) (Unix.geteuid ()); *)
   (* Printf.printf "Pid: %i\n%!" (Unix.getpid ()); *)
   (* Printf.printf "User: %i (%i)\n%!" (Unix.getuid ()) (Unix.geteuid ()); *)
-  (** make the mount private and mount basic directories *)
-  Opt.iter mount_base dir;
-  (** chroot in the directory *)
-  Opt.iter do_chroot dir
-  (* Printf.printf "User: %i (%i)\n%!" (Unix.getuid ()) (Unix.geteuid ()) *)
 
 let create_rootfs ~distr ~release ~arch testdir =
   let rootfsdir = Filename.concat testdir "rootfs" in
@@ -289,7 +280,9 @@ let create_rootfs ~distr ~release ~arch testdir =
     let exclude = Filename.concat metadir "excludes-user" in
     Printf.printf "Uncompressing rootfs:%!";
     if Sys.file_exists exclude
-    then command_no_fail ~error "tar Jxf %S -C %S --exclude-from %S"
+    then command_no_fail ~error
+        "tar Jxf %S -C %S --exclude-from %S \
+         --numeric-owner --preserve-permissions --preserve-order --same-owner"
         rootfs rootfsdir exclude
     else command_no_fail ~error "tar Jxf %S -C %S" meta metadir;
     Printf.printf "done.\n%!";
@@ -358,9 +351,13 @@ let () =
   Unix.handle_unix_error begin fun () ->
     test_userns_availability ();
     mkdir ~perm:0o750 testdir;
+    go_in_userns idmap;
     let rootfsdir = create_rootfs ~arch ~distr ~release testdir in
     command_no_fail "cp /etc/resolv.conf %S/etc/resolv.conf" rootfsdir;
-    go_in_userns ~dir:rootfsdir idmap;
+    (** make the mount private and mount basic directories *)
+    mount_base rootfsdir;
+    (** chroot in the directory *)
+    do_chroot rootfsdir;
     (** group must be changed before uid... *)
     setresgid setgid setgid setgid;
     setresuid setuid setuid setuid;
