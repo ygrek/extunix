@@ -138,4 +138,6 @@
 <test/*.ml{,i}>: use_extunix
 <test/testba.{native,byte}>: custom
 # OASIS_STOP
+true: my_warnings
+"test/test.ml": warn_d
 "src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o

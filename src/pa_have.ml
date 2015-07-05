@@ -24,13 +24,13 @@ struct
   | <:ctyp< $t$ >> -> let loc = Loc.ghost in <:expr@loc< ($body$ : $t$) >>
 
   let invalid_external = function
-  | <:str_item@_loc< external $i$ : $t$ = $sl$ >> ->
+  | <:str_item@_loc< external $i$ : $t$ = $_sl$ >> ->
       <:str_item< value $lid:i$ = $make_dummy_f <:expr< raise (Not_available $str:i$) >> t$; >>
   | e -> e
 
   let record_external have si =
     begin match si with
-    | <:str_item@_loc< external $i$ : $t$ = $sl$ >> ->
+    | <:str_item@_loc< external $i$ : $_t$ = $_sl$ >> ->
 (*       if Hashtbl.mem funcs i then failwith (Printf.sprintf "duplicate external %s" i); *)
       Hashtbl.replace funcs i have
     | _ -> () end;

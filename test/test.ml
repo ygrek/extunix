@@ -338,7 +338,7 @@ let test_endian_string () =
   
 let test_read_credentials () =
   require "read_credentials";
-  let (fd1, fd2) = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
+  let (_fd1, fd2) = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
   let (pid, uid, gid) = Unix.getpid (), Unix.getuid (), Unix.getgid () in
   assert_equal (read_credentials fd2) (pid, uid, gid)
 
@@ -372,7 +372,7 @@ let test_sendmsg () =
       sendmsg s2 ~sendfd:fd (sprintf "%d" st.Unix.st_ino);
       Unix.close fd;
       Unix.close s2;
-  | pid ->
+  | _pid ->
       Unix.close s2;
       let (some_fd, msg) = recvmsg_fd s1 in
       Unix.close s1;
@@ -496,14 +496,12 @@ let test_write () =
 
 let test_mkstemp () =
   require "internal_mkstemps";
-  let (fd, name) = mkstemp ~suffix:"mkstemp" "extunix"
-  in
+  let (_fd, name) = mkstemp ~suffix:"mkstemp" "extunix" in
   Unix.unlink name
 
 let test_mkostemp () =
   require "internal_mkostemps";
-  let (fd, name) = mkostemp ~suffix:"mkstemp" ~flags:[Unix.O_APPEND] "extunix"
-  in
+  let (_fd, name) = mkostemp ~suffix:"mkstemp" ~flags:[Unix.O_APPEND] "extunix" in
   Unix.unlink name
 
 let test_memalign () =
@@ -537,7 +535,7 @@ let test_sendmsg_bin () =
   | 0 ->
     Unix.close s';
     sendmsg s ~sendfd:Unix.stdout test_msg;
-    sendfd s Unix.stdout
+    sendfd ~sock:s ~fd:Unix.stdout
   | _ ->
     Unix.close s;
     let (fd1,msg) = recvmsg_fd s' in
