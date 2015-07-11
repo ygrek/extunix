@@ -4,10 +4,10 @@ open ExtUnix.All
 let mkdir ?(perm=0o750) dir =
   if not (Sys.file_exists dir) then Unix.mkdir dir perm
 
-let mount_inside ~dir ~src ~tgt ?(fstype="") ~flags ?(option="") () =
+let mount_inside ~dir ~src ~tgt ?(fstype="") ~flags ?(data="") () =
   let tgt = Filename.concat dir tgt in
   mkdir tgt;
-  mount src tgt fstype flags option
+  mount ~source:src ~target:tgt ~fstype flags ~data
 
 let mount_base dir =
   mount_inside ~dir ~src:"proc" ~tgt:"proc" ~fstype:"proc"
@@ -17,11 +17,11 @@ let mount_base dir =
 
   mount_inside ~dir ~src:"tmpfs" ~tgt:"dev/shm" ~fstype:"tmpfs"
     ~flags:[MS_NOSUID; MS_STRICTATIME; MS_NODEV]
-    ~option:"mode=1777" ();
+    ~data:"mode=1777" ();
 
   mount_inside ~dir ~src:"tmpfs" ~tgt:"run" ~fstype:"tmpfs"
     ~flags:[MS_NOSUID; MS_STRICTATIME; MS_NODEV]
-    ~option:"mode=755" ();
+    ~data:"mode=755" ();
 
   (** for aptitude *)
   mkdir (Filename.concat dir "/run/lock")
@@ -127,7 +127,7 @@ let gpg_check file = function
 let download_compat_level=2
 let download_server = "images.linuxcontainers.org"
 
-let rec download ?(quiet=true) fmt =
+let download ?(quiet=true) fmt =
   Printf.ksprintf (fun src ->
       Printf.ksprintf (fun dst ->
           command "wget -T 30 %s https://%s/%s -O %S %s"

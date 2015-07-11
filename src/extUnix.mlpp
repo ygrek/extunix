@@ -638,8 +638,8 @@ type mount_flag =
   | MS_SHARED | MS_RELATIME | MS_KERNMOUNT | MS_I_VERSION | MS_STRICTATIME
   | MS_NOUSER
 
-external mount: string -> string -> string ->
-  mount_flag list -> string -> unit = "caml_extunix_mount"
+external mount: source:string -> target:string -> fstype:string ->
+  mount_flag list -> data:string -> unit = "caml_extunix_mount"
 
 type umount2_flag =
   | MNT_FORCE | MNT_DETACH | MNT_EXPIRE | UMOUNT_NOFOLLOW
