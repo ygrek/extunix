@@ -17,7 +17,7 @@ Copyrights:
               (C) 2013 Mehdi Dogguy,
               (C) 2013 Roman Vorobets,
               (C) 2013 Pierre Chambart,
-              (C) 2013 Dmitry Grebeniuk
+              (C) 2013 Dmitry Grebeniuk,
               (C) 2015 François Bobot
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
