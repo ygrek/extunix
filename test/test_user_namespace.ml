@@ -78,13 +78,53 @@ let command_no_fail ?(error=(fun () -> ())) fmt =
       end
     ) fmt
 
+(** {2 GPG} *)
 
-(** {2 Download image} *)
-(** use lxc download template facilities } *)
-
-let download_compat_level=2
 let download_keyid = "0xBAEFF88C22F6E216"
 let download_keyserver = "hkp://pool.sks-keyservers.net"
+
+type gpg_t =
+  | GPGNotAvailable
+  | GPGAvailable of string
+
+
+let gpg_setup ~dir =
+  let command_raise fmt =
+    Printf.ksprintf (fun cmd ->
+        Printf.ksprintf (fun msg ->
+            let c = Sys.command cmd in
+            if c <> 0 then begin
+              Printf.eprintf "%s\n%!" msg;
+              raise Exit
+            end
+          )
+      ) fmt
+  in
+  try
+    command_raise
+      "which gpg >/dev/null 2>&1"
+      "The program gpg is not present: can't validate download";
+    let gpg_dir = Filename.concat dir "gpg" in
+    mkdir ~perm:0o700 gpg_dir;
+    command_raise
+      "GNUPGHOME=%S gpg --keyserver %s --recv-keys %s > /dev/null 2>&1;"
+      gpg_dir download_keyserver download_keyid
+      "Can't download gpg key data: can't validate download";
+    GPGAvailable gpg_dir
+  with Exit ->
+    GPGNotAvailable
+
+let gpg_check file = function
+  | GPGNotAvailable -> ()
+  | GPGAvailable gpg_dir ->
+    command_no_fail
+      ~error:(fun () -> Printf.eprintf "Invalid signature for %s\n%!" file)
+      "GNUPGHOME=%S gpg --verify %S > /dev/null 2>&1" gpg_dir (file^".asc")
+
+(** {2 Download image} *)
+(** use lxc download template facilities *)
+
+let download_compat_level=2
 let download_server = "images.linuxcontainers.org"
 
 let rec download ?(quiet=true) fmt =
@@ -97,7 +137,7 @@ let rec download ?(quiet=true) fmt =
         )
     ) fmt
 
-let download_index ~dir =
+let download_index ~dir ~gpg =
   let index = Filename.concat dir "index" in
   let url_index = "meta/1.0/index-user" in
   Printf.printf "Download the index: %!";
@@ -114,6 +154,7 @@ let download_index ~dir =
       Printf.eprintf "error.\n%!";
       exit 1;
     end;
+  gpg_check index gpg;
   Printf.printf "done.\n%!";
   index
 
@@ -134,8 +175,10 @@ let find_image ~distr ~release ~arch index =
       distr release arch;
     exit 1
 
-let download_rootfs_meta ~dir (build_id,url) =
+let download_rootfs_meta ~dir ~gpg (build_id,url) =
   let build_id_file = Filename.concat dir "build_id" in
+  let rootfs_tar = Filename.concat dir "rootfs.tar.xz" in
+  let meta_tar = Filename.concat dir "meta.tar.xz" in
   if not (Sys.file_exists build_id_file)
      || read_in_file "%s" build_id_file <> build_id then begin
     if Sys.file_exists build_id_file then Unix.unlink build_id_file;
@@ -145,9 +188,11 @@ let download_rootfs_meta ~dir (build_id,url) =
             && download "%s/meta.tar.xz" url "%s/meta.tar.xz" dir
             && download "%s/meta.tar.xz.asc" url "%s/meta.tar.xz.asc" dir)
     then begin Printf.printf "error.\n%!"; exit 1 end;
+    gpg_check rootfs_tar gpg;
+    gpg_check meta_tar gpg;
     write_in_file "%s" build_id_file "%s" build_id
   end;
-  Filename.concat dir "rootfs.tar.xz", Filename.concat dir "meta.tar.xz"
+  rootfs_tar, meta_tar
 
 (** {2 User namespace} *)
 type userns_idmap =
@@ -265,10 +310,11 @@ let go_in_userns idmap =
 let create_rootfs ~distr ~release ~arch testdir =
   let rootfsdir = Filename.concat testdir "rootfs" in
   if not (Sys.file_exists rootfsdir) then begin
-    let index = download_index ~dir:testdir in
+    let gpg = gpg_setup ~dir:testdir in
+    let index = download_index ~dir:testdir ~gpg in
     let url =
       find_image ~distr ~release ~arch index in
-    let rootfs, meta = download_rootfs_meta ~dir:testdir url in
+    let rootfs, meta = download_rootfs_meta ~dir:testdir ~gpg url in
     let metadir = Filename.concat testdir "meta" in
     command_no_fail "rm -rf %S" metadir;
     mkdir metadir;
@@ -353,7 +399,8 @@ let () =
     mkdir ~perm:0o750 testdir;
     go_in_userns idmap;
     let rootfsdir = create_rootfs ~arch ~distr ~release testdir in
-    command_no_fail "cp /etc/resolv.conf %S/etc/resolv.conf" rootfsdir;
+    command_no_fail "cp /etc/resolv.conf %S"
+      (Filename.concat rootfsdir "etc/resolv.conf");
     (** make the mount private and mount basic directories *)
     mount_base rootfsdir;
     (** chroot in the directory *)
