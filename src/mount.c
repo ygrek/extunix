@@ -50,8 +50,6 @@ CAMLprim value caml_extunix_umount2(value v_target,value v_umountflags)
 
   int p_umountflags = caml_convert_flag_list(v_umountflags, umountflags_table);
 
-  strcpy(p_target, String_val(v_target));
-
   caml_enter_blocking_section();
   ret = umount2(p_target, p_umountflags);
   caml_leave_blocking_section();

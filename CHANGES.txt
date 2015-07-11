@@ -4,6 +4,7 @@
   * mtrace muntrace
   * mount, umount2
   * unshare
+  * chroot
 + U.Poll.is_inter
 
 0.1.1 - 18 May 2014

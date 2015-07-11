@@ -349,7 +349,7 @@ let idmap, (cmd,arg), testdir, setuid, setgid, arch, distr, release =
   parse (align ~limit:80 [
       "--dir",
       Set_string testdir,
-      "dir ​directory to use for the test \
+      "dir Directory to use for the test \
        (dir/rootfs is used for root directory)";
       "--idmap",
       Tuple [Set_int idmap_id;Set_int idmap_rangeid],
