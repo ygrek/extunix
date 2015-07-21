@@ -836,7 +836,7 @@ END
 
 HAVE POLL
 
-module Poll : sig 
+module Poll : sig
 
 type t = private int
 
@@ -884,7 +884,9 @@ let join = List.fold_left (lor) 0
 
 end
 
-external poll : (Unix.file_descr * Poll.t) array -> float -> (Unix.file_descr * Poll.t) list = "caml_extunix_poll"
+external poll : (Unix.file_descr * Poll.t) array -> int -> float -> (Unix.file_descr * Poll.t) list = "caml_extunix_poll"
+
+let poll a ?(n=Array.length a) t = poll a n t
 
 END
 

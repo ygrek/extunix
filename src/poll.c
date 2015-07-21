@@ -20,15 +20,18 @@ CAMLprim value caml_extunix_poll_constants(value v_unit)
   return v;
 }
 
-CAMLprim value caml_extunix_poll(value v_fds, value v_ms)
+CAMLprim value caml_extunix_poll(value v_fds, value v_n, value v_ms)
 {
-  CAMLparam2(v_fds, v_ms);
+  CAMLparam3(v_fds, v_n, v_ms);
   CAMLlocal3(v_l,v_tuple,v_cons);
   struct pollfd* fd = NULL;
-  size_t n = Wosize_val(v_fds);
+  size_t n = Int_val(v_n);
   size_t i = 0;
   int result;
   int timeout = Double_val(v_ms) * 1000.f;
+
+  if (Wosize_val(v_fds) < n)
+    caml_invalid_argument("poll");
 
   if (0 == n)
     CAMLreturn(Val_emptylist);
