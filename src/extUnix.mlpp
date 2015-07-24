@@ -808,15 +808,21 @@ END
 
 HAVE SOCKOPT
 
-(** Extra socket options with integer value not covered in {!Unix} module *)
+(** Extra socket options with integer value not covered in {!Unix} module.
+  NB Not all options available on all platforms, use {!have_sockopt} to check at runtime
+  (even when function is defined in [Specific] module)
+*)
 type socket_int_option =
 | TCP_KEEPCNT (** The maximum number of keepalive probes TCP should send before dropping the connection *)
 | TCP_KEEPIDLE (** The  time  (in  seconds)  the connection needs to remain idle before TCP starts sending
                    keepalive probes, if the socket option SO_KEEPALIVE has been set on this socket *)
 | TCP_KEEPINTVL (** The time (in seconds) between individual keepalive probes *)
 
+(** raise [Not_available] if option is not supported, see {!have_sockopt} *)
 external setsockopt_int : Unix.file_descr -> socket_int_option -> int -> unit = "caml_extunix_setsockopt_int"
 external getsockopt_int : Unix.file_descr -> socket_int_option -> int = "caml_extunix_getsockopt_int"
+
+external have_sockopt : socket_int_option -> bool = "caml_extunix_have_sockopt"
 
 (** Set an integer-valued option in the given socket *)
 let setsockopt_int sock opt v =

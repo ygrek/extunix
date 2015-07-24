@@ -19,9 +19,19 @@
 #define TCP_KEEPINTVL -1
 #endif
 
-static int tcp_options[] = { 
+static int tcp_options[] = {
   TCP_KEEPCNT, TCP_KEEPIDLE, TCP_KEEPINTVL,
 };
+
+CAMLprim value caml_extunix_have_sockopt(value k)
+{
+  if (Int_val(k) < 0 || (unsigned int)Int_val(k) >= sizeof(tcp_options) / sizeof(tcp_options[0]))
+  {
+    caml_invalid_argument("have_sockopt");
+  }
+
+  return Val_bool(tcp_options[Int_val(k)] != -1);
+}
 
 CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
 {
