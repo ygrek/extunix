@@ -119,6 +119,28 @@ CAMLprim value caml_extunix_linkat(value v_olddirfd, value v_oldname, value v_ne
   CAMLreturn(Val_unit);
 }
 
+CAMLprim value caml_extunix_fchownat(value v_dirfd, value v_name, value v_owner, value v_group, value v_flags)
+{
+  CAMLparam5(v_dirfd, v_name, v_owner, v_group, v_flags);
+  int ret = 0;
+  int flags = caml_convert_flag_list(v_flags, at_flags_table);
+  flags &= (AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH);  /* only allowed flag here */
+  ret = fchownat(Int_val(v_dirfd), String_val(v_name), Int_val(v_owner), Int_val(v_group), flags);
+  if (ret != 0) uerror("fchownat", v_name);
+  CAMLreturn(Val_unit);
+}
+
+CAMLprim value caml_extunix_fchmodat(value v_dirfd, value v_name, value v_mode, value v_flags)
+{
+  CAMLparam4(v_dirfd, v_name, v_mode, v_flags);
+  int ret = 0;
+  int flags = caml_convert_flag_list(v_flags, at_flags_table);
+  flags &= AT_SYMLINK_NOFOLLOW;  /* only allowed flag here */
+  ret = fchmodat(Int_val(v_dirfd), String_val(v_name), Int_val(v_mode), flags);
+  if (ret != 0) uerror("fchmodat", v_name);
+  CAMLreturn(Val_unit);
+}
+
 CAMLprim value caml_extunix_symlinkat(value v_path, value v_newdirfd, value v_newname)
 {
   CAMLparam3(v_path, v_newdirfd, v_newname);
