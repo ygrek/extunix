@@ -330,7 +330,7 @@ let create_rootfs ~distr ~release ~arch testdir =
         "tar Jxf %S -C %S --exclude-from %S \
          --numeric-owner --preserve-permissions --preserve-order --same-owner"
         rootfs rootfsdir exclude
-    else command_no_fail ~error "tar Jxf %S -C %S" meta metadir;
+    else command_no_fail ~error "tar Jxf %S -C %S" rootfs rootfsdir;
     Printf.printf "done.\n%!";
   end;
   rootfsdir
