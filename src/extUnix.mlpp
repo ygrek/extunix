@@ -138,6 +138,8 @@ external mkdirat : Unix.file_descr -> string -> int -> unit = "caml_extunix_mkdi
 external linkat : Unix.file_descr -> string -> Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_linkat"
 external symlinkat : string -> Unix.file_descr -> string -> unit = "caml_extunix_symlinkat"
 external readlinkat : Unix.file_descr -> string -> string = "caml_extunix_readlinkat"
+external fchownat : Unix.file_descr -> string -> int -> int -> at_flag list -> unit = "caml_extunix_fchownat"
+external fchmodat : Unix.file_descr -> string -> int -> at_flag list -> unit = "caml_extunix_fchmodat"
 END
 
 (** @raise Not_available if OS does not represent file descriptors as numbers *)
