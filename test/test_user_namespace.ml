@@ -346,7 +346,7 @@ let idmap, (cmd,arg), testdir, setuid, setgid, arch, distr, release =
   let arch = ref "amd64" in
   let distr = ref "debian" in
   let release = ref "jessie" in
-  parse (align ~limit:80 [
+  parse (align [
       "--dir",
       Set_string testdir,
       "dir Directory to use for the test \
