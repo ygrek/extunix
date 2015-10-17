@@ -124,7 +124,7 @@ CAMLprim value caml_extunix_fchownat(value v_dirfd, value v_name, value v_owner,
   CAMLparam5(v_dirfd, v_name, v_owner, v_group, v_flags);
   int ret = 0;
   int flags = caml_convert_flag_list(v_flags, at_flags_table);
-  flags &= (AT_SYMLINK_NOFOLLOW | AT_EMPTY_PATH);  /* only allowed flag here */
+  flags &= (AT_SYMLINK_NOFOLLOW /* | AT_EMPTY_PATH */);  /* only allowed flag here */
   ret = fchownat(Int_val(v_dirfd), String_val(v_name), Int_val(v_owner), Int_val(v_group), flags);
   if (ret != 0) uerror("fchownat", v_name);
   CAMLreturn(Val_unit);
