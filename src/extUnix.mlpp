@@ -1962,13 +1962,20 @@ type sysconf_name =
                               the format of YYYYMML.  *)
   | PHYS_PAGES            (** The number of pages of physical memory.  Note that
                               it is possible for the product of this value and the
-                              value of [PAGE_SIZE] to overflow. *)
-  | AVPHYS_PAGES          (** The number of currently available pages of physical memory. *)
-  | NPROCESSORS_CONF      (** The number of processors configured. *)
-  | NPROCESSORS_ONLN      (** The number of processors currently online (available). *)
+                              value of [PAGE_SIZE] to overflow. Non-standard, may be not available *)
+  | AVPHYS_PAGES          (** The number of currently available pages of physical memory. Non-standard, may be not available *)
+  | NPROCESSORS_CONF      (** The number of processors configured. Non-standard, may be not available *)
+  | NPROCESSORS_ONLN      (** The number of processors currently online (available). Non-standard, may be not available *)
 
-(** get configuration information at runtime *)
 external sysconf: sysconf_name -> int64 = "caml_extunix_sysconf"
+
+(** get configuration information at runtime, may raise [Not_available] for non-standard options (see above)
+  even in [Specific] module *)
+let sysconf sc =
+  try
+    sysconf sc
+  with
+    Not_found -> raise (Not_available "sysconf")
 
 END
 

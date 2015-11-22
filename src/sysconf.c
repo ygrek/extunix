@@ -14,6 +14,22 @@
 
 #if defined(EXTUNIX_HAVE_SYSCONF)
 
+#ifndef _SC_PHYS_PAGES
+#define  _SC_PHYS_PAGES (-1)
+#endif
+
+#ifndef _SC_AVPHYS_PAGES
+#define _SC_AVPHYS_PAGES (-1)
+#endif
+
+#ifndef _SC_NPROCESSORS_CONF
+#define _SC_NPROCESSORS_CONF (-1)
+#endif
+
+#ifndef _SC_NPROCESSORS_ONLN
+#define _SC_NPROCESSORS_ONLN (-1)
+#endif
+
 static int caml_conf_table[] =
   {
     _SC_ARG_MAX,
@@ -41,8 +57,15 @@ CAMLprim value caml_extunix_sysconf(value name)
 {
   CAMLparam1(name);
   long r = -1;
+  int sc = caml_conf_table[Int_val(name)];
 
-  r = sysconf(caml_conf_table[Int_val(name)]);
+  if (-1 == sc)
+  {
+    caml_raise_not_found();
+    assert(0);
+  }
+
+  r = sysconf(sc);
 
   if (-1 == r)
   {

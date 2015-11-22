@@ -60,6 +60,7 @@ let config_includes = [
   "caml/bigarray.h";
   "string.h";
   "errno.h";
+  "assert.h";
   ]
 
 let build_code args =
@@ -231,7 +232,7 @@ let features =
       D "POSIX_FADV_NORMAL";
     ];
     "FALLOCATE", ANY[
-      [I "fcntl.h"; S "posix_fallocate"; S" posix_fallocate64"; ];
+      [I "fcntl.h"; S "posix_fallocate"; S "posix_fallocate64"; ];
       [D "WIN32"; S "GetFileSizeEx"; ];
     ];
     "TTY_IOCTL", L[
@@ -304,7 +305,6 @@ let features =
       S "sysconf";
       (* check for standard values and extensions *)
       D "_SC_VERSION"; D "_SC_2_VERSION";
-      D "_SC_PHYS_PAGES"; D "_SC_AVPHYS_PAGES"; D "_SC_NPROCESSORS_CONF"; D "_SC_NPROCESSORS_ONLN";
     ];
     "SPLICE", L[ I "fcntl.h"; S"splice"; ];
     "TEE", L[ I "fcntl.h"; S"tee"; ];
@@ -324,7 +324,7 @@ let features =
     "CHROOT", L[ I"unistd.h"; S "chroot"; ];
   ]
 
-let () = 
+let () =
   let args0 = [
     "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
     "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
@@ -335,7 +335,7 @@ let () =
     assert (not (String.contains name ' '));
     "--disable-" ^ String.lowercase name,
     Arg.Unit (fun () -> disabled := name :: !disabled),
-    " disable " ^ name) features 
+    " disable " ^ name) features
   in
   let args = Arg.align (args0 @ args1) in
   Arg.parse args failwith ("Options are:");

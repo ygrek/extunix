@@ -5,18 +5,17 @@
 #if defined(EXTUNIX_HAVE_SOCKOPT)
 
 #include <assert.h>
-#include <caml/fail.h>
 
 #ifndef TCP_KEEPCNT
-#define TCP_KEEPCNT -1
+#define TCP_KEEPCNT (-1)
 #endif
 
 #ifndef TCP_KEEPIDLE
-#define TCP_KEEPIDLE -1
+#define TCP_KEEPIDLE (-1)
 #endif
 
 #ifndef TCP_KEEPINTVL
-#define TCP_KEEPINTVL -1
+#define TCP_KEEPINTVL (-1)
 #endif
 
 static int tcp_options[] = {
