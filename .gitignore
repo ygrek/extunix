@@ -4,7 +4,8 @@ _build
 *.docdir
 setup.data
 setup.log
-src/config.*
+src/config.h
+src/extUnixConfig.ml
 web/index.html
 *~
 /userns_test/

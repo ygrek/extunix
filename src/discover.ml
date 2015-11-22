@@ -9,7 +9,7 @@
 
 open Printf
 
-type arg = 
+type arg =
   | I of string (* check header file (#include) available (promoted to config) *)
   | T of string (* check type available *)
   | DEFINE of string (* define symbol prior to including header files (promoted to config) *)
@@ -105,7 +105,7 @@ let discover (name,test) =
   let rec loop args other =
     let code = build_code args in
     match execute code, other with
-    | false, [] -> 
+    | false, [] ->
         if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
@@ -161,17 +161,24 @@ let show_c file result =
 let show_ml file result =
   let ch = open_out file in
   let pr fmt = ksprintf (fun s -> output_string ch (s^"\n")) fmt in
-  pr "let have = function";
+  pr "(** @return whether feature is available *)";
+  pr "let feature = function";
   List.iter (function
   | YES (name,_) -> pr "| %S -> Some true" name
   | NO name -> pr "| %S -> Some false" name) result;
   pr "| _ -> None";
+  pr "";
+  pr "(** @return whether feature is available *)";
+  pr "let have = function";
+  List.iter (function
+  | YES (name,_) -> pr "| `%s -> true" name
+  | NO name -> pr "| `%s -> false" name) result;
   close_out ch
 
 let main config =
   let result = List.map discover config in
   show_c "src/config.h" result;
-  show_ml "src/config.ml" result
+  show_ml "src/extUnixConfig.ml" result
 
 let features =
   [

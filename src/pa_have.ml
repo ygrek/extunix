@@ -1,6 +1,6 @@
 (**
   New toplevel statement (structure item): HAVE <uident> { OR <uident> }* <structure_items> END
-  if (Config.have "<uident>") is true (for any of the uident's provided) then enclosed structure items are left as is,
+  if (ExtUnixConfig.have "<uident>") is true (for any of the uident's provided) then enclosed structure items are left as is,
   otherwise:
     if -gen-all was specified then external declarations in the scope are rewritten to raise exception when called,
     otherwise all contents is dropped altogether
@@ -8,7 +8,7 @@
 
 module Have(Syntax : Camlp4.Sig.Camlp4Syntax) =
 struct
-  open Camlp4.PreCast 
+  open Camlp4.PreCast
 
   include Syntax
 
@@ -45,7 +45,7 @@ struct
 
   let show name s = if !verbose then Printf.eprintf "%-20s %s\n%!" name s
 
-  let check name = match Config.have name with
+  let check name = match ExtUnixConfig.feature name with
     | None -> failwith ("Unregistered feature : " ^ name)
     | Some have -> have
 

@@ -643,12 +643,12 @@ let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
 let gen gen_all prod =
   rule ("generate " ^ if gen_all then "all" else "specific")
-  ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/config.cmo"]
+  ~deps:["src/extUnix.mlpp";"src/pa_have.cmo";"src/extUnixConfig.cmo"]
   ~prod
   (fun _ _ -> Cmd
     (S([P"camlp4o";
       T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
-      A "src/config.cmo"; A"src/pa_have.cmo";
+      A "src/extUnixConfig.cmo"; A"src/pa_have.cmo";
       A"pr_o.cmo";
       A"-impl"; A"src/extUnix.mlpp";
       A"-o"; A prod;
