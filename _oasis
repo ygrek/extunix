@@ -41,7 +41,7 @@ Flag strict
 
 Library extunix
   Path: src/
-  Modules: ExtUnix, ExtUnixAll, ExtUnixSpecific
+  Modules: ExtUnix, ExtUnixAll, ExtUnixSpecific, ExtUnixConfig
   if flag(strict) && ccomp_type(cc)
     CCOpt: -std=c89 -pedantic -Wno-long-long -Wextra
   CSources: config.h,
