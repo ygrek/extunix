@@ -553,6 +553,11 @@ let test_sysinfo () =
   let (_:int) = t.uptime in
   ()
 
+let test_ioctl () =
+  require "ioctl";
+  (* TODO: what would be a platform-independent ioctl(2) test? *)
+  ()
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -587,5 +592,6 @@ let () =
     "sockopt" >:: test_sockopt;
     "sendmsg_bin" >:: test_sendmsg_bin;
     "sysinfo" >:: test_sysinfo;
+    "ioctl" >:: test_ioctl;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
