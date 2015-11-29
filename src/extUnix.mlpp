@@ -679,7 +679,7 @@ module Ioctl = struct
 
 HAVE IOCTL
 (** Control a device. See ioctl(2). *)
-external ioctl : Unix.file_descr -> int32 -> int32 = "caml_extunix_ioctl"
+external ioctl : Unix.file_descr -> int64 -> int32 = "caml_extunix_ioctl"
 END
 
 HAVE SIOCGIFCONF

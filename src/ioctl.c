@@ -8,7 +8,7 @@ CAMLprim value caml_extunix_ioctl(value v_fd, value v_cmd)
   CAMLparam2(v_fd, v_cmd);
   CAMLlocal1(v_rc);
   int fd = Int_val(v_fd);
-  int cmd = Int32_val(v_cmd);
+  unsigned long cmd = Int64_val(v_cmd);
 
   int rc = ioctl(fd, cmd, NULL);
   if (rc == -1) uerror("ioctl", Nothing);
