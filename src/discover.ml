@@ -329,6 +329,7 @@ let features =
     "MOUNT", L[ I"sys/mount.h"; S "mount"; S "umount2"; D "MS_REC" ];
     "UNSHARE", L[ I"sched.h"; S "unshare"; D "CLONE_NEWPID"; D "CLONE_NEWUSER"];
     "CHROOT", L[ I"unistd.h"; S "chroot"; ];
+    "IOCTL", L[ I "sys/ioctl.h"; S "ioctl"; ];
   ]
 
 let () =

@@ -677,6 +677,11 @@ END
 (** Control the underlying device parameters of special files *)
 module Ioctl = struct
 
+HAVE IOCTL
+(** Control a device. See ioctl(2). *)
+external ioctl : Unix.file_descr -> int -> int = "caml_extunix_ioctl"
+END
+
 HAVE SIOCGIFCONF
 (** [siocgifconf sock], where [sock] is any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
   @return the list of interfaces and corresponding addresses ({b FIXME max 32}) ({b may change}) *)
