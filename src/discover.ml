@@ -323,6 +323,7 @@ let features =
     "TCP_KEEPCNT", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPCNT"];
     "TCP_KEEPIDLE", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPIDLE"];
     "TCP_KEEPINTVL", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPINTVL"];
+    "SO_REUSEPORT", L[I"sys/socket.h"; V"SO_REUSEPORT"];
     "POLL", L[ I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
     "SYSINFO", L[ I"sys/sysinfo.h"; S"sysinfo"; F ("sysinfo","mem_unit")];
     "MCHECK", L[ I"mcheck.h"; S"mtrace"; S"muntrace" ];

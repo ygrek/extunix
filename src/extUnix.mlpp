@@ -4,8 +4,8 @@ These functions are thin wrappers for underlying system API, consult
 the corresponding man pages and/or system documentation for details.
 *)
 
-(** [Not_available "func"] may be raised by [ExtUnix.All.func]
-    if the wrapped C function is not available on this platform.
+(** [Not_available "symbol"] may be raised by [ExtUnix.All.func]
+    if the wrapped C function or constant is not available on this platform.
 
     [ExtUnix.Specific] includes only functions available on the current
     platform and will not raise [Not_available].
@@ -810,6 +810,22 @@ END
 
 HAVE SOCKOPT
 
+type socket_int_option_ =
+| TCP_KEEPCNT_
+| TCP_KEEPIDLE_
+| TCP_KEEPINTVL_
+| SO_REUSEPORT_
+
+let string_of_socket_int_option_ = function
+| TCP_KEEPCNT_ -> "TCP_KEEPCNT"
+| TCP_KEEPIDLE_ -> "TCP_KEEPIDLE"
+| TCP_KEEPINTVL_ -> "TCP_KEEPINTVL"
+| SO_REUSEPORT_ -> "SO_REUSEPORT"
+
+external setsockopt_int : Unix.file_descr -> socket_int_option_ -> int -> unit = "caml_extunix_setsockopt_int"
+external getsockopt_int : Unix.file_descr -> socket_int_option_ -> int = "caml_extunix_getsockopt_int"
+external have_sockopt_int : socket_int_option_ -> bool = "caml_extunix_have_sockopt"
+
 (** Extra socket options with integer value not covered in {!Unix} module.
   NB Not all options available on all platforms, use {!have_sockopt} to check at runtime
   (even when function is defined in [Specific] module)
@@ -819,27 +835,39 @@ type socket_int_option =
 | TCP_KEEPIDLE (** The  time  (in  seconds)  the connection needs to remain idle before TCP starts sending
                    keepalive probes, if the socket option SO_KEEPALIVE has been set on this socket *)
 | TCP_KEEPINTVL (** The time (in seconds) between individual keepalive probes *)
+
+type socket_bool_option =
 | SO_REUSEPORT (** Permits multiple AF_INET or AF_INET6 sockets to be bound to an identical socket address. *)
 
-(** raise [Not_available] if option is not supported, see {!have_sockopt} *)
-external setsockopt_int : Unix.file_descr -> socket_int_option -> int -> unit = "caml_extunix_setsockopt_int"
-external getsockopt_int : Unix.file_descr -> socket_int_option -> int = "caml_extunix_getsockopt_int"
+let make_socket_int_option = function
+| TCP_KEEPCNT -> TCP_KEEPCNT_
+| TCP_KEEPIDLE -> TCP_KEEPIDLE_
+| TCP_KEEPINTVL -> TCP_KEEPINTVL_
 
-external have_sockopt : socket_int_option -> bool = "caml_extunix_have_sockopt"
+let make_socket_bool_option = function
+| SO_REUSEPORT -> SO_REUSEPORT_
+
+let have_sockopt_bool x = have_sockopt_int (make_socket_bool_option x)
+let have_sockopt_int x = have_sockopt_int (make_socket_int_option x)
+
+(** obsolete, compatibility *)
+let have_sockopt = have_sockopt_int
+
+let setsockopt_int sock opt v = try setsockopt_int sock opt v with Not_found -> raise (Not_available ("setsockopt " ^ string_of_socket_int_option_ opt))
+let getsockopt_int sock opt = try getsockopt_int sock opt with Not_found -> raise (Not_available ("getsockopt " ^ string_of_socket_int_option_ opt))
+
+(** Set a boolean-valued option in the given socket *)
+let setsockopt sock opt v = setsockopt_int sock (make_socket_bool_option opt) (if v then 1 else 0)
+
+(** Get the current value for the boolean-valued option in the given socket *)
+let getsockopt sock opt = 0 <> getsockopt_int sock (make_socket_bool_option opt)
 
 (** Set an integer-valued option in the given socket *)
-let setsockopt_int sock opt v =
-  try
-    setsockopt_int sock opt v
-  with
-    Not_found -> raise (Not_available "setsockopt_int")
+let setsockopt_int sock opt v = setsockopt_int sock (make_socket_int_option opt) v
 
 (** Get the current value for the integer-valued option in the given socket *)
-let getsockopt_int sock opt =
-  try
-    getsockopt_int sock opt
-  with
-    Not_found -> raise (Not_available "getsockopt_int")
+let getsockopt_int sock opt = getsockopt_int sock (make_socket_int_option opt)
+
 
 END
 
