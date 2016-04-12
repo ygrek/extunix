@@ -18,8 +18,20 @@
 #define TCP_KEEPINTVL (-1)
 #endif
 
-static int tcp_options[] = {
-  TCP_KEEPCNT, TCP_KEEPIDLE, TCP_KEEPINTVL,
+#ifndef SO_REUSEPORT
+#define SO_REUSEPORT (-1)
+#endif
+
+struct option {
+  int opt;
+  int level;
+};
+
+static struct option tcp_options[] = {
+  { .opt = TCP_KEEPCNT, .level = IPPROTO_TCP},
+  { .opt = TCP_KEEPIDLE, .level = IPPROTO_TCP},
+  { .opt = TCP_KEEPINTVL, .level = IPPROTO_TCP},
+  { .opt = SO_REUSEPORT, .level = SOL_SOCKET },
 };
 
 CAMLprim value caml_extunix_have_sockopt(value k)
@@ -29,7 +41,7 @@ CAMLprim value caml_extunix_have_sockopt(value k)
     caml_invalid_argument("have_sockopt");
   }
 
-  return Val_bool(tcp_options[Int_val(k)] != -1);
+  return Val_bool(tcp_options[Int_val(k)].opt != -1);
 }
 
 CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
@@ -42,13 +54,13 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
     caml_invalid_argument("setsockopt_int");
   }
 
-  if (tcp_options[Int_val(k)] == -1)
+  if (tcp_options[Int_val(k)].opt == -1)
   {
     caml_raise_not_found();
     assert(0);
   }
 
-  if (0 != setsockopt(Int_val(fd), IPPROTO_TCP, tcp_options[Int_val(k)], &optval, optlen))
+  if (0 != setsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, &optval, optlen))
   {
     uerror("setsockopt_int", Nothing);
   }
@@ -66,13 +78,13 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
     caml_invalid_argument("getsockopt_int");
   }
 
-  if (tcp_options[Int_val(k)] == -1)
+  if (tcp_options[Int_val(k)].opt == -1)
   {
     caml_raise_not_found();
     assert(0);
   }
 
-  if (0 != getsockopt(Int_val(fd), IPPROTO_TCP, tcp_options[Int_val(k)], &optval, &optlen))
+  if (0 != getsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, &optval, &optlen))
   {
     uerror("getsockopt_int", Nothing);
   }
