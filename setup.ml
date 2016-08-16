@@ -7054,7 +7054,6 @@ let setup_t =
                               (OASISExpr.EFlag "strict",
                                 OASISExpr.ETest ("ccomp_type", "cc")),
                              [
-                                "-std=c89";
                                 "-pedantic";
                                 "-Wno-long-long";
                                 "-Wextra"

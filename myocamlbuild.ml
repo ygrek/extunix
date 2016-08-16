@@ -620,8 +620,6 @@ let package_default =
                  S
                    [
                       A "-ccopt";
-                      A "-std=c89";
-                      A "-ccopt";
                       A "-pedantic";
                       A "-ccopt";
                       A "-Wno-long-long";
