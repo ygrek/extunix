@@ -24,15 +24,19 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
   ssize_t ret;
   char *buf;
 
+#if defined(CMSG_SPACE)
+  union {
+    struct cmsghdr cmsg; /* for alignment */
+    char control[CMSG_SPACE(sizeof(int))]; /* sizeof sendfd */
+  } control_un;
+#endif
+
   memset(&msg, 0, sizeof msg);
 
-  if (sendfd_val != Val_none) {
+  if (sendfd_val != Val_none)
+  {
     int sendfd = Int_val(Some_val(sendfd_val));
 #if defined(CMSG_SPACE)
-    union {
-      struct cmsghdr cmsg; /* for alignment */
-      char control[CMSG_SPACE(sizeof sendfd)];
-    } control_un;
     struct cmsghdr *cmsgp;
 
     msg.msg_control = control_un.control;
