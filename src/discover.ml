@@ -286,15 +286,17 @@ let features =
     "EXECINFO", L[ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; ];
     "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
-    "MKDTEMP", L[ I"stdlib.h"; S"mkdtemp"; ];
+    "MKDTEMP", L[ I"stdlib.h"; I"unistd.h"; S"mkdtemp"; ];
     "TIMEGM", L[ I"time.h"; S"timegm"; ];
     "MALLOC_INFO", L[ I"malloc.h"; S"malloc_info"; ];
     "MALLOC_STATS", L[ I"malloc.h"; S"malloc_stats"; ];
     "MEMALIGN", L[ I "stdlib.h"; S"posix_memalign"; ];
-    "ENDIAN", L[ I "endian.h";
-		 D"htobe16"; D"htole16"; D"be16toh"; D"le16toh";
-		 D"htobe32"; D"htole32"; D"be32toh"; D"le32toh";
-		 D"htobe64"; D"htole64"; D"be64toh"; D"le64toh"; ];
+    "ENDIAN", L[
+      I "endian.h";
+      D"htobe16"; D"htole16"; D"be16toh"; D"le16toh";
+      D"htobe32"; D"htole32"; D"be32toh"; D"le32toh";
+      D"htobe64"; D"htole64"; D"be64toh"; D"le64toh";
+    ];
     "READ_CREDENTIALS", L[ I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
     "FEXECVE", L[ I "unistd.h"; S"fexecve"; ];
     "SENDMSG", ANY[
@@ -305,8 +307,8 @@ let features =
     "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
     "READ", L[ I "unistd.h"; S"read"; ];
     "WRITE", L[ I "unistd.h"; S"write"; ];
-    "MKSTEMPS", L[ I "stdlib.h"; S"mkstemps"; ];
-    "MKOSTEMPS", L[ I "stdlib.h"; S"mkostemps"; ];
+    "MKSTEMPS", L[ I "stdlib.h"; I "unistd.h"; S"mkstemps"; ];
+    "MKOSTEMPS", L[ I "stdlib.h"; I "unistd.h"; S"mkostemps"; ];
     "SETRESUID", L[ I"sys/types.h"; I"unistd.h"; S"setresuid"; S"setresgid" ];
     "SYSCONF", L[
       I "unistd.h";

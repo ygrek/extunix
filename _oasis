@@ -49,7 +49,7 @@ Library extunix
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,
             resource.c, mman.c, time.c, pts.c, execinfo.c, malloc.c,
-            endian.c, read_cred.c, fexecve.c, sendmsg.c,
+            endian.c, read_cred.c, fexecve.c, sendmsg.c, mktemp.c,
             memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
             splice.c, sysconf.c, common.c, common.h, sockopt.c, poll.c,
             sysinfo.c, mount.c, unshare.c
