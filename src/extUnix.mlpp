@@ -792,7 +792,7 @@ type sysinfo = {
   mem_unit : int;   (** Memory unit size in bytes *)
 }
 
-(** @retrun overall system statistics *)
+(** @return overall system statistics *)
 external sysinfo : unit -> sysinfo = "caml_extunix_sysinfo"
 
 (** @return seconds since boot *)
