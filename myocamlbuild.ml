@@ -816,6 +816,6 @@ let gen gen_all prod =
 gen true "src/extUnixAll.ml";;
 gen false "src/extUnixSpecific.ml";;
 
-flag ["compile"; "ocaml"; "my_warnings"] (S[A "-w"; A"+A-e-3-44-48"]);;
+flag ["compile"; "ocaml"; "my_warnings"] (S[A "-w"; A"+A-e-3-44-48-50"]);;
 
 Ocamlbuild_plugin.dispatch dispatch_default;;
