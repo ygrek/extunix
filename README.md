@@ -70,7 +70,7 @@ For OCaml programming style, we follow Unix module:
 * Be MT friendly by default - i.e. release runtime lock for blocking
   operations, (FIXME) optionally provide ST variants
 
-Portability: 
+Portability:
 * No shell scripting for build and install (think windows :) )
 * Write portable C code (use compiler options to catch compatibility issues),
   NB: msvc doesn't support C99.
@@ -127,11 +127,11 @@ Checklist for release
 ---------------------
 
 * Review `git log` and update CHANGES.txt
-* Update version in _oasis and `oasis setup`
+* Update version in _oasis and do `oasis setup`
 * Commit
 * `make release`
-* Upload (forge and oasis-db) and update download links on web page
-* Commit
+* Upload tarball and update download links on web page
+* Update opam
 
 Development
 -----------
@@ -139,7 +139,7 @@ Development
 Many people contribute to extunix. Please submit your patches and/or feature requests
 to project bugtracker at
 
-  https://forge.ocamlcore.org/tracker/?group_id=175
+	https://github.com/ygrek/extunix/issues
 
 Current maintainer is reachable at :
 
