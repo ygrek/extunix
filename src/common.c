@@ -5,7 +5,11 @@
 /* otherlibs/unix/open.c */
 
 #ifndef O_NONBLOCK
+#ifdef __MINGW32__
+#define O_NONBLOCK 0 /* no O_NONBLOCK on mingw */
+#else
 #define O_NONBLOCK O_NDELAY
+#endif
 #endif
 #ifndef O_DSYNC
 #define O_DSYNC 0
