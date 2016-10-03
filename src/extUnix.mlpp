@@ -909,7 +909,7 @@ end = struct
 
 type t = int
 external poll_constants : unit -> (int*int*int*int*int*int*int) = "caml_extunix_poll_constants"
-let (pollin,pollpri,pollout,pollerr,pollhup,pollnval,pollrdhup) = poll_constants ()
+let (pollin,pollpri,pollout,pollerr,pollhup,pollnval,pollrdhup) = try poll_constants () with Not_available _ -> (0,0,0,0,0,0,0)
 let none = 0
 
 let is_set xs x = xs land x = x
