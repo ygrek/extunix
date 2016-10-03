@@ -86,7 +86,7 @@ CAMLprim value caml_extunix_tzname(value v_isdst)
 
 #endif
 
-#if defined(EXTUNIX_WANT_TIMEZONE)
+#if defined(EXTUNIX_HAVE_TIMEZONE)
 
 CAMLprim value caml_extunix_timezone(value v_unit)
 {
