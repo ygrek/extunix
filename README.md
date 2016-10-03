@@ -2,6 +2,9 @@
 ExtUnix OCaml library
 =====================
 
+[![Build Status](https://travis-ci.org/ygrek/extunix.svg?branch=master)](https://travis-ci.org/ygrek/extunix)
+[![Build status](https://ci.appveyor.com/api/projects/status/66fpgc2qol5fu30g?svg=true)](https://ci.appveyor.com/project/ygrek/extunix/branch/master)
+
 A collection of thin bindings to various low-level system API.
 
 Our motto: "Be to Unix, what extlib is to stdlib"
