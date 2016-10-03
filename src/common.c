@@ -11,6 +11,9 @@
 #define O_NONBLOCK O_NDELAY
 #endif
 #endif
+#ifndef O_NOCTTY
+#define O_NOCTTY 0
+#endif
 #ifndef O_DSYNC
 #define O_DSYNC 0
 #endif
