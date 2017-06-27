@@ -158,7 +158,7 @@ true: annot, bin_annot
 <test/*.ml{,i,y}>: use_extunix
 <test/test_user_namespace.{native,byte}>: custom
 # OASIS_STOP
-true: my_warnings
+true: my_warnings, safe_string
 "test/test.ml": warn_d
 "src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o
 <**/rootfs*>: -traverse

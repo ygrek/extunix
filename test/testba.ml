@@ -107,7 +107,7 @@ let test_pread_bigarray () =
   try
     let size = 65536 in
     let s = String.make size 'x' in
-    assert_equal (Unix.write fd s 0 size) size;
+    assert_equal (Unix.write_substring fd s 0 size) size;
     let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (pread fd 0 t) size;
     cmp_buf t 'x' "pread read bad data";
@@ -126,6 +126,12 @@ let cmp_str str c text =
     then assert_failure text;
   done
 
+let cmp_bytes str c text =
+  for i = 0 to Bytes.length str - 1 do
+    if Bytes.get str i <> c
+    then assert_failure text;
+  done
+
 let test_pwrite_bigarray () =
   require "unsafe_pwrite";
   let name = Filename.temp_file "extunix" "pwrite" in
@@ -137,11 +143,11 @@ let test_pwrite_bigarray () =
     let rec loop off = function
       | 0 -> ()
       | size ->
-	let len = Unix.read fd dst off size
-	in
-	loop (off + len) (size - len)
+        let len = Unix.read fd dst off size
+        in
+        loop (off + len) (size - len)
     in
-    loop 0 (String.length dst)
+    loop 0 (Bytes.length dst)
   in
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
@@ -150,16 +156,16 @@ let test_pwrite_bigarray () =
       Bigarray.Array1.set s i (int_of_char 'x');
     done;
     assert_equal (pwrite fd 0 s) size;
-    let t = String.make size ' ' in
+    let t = Bytes.make size ' ' in
     read t;
-    cmp_str t 'x' "pwrite wrote bad data";
+    cmp_bytes t 'x' "pwrite wrote bad data";
     ignore (single_pwrite fd 0 s);
     for i = 0 to size - 1 do
       Bigarray.Array1.set s i (int_of_char 'y');
     done;
     assert_equal (LargeFile.pwrite fd Int64.zero s) size;
     read t;
-    cmp_str t 'y' "Largefile.pwrite wrote bad data";
+    cmp_bytes t 'y' "Largefile.pwrite wrote bad data";
     ignore (LargeFile.single_pwrite fd Int64.zero s);
     Unix.close fd;
     Unix.unlink name
@@ -181,7 +187,7 @@ let test_read_bigarray () =
   try
     let size = 65536 in
     let s = String.make size 'x' in
-    assert_equal (Unix.write fd s 0 size) size;
+    assert_equal (Unix.write_substring fd s 0 size) size;
     let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
     assert_equal (read fd t) size;
@@ -203,11 +209,11 @@ let test_write_bigarray () =
     let rec loop off = function
       | 0 -> ()
       | size ->
-	let len = Unix.read fd dst off size
-	in
-	loop (off + len) (size - len)
+        let len = Unix.read fd dst off size
+        in
+        loop (off + len) (size - len)
     in
-    loop 0 (String.length dst)
+    loop 0 (Bytes.length dst)
   in
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
@@ -216,9 +222,9 @@ let test_write_bigarray () =
       Bigarray.Array1.set s i (int_of_char 'x');
     done;
     assert_equal (write fd s) size;
-    let t = String.make size ' ' in
+    let t = Bytes.make size ' ' in
     read t;
-    cmp_str t 'x' "write wrote bad data";
+    cmp_bytes t 'x' "write wrote bad data";
     ignore (single_write fd s);
     Unix.close fd;
     Unix.unlink name

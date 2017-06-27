@@ -186,9 +186,12 @@ let test_pts () =
     let name = ptsname master in
     let slave = Unix.openfile name [Unix.O_RDWR; Unix.O_NOCTTY] 0 in
     let test = "test" in
-    let len = Unix.write slave test 0 (String.length test) in
-    let str = String.create len in
-    ignore (Unix.read master str 0 len);
+    let len = Unix.write_substring slave test 0 (String.length test) in
+    let str =
+      let b = Bytes.create len in
+      ignore (Unix.read master b 0 len);
+      Bytes.unsafe_to_string b
+    in
     assert_equal str test;
     ()
 
@@ -319,23 +322,23 @@ let test_endian_string () =
   assert_equal (L.get_uint63 src 10) (Int64.to_int 0x1032547698BADCFEL);
   assert_equal (L.get_int63  src 10) (Int64.to_int 0x1032547698BADCFEL);
   assert_equal (L.get_int63  src 10) (Int64.to_int (-0x6FCDAB8967452302L));
-  let b = "                  " in
+  let b = Bytes.create 18 in
   B.set_uint8  b  0 0xFF;
   B.set_int8   b  1 (-0x01);
   B.set_uint16 b  2 0xFEDC;
   B.set_uint16 b  4 (-0x0124);
   B.set_int32  b  6 (0xFEDCBA98l);
   B.set_int64  b 10 (0xFEDCBA9876543210L);
-  assert_equal b src;
-  let l = "                  " in
+  assert_equal (Bytes.unsafe_to_string b) src;
+  let l = Bytes.create 18 in
   L.set_uint8  l  0 0xFF;
   L.set_int8   l  1 (-0x01);
   L.set_uint16 l  2 0xDCFE;
   L.set_uint16 l  4 (-0x2302);
   L.set_int32  l  6 (0x98BADCFEl);
   L.set_int64  l 10 (0x1032547698BADCFEL);
-  assert_equal l src
-  
+  assert_equal (Bytes.unsafe_to_string l) src
+
 let test_read_credentials () =
   require "read_credentials";
   let (_fd1, fd2) = Unix.socketpair Unix.PF_UNIX Unix.SOCK_STREAM 0 in
@@ -356,8 +359,11 @@ let test_fexecve () =
       Unix.close s2;
       let wpid, _ = Unix.wait () in
       assert_equal wpid pid;
-      let str = String.create 7 in
-      ignore (Unix.read s1 str 0 7);
+      let str =
+        let b = Bytes.create 7 in
+        ignore (Unix.read s1 b 0 7);
+        Bytes.unsafe_to_string b
+      in
       assert_equal "fexecve" str;
       Unix.close s1
 
@@ -389,6 +395,12 @@ let cmp_str str c text =
     then assert_failure text;
   done
 
+let cmp_bytes str c text =
+  for i = 0 to Bytes.length str - 1 do
+    if Bytes.get str i <> c
+    then assert_failure text;
+  done
+
 let test_pread () =
   require "unsafe_pread";
   let name = Filename.temp_file "extunix" "pread" in
@@ -398,7 +410,7 @@ let test_pread () =
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
     let s = String.make size 'x' in
-    assert_equal (Unix.write fd s 0 size) size;
+    assert_equal (Unix.write_substring fd s 0 size) size;
     let t = String.make size ' ' in
     assert_equal (pread fd 0 t 0 size) size;
     cmp_str t 'x' "pread read bad data";
@@ -422,24 +434,25 @@ let test_pwrite () =
     let rec loop off = function
       | 0 -> ()
       | size ->
-	let len = Unix.read fd dst off size
-	in
-	loop (off + len) (size - len)
+        let len = Unix.read fd dst off size
+        in
+        loop (off + len) (size - len)
     in
-    loop 0 (String.length dst)
+    loop 0 (Bytes.length dst)
   in
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
     let s = String.make size 'x' in
     assert_equal (pwrite fd 0 s 0 size) size;
-    let t = String.make size ' ' in
+    let t = Bytes.make size ' ' in
     read t;
-    cmp_str t 'x' "pwrite wrote bad data";
+    cmp_bytes t 'x' "pwrite wrote bad data";
     ignore (single_pwrite fd 0 s 0 size);
     let s = String.make size 'y' in
     assert_equal (LargeFile.pwrite fd Int64.zero s 0 size) size;
+    let t = Bytes.make size ' ' in
     read t;
-    cmp_str t 'y' "Largefile.pwrite wrote bad data";
+    cmp_bytes t 'y' "Largefile.pwrite wrote bad data";
     ignore (LargeFile.single_pwrite fd Int64.zero s 0 size);
     Unix.close fd;
     Unix.unlink name
@@ -454,7 +467,7 @@ let test_read () =
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
     let s = String.make size 'x' in
-    assert_equal (Unix.write fd s 0 size) size;
+    assert_equal (Unix.write_substring fd s 0 size) size;
     let t = String.make size ' ' in
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
     assert_equal (read fd t 0 size) size;
@@ -476,19 +489,19 @@ let test_write () =
     let rec loop off = function
       | 0 -> ()
       | size ->
-	let len = Unix.read fd dst off size
-	in
-	loop (off + len) (size - len)
+        let len = Unix.read fd dst off size
+        in
+        loop (off + len) (size - len)
     in
-    loop 0 (String.length dst)
+    loop 0 (Bytes.length dst)
   in
   try
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
     let s = String.make size 'x' in
     assert_equal (write fd s 0 size) size;
-    let t = String.make size ' ' in
+    let t = Bytes.make size ' ' in
     read t;
-    cmp_str t 'x' "write wrote bad data";
+    cmp_bytes t 'x' "write wrote bad data";
     ignore (single_write fd s 0 size);
     Unix.close fd;
     Unix.unlink name

@@ -1443,8 +1443,8 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int64 str off
 
-  (** [unsafe_set_X str off v] stores the integer [v] as type [X] in
-      string [str] starting at offset [off]. Bounds checking is not
+  (** [unsafe_set_X buf off v] stores the integer [v] as type [X] in
+      the buffer [buf] starting at offset [off]. Bounds checking is not
       performed. Use with caution and only when the program logic
       guarantees that the access is within bounds.
 
@@ -1453,65 +1453,65 @@ HAVE ENDIAN
       will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
-  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
-  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
-  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
-  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_b32" "noalloc"
-  external unsafe_set_uint63 : string -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
-  external unsafe_set_int63  : string -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
-  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_b64" "noalloc"
+  external unsafe_set_uint8  : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : bytes -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
+  external unsafe_set_int16  : bytes -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
+  external unsafe_set_uint31 : bytes -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
+  external unsafe_set_int31  : bytes -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
+  external unsafe_set_int32  : bytes -> int -> int32 -> unit = "caml_extunix_set_b32" "noalloc"
+  external unsafe_set_uint63 : bytes -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
+  external unsafe_set_int63  : bytes -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
+  external unsafe_set_int64  : bytes -> int -> int64 -> unit = "caml_extunix_set_b64" "noalloc"
 
-  (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
+  (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
-    if off < 0 || off >= String.length str
+    if off < 0 || off >= Bytes.length str
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint8 str off v
 
   let set_int8 str off v =
-    if off < 0 || off >= String.length str
+    if off < 0 || off >= Bytes.length str
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int8 str off v
 
   let set_uint16 str off v =
-    if off < 0 || off > String.length str - 2
+    if off < 0 || off > Bytes.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint16 str off v
 
   let set_int16 str off v =
-    if off < 0 || off > String.length str - 2
+    if off < 0 || off > Bytes.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int16 str off v
 
   let set_uint31 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint31 str off v
 
   let set_int31 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int31 str off v
 
   let set_int32 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
   let set_uint63 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint63 str off v
 
   let set_int63 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int63 str off v
 
   let set_int64 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
@@ -1655,73 +1655,73 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int64 str off
 
-  (** [unsafe_set_X str off v] stores the integer [v] as type [X] in
-      string [str] starting at offset [off]. Bounds checking is not
+  (** [unsafe_set_X buf off v] stores the integer [v] as type [X] in
+      the buffer [buf] starting at offset [off]. Bounds checking is not
       performed. Use with caution and only when the program logic
       guarantees that the access is within bounds.
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
       will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
-  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
-  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
-  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
-  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_l32" "noalloc"
-  external unsafe_set_uint63 : string -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
-  external unsafe_set_int63  : string -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
-  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_l64" "noalloc"
+  external unsafe_set_uint8  : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : bytes -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
+  external unsafe_set_int16  : bytes -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
+  external unsafe_set_uint31 : bytes -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
+  external unsafe_set_int31  : bytes -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
+  external unsafe_set_int32  : bytes -> int -> int32 -> unit = "caml_extunix_set_l32" "noalloc"
+  external unsafe_set_uint63 : bytes -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
+  external unsafe_set_int63  : bytes -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
+  external unsafe_set_int64  : bytes -> int -> int64 -> unit = "caml_extunix_set_l64" "noalloc"
 
-  (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
+  (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
-    if off < 0 || off >= String.length str
+    if off < 0 || off >= Bytes.length str
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint8 str off v
 
   let set_int8 str off v =
-    if off < 0 || off >= String.length str
+    if off < 0 || off >= Bytes.length str
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int8 str off v
 
   let set_uint16 str off v =
-    if off < 0 || off > String.length str - 2
+    if off < 0 || off > Bytes.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint16 str off v
 
   let set_int16 str off v =
-    if off < 0 || off > String.length str - 2
+    if off < 0 || off > Bytes.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int16 str off v
 
   let set_uint31 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint31 str off v
 
   let set_int31 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int31 str off v
 
   let set_int32 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
   let set_uint63 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint63 str off v
 
   let set_int63 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int63 str off v
 
   let set_int64 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
@@ -1808,8 +1808,8 @@ module HostEndian = struct
     then raise (Invalid_argument "index out of bounds");
     unsafe_get_int64 str off
 
-  (** [unsafe_set_X str off v] stores the integer [v] as type [X] in
-      string [str] starting at offset [off]. Bounds checking is not
+  (** [unsafe_set_X buf off v] stores the integer [v] as type [X] in
+      the buffer [buf] starting at offset [off]. Bounds checking is not
       performed. Use with caution and only when the program logic
       guarantees that the access is within bounds.
 
@@ -1818,65 +1818,65 @@ module HostEndian = struct
       will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_set_uint8  : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_int8   : string -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_uint16 : string -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
-  external unsafe_set_int16  : string -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
-  external unsafe_set_uint31 : string -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
-  external unsafe_set_int31  : string -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
-  external unsafe_set_int32  : string -> int -> int32 -> unit = "caml_extunix_set_h32" "noalloc"
-  external unsafe_set_uint63 : string -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
-  external unsafe_set_int63  : string -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
-  external unsafe_set_int64  : string -> int -> int64 -> unit = "caml_extunix_set_h64" "noalloc"
+  external unsafe_set_uint8  : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : bytes -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
+  external unsafe_set_int16  : bytes -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
+  external unsafe_set_uint31 : bytes -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
+  external unsafe_set_int31  : bytes -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
+  external unsafe_set_int32  : bytes -> int -> int32 -> unit = "caml_extunix_set_h32" "noalloc"
+  external unsafe_set_uint63 : bytes -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
+  external unsafe_set_int63  : bytes -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
+  external unsafe_set_int64  : bytes -> int -> int64 -> unit = "caml_extunix_set_h64" "noalloc"
 
-  (** [set_X str off v] same as [unsafe_set_X] but with bounds checking. *)
+  (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
-    if off < 0 || off >= String.length str
+    if off < 0 || off >= Bytes.length str
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint8 str off v
 
   let set_int8 str off v =
-    if off < 0 || off >= String.length str
+    if off < 0 || off >= Bytes.length str
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int8 str off v
 
   let set_uint16 str off v =
-    if off < 0 || off > String.length str - 2
+    if off < 0 || off > Bytes.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint16 str off v
 
   let set_int16 str off v =
-    if off < 0 || off > String.length str - 2
+    if off < 0 || off > Bytes.length str - 2
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int16 str off v
 
   let set_uint31 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint31 str off v
 
   let set_int31 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int31 str off v
 
   let set_int32 str off v =
-    if off < 0 || off > String.length str - 4
+    if off < 0 || off > Bytes.length str - 4
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int32 str off v
 
   let set_uint63 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_uint63 str off v
 
   let set_int63 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int63 str off v
 
   let set_int64 str off v =
-    if off < 0 || off > String.length str - 8
+    if off < 0 || off > Bytes.length str - 8
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
