@@ -53,7 +53,7 @@ Library extunix
             memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
             splice.c, sysconf.c, common.c, common.h, sockopt.c, poll.c,
             sysinfo.c, mount.c, unshare.c
-  BuildDepends: unix, bigarray
+  BuildDepends: unix, bigarray, bytes
 
 Executable test
   Path: test/
@@ -80,7 +80,7 @@ Executable test_user_namespace
   Custom: true
   CompiledObject: best
   MainIs: test_user_namespace.ml
-  BuildDepends: bytes, str, extunix, oUnit (>= 1.0.3)
+  BuildDepends: str, extunix, oUnit (>= 1.0.3)
 
 Test main
   Command: $test && $testba
