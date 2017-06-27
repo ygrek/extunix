@@ -389,12 +389,6 @@ let test_sendmsg () =
         assert_equal (int_of_string msg) st.Unix.st_ino;
         Unix.close fd
 
-let cmp_str str c text =
-  for i = 0 to String.length str - 1 do
-    if str.[i] <> c
-    then assert_failure text;
-  done
-
 let cmp_bytes str c text =
   for i = 0 to Bytes.length str - 1 do
     if Bytes.get str i <> c
@@ -411,16 +405,16 @@ let test_pread () =
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
     let s = String.make size 'x' in
     assert_equal (Unix.write_substring fd s 0 size) size;
-    let t = String.make size ' ' in
+    let t = Bytes.make size ' ' in
     assert_equal (pread fd 0 t 0 size) size;
-    cmp_str t 'x' "pread read bad data";
+    cmp_bytes t 'x' "pread read bad data";
     assert_equal (single_pread fd 0 t 0 size) size;
-    cmp_str t 'x' "single_pread read bad data";
-    let t = String.make size ' ' in
+    cmp_bytes t 'x' "single_pread read bad data";
+    let t = Bytes.make size ' ' in
     assert_equal (LargeFile.pread fd Int64.zero t 0 size) size;
-    cmp_str t 'x' "Largefile.pread read bad data";
+    cmp_bytes t 'x' "Largefile.pread read bad data";
     assert_equal (LargeFile.single_pread fd Int64.zero t 0 size) size;
-    cmp_str t 'x' "Largefile.single_pread read bad data";
+    cmp_bytes t 'x' "Largefile.single_pread read bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -474,13 +468,13 @@ let test_read () =
     let size = 65536 in (* Must be larger than UNIX_BUFFER_SIZE (16384) *)
     let s = String.make size 'x' in
     assert_equal (Unix.write_substring fd s 0 size) size;
-    let t = String.make size ' ' in
+    let t = Bytes.make size ' ' in
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
     assert_equal (read fd t 0 size) size;
-    cmp_str t 'x' "read read bad data";
+    cmp_bytes t 'x' "read read bad data";
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
     assert_equal (single_read fd t 0 size) size;
-    cmp_str t 'x' "single_read read bad data";
+    cmp_bytes t 'x' "single_read read bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn

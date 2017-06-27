@@ -226,10 +226,10 @@ HAVE PREAD
     only ever returns 0 on End-of-file. Continues the read operation
     on EINTR. Raises an Unix.Unix_error exception in all other
     cases. *)
-external unsafe_all_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_all_pread"
+external unsafe_all_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_all_pread"
 
 let all_pread fd off buf ofs len =
-  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.all_pread"
   else unsafe_all_pread fd off buf ofs len
 
@@ -240,10 +240,10 @@ let all_pread fd off buf ofs len =
 
     [single_pread] attempts to read only once. Returns the number of
     characters read or raises an Unix.Unix_error exception. *)
-external unsafe_single_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_single_pread"
+external unsafe_single_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_single_pread"
 
 let single_pread fd off buf ofs len =
-  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.single_pread"
   else unsafe_single_pread fd off buf ofs len
 
@@ -256,10 +256,10 @@ let single_pread fd off buf ofs len =
     if 0 characters could be read before an error occurs. Continues
     the read operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external unsafe_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_pread"
+external unsafe_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_pread"
 
 let pread fd off buf ofs len =
-  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.pread"
   else unsafe_pread fd off buf ofs len
 
@@ -272,10 +272,10 @@ let pread fd off buf ofs len =
     if 0 characters could be read before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external unsafe_intr_pread: Unix.file_descr -> int -> string -> int -> int -> int = "caml_extunix_intr_pread"
+external unsafe_intr_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_intr_pread"
 
 let intr_pread fd off buf ofs len =
-  if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
+  if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.intr_pread"
   else unsafe_intr_pread fd off buf ofs len
 END
@@ -363,10 +363,10 @@ HAVE READ
     only ever returns 0 on End-of-file. Continues the read operation
     on EINTR. Raises an Unix.Unix_error exception in all other
     cases. *)
-external unsafe_all_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_all_read"
+external unsafe_all_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_all_read"
 
 let all_read fd buf ofs len =
-  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.all_read"
   else unsafe_all_read fd buf ofs len
 
@@ -375,10 +375,10 @@ let all_read fd buf ofs len =
 
     [single_read] attempts to read only once. Returns the number of
     characters read or raises an Unix.Unix_error exception. *)
-external unsafe_single_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_single_read"
+external unsafe_single_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_single_read"
 
 let single_read fd buf ofs len =
-  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.single_read"
   else unsafe_single_read fd buf ofs len
 
@@ -390,10 +390,10 @@ let single_read fd buf ofs len =
     if 0 characters could be read before an error occurs. Continues
     the read operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external unsafe_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_read"
+external unsafe_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_read"
 
 let read fd buf ofs len =
-  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.read"
   else unsafe_read fd buf ofs len
 
@@ -405,10 +405,10 @@ let read fd buf ofs len =
     if 0 characters could be read before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external unsafe_intr_read: Unix.file_descr -> string -> int -> int -> int = "caml_extunix_intr_read"
+external unsafe_intr_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_intr_read"
 
 let intr_read fd buf ofs len =
-  if ofs < 0 || len < 0 || ofs > String.length buf - len
+  if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.intr_read"
   else unsafe_intr_read fd buf ofs len
 END
@@ -501,28 +501,28 @@ struct
   END
 
   HAVE PREAD
-  external unsafe_all_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_all_pread64"
+  external unsafe_all_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_all_pread64"
 
   let all_pread fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.all_pread"
     else unsafe_all_pread fd off buf ofs len
 
-  external unsafe_single_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_single_pread64"
+  external unsafe_single_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_single_pread64"
 
   let single_pread fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.single_pread"
     else unsafe_single_pread fd off buf ofs len
 
-  external unsafe_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_pread64"
+  external unsafe_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_pread64"
 
   let pread fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.pread"
     else unsafe_pread fd off buf ofs len
 
-  external unsafe_intr_pread: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_intr_pread64"
+  external unsafe_intr_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_intr_pread64"
 
   let intr_pread fd off buf ofs len =
     if off < Int64.zero

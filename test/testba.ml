@@ -122,12 +122,6 @@ let test_pread_bigarray () =
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
 
-let cmp_str str c text =
-  for i = 0 to String.length str - 1 do
-    if str.[i] <> c
-    then assert_failure text;
-  done
-
 let cmp_bytes str c text =
   for i = 0 to Bytes.length str - 1 do
     if Bytes.get str i <> c
