@@ -189,7 +189,7 @@ let test_pts () =
     let len = Unix.write_substring slave test 0 (String.length test) in
     let str =
       let b = Bytes.create len in
-      ignore (Unix.read master b 0 len);
+      assert_equal (Unix.read master b 0 len) len;
       Bytes.unsafe_to_string b
     in
     assert_equal str test;
@@ -361,7 +361,7 @@ let test_fexecve () =
       assert_equal wpid pid;
       let str =
         let b = Bytes.create 7 in
-        ignore (Unix.read s1 b 0 7);
+        assert_equal (Unix.read s1 b 0 7) 7;
         Bytes.unsafe_to_string b
       in
       assert_equal "fexecve" str;
@@ -414,11 +414,13 @@ let test_pread () =
     let t = String.make size ' ' in
     assert_equal (pread fd 0 t 0 size) size;
     cmp_str t 'x' "pread read bad data";
-    ignore (single_pread fd 0 t 0 size);
+    assert_equal (single_pread fd 0 t 0 size) size;
+    cmp_str t 'x' "single_pread read bad data";
     let t = String.make size ' ' in
     assert_equal (LargeFile.pread fd Int64.zero t 0 size) size;
     cmp_str t 'x' "Largefile.pread read bad data";
-    ignore (LargeFile.single_pread fd Int64.zero t 0 size);
+    assert_equal (LargeFile.single_pread fd Int64.zero t 0 size) size;
+    cmp_str t 'x' "Largefile.single_pread read bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -447,13 +449,17 @@ let test_pwrite () =
     let t = Bytes.make size ' ' in
     read t;
     cmp_bytes t 'x' "pwrite wrote bad data";
-    ignore (single_pwrite fd 0 s 0 size);
+    assert_equal (single_pwrite fd 0 s 0 size) size;
+    read t;
+    cmp_bytes t 'x' "single_pwrite wrote bad data";
     let s = String.make size 'y' in
     assert_equal (LargeFile.pwrite fd Int64.zero s 0 size) size;
     let t = Bytes.make size ' ' in
     read t;
     cmp_bytes t 'y' "Largefile.pwrite wrote bad data";
-    ignore (LargeFile.single_pwrite fd Int64.zero s 0 size);
+    assert_equal (LargeFile.single_pwrite fd Int64.zero s 0 size) size;
+    read t;
+    cmp_bytes t 'y' "Largefile.single_pwrite wrote bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -473,7 +479,8 @@ let test_read () =
     assert_equal (read fd t 0 size) size;
     cmp_str t 'x' "read read bad data";
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
-    ignore (single_read fd t 0 size);
+    assert_equal (single_read fd t 0 size) size;
+    cmp_str t 'x' "single_read read bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -502,7 +509,9 @@ let test_write () =
     let t = Bytes.make size ' ' in
     read t;
     cmp_bytes t 'x' "write wrote bad data";
-    ignore (single_write fd s 0 size);
+    assert_equal (single_write fd s 0 size) size;
+    read t;
+    cmp_bytes t 'x' "single_write wrote bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn

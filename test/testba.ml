@@ -111,11 +111,13 @@ let test_pread_bigarray () =
     let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (pread fd 0 t) size;
     cmp_buf t 'x' "pread read bad data";
-    ignore (single_pread fd 0 t);
+    assert_equal (single_pread fd 0 t) size;
+    cmp_buf t 'x' "pread read bad data";
     let t = Bigarray.Array1.create Bigarray.int8_unsigned Bigarray.c_layout size in
     assert_equal (LargeFile.pread fd Int64.zero t) size;
     cmp_buf t 'x' "Largefile.pread read bad data";
-    ignore (LargeFile.single_pread fd Int64.zero t);
+    assert_equal (LargeFile.single_pread fd Int64.zero t) size;
+    cmp_buf t 'x' "Largefile.single_pread read bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -159,14 +161,18 @@ let test_pwrite_bigarray () =
     let t = Bytes.make size ' ' in
     read t;
     cmp_bytes t 'x' "pwrite wrote bad data";
-    ignore (single_pwrite fd 0 s);
+    assert_equal (single_pwrite fd 0 s) size;
+    read t;
+    cmp_bytes t 'x' "single_pwrite wrote bad data";
     for i = 0 to size - 1 do
       Bigarray.Array1.set s i (int_of_char 'y');
     done;
     assert_equal (LargeFile.pwrite fd Int64.zero s) size;
     read t;
     cmp_bytes t 'y' "Largefile.pwrite wrote bad data";
-    ignore (LargeFile.single_pwrite fd Int64.zero s);
+    assert_equal (LargeFile.single_pwrite fd Int64.zero s) size;
+    read t;
+    cmp_bytes t 'y' "Largefile.single_pwrite wrote bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -193,7 +199,8 @@ let test_read_bigarray () =
     assert_equal (read fd t) size;
     cmp_buf t 'x' "read read bad data";
     assert_equal (Unix.lseek fd 0 Unix.SEEK_SET) 0;
-    ignore (single_read fd t);
+    assert_equal (single_read fd t) size;
+    cmp_buf t 'x' "single_read read bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
@@ -225,7 +232,9 @@ let test_write_bigarray () =
     let t = Bytes.make size ' ' in
     read t;
     cmp_bytes t 'x' "write wrote bad data";
-    ignore (single_write fd s);
+    assert_equal (single_write fd s) size;
+    read t;
+    cmp_bytes t 'x' "write wrote bad data";
     Unix.close fd;
     Unix.unlink name
   with exn -> Unix.close fd; Unix.unlink name; raise exn
