@@ -1,9 +1,9 @@
 opam-version: "1.2"
 maintainer: "ygrek@autistici.org"
-homepage: "http://extunix.forge.ocamlcore.org/"
+homepage: "http://ygrek.org.ua/p/extunix"
 dev-repo: "git://github.com/ygrek/extunix.git"
 bug-reports: "https://github.com/ygrek/extunix/issues"
-doc: "http://extunix.forge.ocamlcore.org/api/index.html"
+doc: "http://ygrek.org.ua/p/ocaml-extunix/api/index.html"
 license: "LGPL-2.1 with OCaml linking exception"
 authors: [ "ygrek"
            "Sylvain Le Gall"
@@ -41,6 +41,7 @@ depends: [
   "ocamlfind" {build}
   "camlp4" {build}
   "ounit" {test & >= "1.0.3"}
+  "base-bytes"
   "base-bigarray"
   "base-unix"
   "ocamlbuild" {build}
