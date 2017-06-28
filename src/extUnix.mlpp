@@ -226,7 +226,7 @@ HAVE PREAD
     only ever returns 0 on End-of-file. Continues the read operation
     on EINTR. Raises an Unix.Unix_error exception in all other
     cases. *)
-external unsafe_all_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_all_pread"
+external unsafe_all_pread: Unix.file_descr -> int -> Bytes.t -> int -> int -> int = "caml_extunix_all_pread"
 
 let all_pread fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -240,7 +240,7 @@ let all_pread fd off buf ofs len =
 
     [single_pread] attempts to read only once. Returns the number of
     characters read or raises an Unix.Unix_error exception. *)
-external unsafe_single_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_single_pread"
+external unsafe_single_pread: Unix.file_descr -> int -> Bytes.t -> int -> int -> int = "caml_extunix_single_pread"
 
 let single_pread fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -256,7 +256,7 @@ let single_pread fd off buf ofs len =
     if 0 characters could be read before an error occurs. Continues
     the read operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external unsafe_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_pread"
+external unsafe_pread: Unix.file_descr -> int -> Bytes.t -> int -> int -> int = "caml_extunix_pread"
 
 let pread fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -272,7 +272,7 @@ let pread fd off buf ofs len =
     if 0 characters could be read before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external unsafe_intr_pread: Unix.file_descr -> int -> bytes -> int -> int -> int = "caml_extunix_intr_pread"
+external unsafe_intr_pread: Unix.file_descr -> int -> Bytes.t -> int -> int -> int = "caml_extunix_intr_pread"
 
 let intr_pread fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -363,7 +363,7 @@ HAVE READ
     only ever returns 0 on End-of-file. Continues the read operation
     on EINTR. Raises an Unix.Unix_error exception in all other
     cases. *)
-external unsafe_all_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_all_read"
+external unsafe_all_read: Unix.file_descr -> Bytes.t -> int -> int -> int = "caml_extunix_all_read"
 
 let all_read fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -375,7 +375,7 @@ let all_read fd buf ofs len =
 
     [single_read] attempts to read only once. Returns the number of
     characters read or raises an Unix.Unix_error exception. *)
-external unsafe_single_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_single_read"
+external unsafe_single_read: Unix.file_descr -> Bytes.t -> int -> int -> int = "caml_extunix_single_read"
 
 let single_read fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -390,7 +390,7 @@ let single_read fd buf ofs len =
     if 0 characters could be read before an error occurs. Continues
     the read operation on EINTR. Returns the number of characters
     written in all other cases. *)
-external unsafe_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_read"
+external unsafe_read: Unix.file_descr -> Bytes.t -> int -> int -> int = "caml_extunix_read"
 
 let read fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -405,7 +405,7 @@ let read fd buf ofs len =
     if 0 characters could be read before an error occurs. Does NOT
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
-external unsafe_intr_read: Unix.file_descr -> bytes -> int -> int -> int = "caml_extunix_intr_read"
+external unsafe_intr_read: Unix.file_descr -> Bytes.t -> int -> int -> int = "caml_extunix_intr_read"
 
 let intr_read fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
@@ -501,28 +501,28 @@ struct
   END
 
   HAVE PREAD
-  external unsafe_all_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_all_pread64"
+  external unsafe_all_pread: Unix.file_descr -> int64 -> Bytes.t -> int -> int -> int = "caml_extunix_all_pread64"
 
   let all_pread fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.all_pread"
     else unsafe_all_pread fd off buf ofs len
 
-  external unsafe_single_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_single_pread64"
+  external unsafe_single_pread: Unix.file_descr -> int64 -> Bytes.t -> int -> int -> int = "caml_extunix_single_pread64"
 
   let single_pread fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.single_pread"
     else unsafe_single_pread fd off buf ofs len
 
-  external unsafe_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_pread64"
+  external unsafe_pread: Unix.file_descr -> int64 -> Bytes.t -> int -> int -> int = "caml_extunix_pread64"
 
   let pread fd off buf ofs len =
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.pread"
     else unsafe_pread fd off buf ofs len
 
-  external unsafe_intr_pread: Unix.file_descr -> int64 -> bytes -> int -> int -> int = "caml_extunix_intr_pread64"
+  external unsafe_intr_pread: Unix.file_descr -> int64 -> Bytes.t -> int -> int -> int = "caml_extunix_intr_pread64"
 
   let intr_pread fd off buf ofs len =
     if off < Int64.zero
@@ -1453,16 +1453,16 @@ HAVE ENDIAN
       will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_set_uint8  : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_int8   : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_uint16 : bytes -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
-  external unsafe_set_int16  : bytes -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
-  external unsafe_set_uint31 : bytes -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
-  external unsafe_set_int31  : bytes -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
-  external unsafe_set_int32  : bytes -> int -> int32 -> unit = "caml_extunix_set_b32" "noalloc"
-  external unsafe_set_uint63 : bytes -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
-  external unsafe_set_int63  : bytes -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
-  external unsafe_set_int64  : bytes -> int -> int64 -> unit = "caml_extunix_set_b64" "noalloc"
+  external unsafe_set_uint8  : Bytes.t -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : Bytes.t -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : Bytes.t -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
+  external unsafe_set_int16  : Bytes.t -> int -> int -> unit = "caml_extunix_set_b16" "noalloc"
+  external unsafe_set_uint31 : Bytes.t -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
+  external unsafe_set_int31  : Bytes.t -> int -> int -> unit = "caml_extunix_set_b31" "noalloc"
+  external unsafe_set_int32  : Bytes.t -> int -> int32 -> unit = "caml_extunix_set_b32" "noalloc"
+  external unsafe_set_uint63 : Bytes.t -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
+  external unsafe_set_int63  : Bytes.t -> int -> int -> unit = "caml_extunix_set_b63" "noalloc"
+  external unsafe_set_int64  : Bytes.t -> int -> int64 -> unit = "caml_extunix_set_b64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
@@ -1663,16 +1663,16 @@ HAVE ENDIAN
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
       will be sign extended to 32bit first. Use with care. *)
-  external unsafe_set_uint8  : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_int8   : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_uint16 : bytes -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
-  external unsafe_set_int16  : bytes -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
-  external unsafe_set_uint31 : bytes -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
-  external unsafe_set_int31  : bytes -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
-  external unsafe_set_int32  : bytes -> int -> int32 -> unit = "caml_extunix_set_l32" "noalloc"
-  external unsafe_set_uint63 : bytes -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
-  external unsafe_set_int63  : bytes -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
-  external unsafe_set_int64  : bytes -> int -> int64 -> unit = "caml_extunix_set_l64" "noalloc"
+  external unsafe_set_uint8  : Bytes.t -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : Bytes.t -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : Bytes.t -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
+  external unsafe_set_int16  : Bytes.t -> int -> int -> unit = "caml_extunix_set_l16" "noalloc"
+  external unsafe_set_uint31 : Bytes.t -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
+  external unsafe_set_int31  : Bytes.t -> int -> int -> unit = "caml_extunix_set_l31" "noalloc"
+  external unsafe_set_int32  : Bytes.t -> int -> int32 -> unit = "caml_extunix_set_l32" "noalloc"
+  external unsafe_set_uint63 : Bytes.t -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
+  external unsafe_set_int63  : Bytes.t -> int -> int -> unit = "caml_extunix_set_l63" "noalloc"
+  external unsafe_set_int64  : Bytes.t -> int -> int64 -> unit = "caml_extunix_set_l64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
@@ -1818,16 +1818,16 @@ module HostEndian = struct
       will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit functions.
   *)
-  external unsafe_set_uint8  : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_int8   : bytes -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
-  external unsafe_set_uint16 : bytes -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
-  external unsafe_set_int16  : bytes -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
-  external unsafe_set_uint31 : bytes -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
-  external unsafe_set_int31  : bytes -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
-  external unsafe_set_int32  : bytes -> int -> int32 -> unit = "caml_extunix_set_h32" "noalloc"
-  external unsafe_set_uint63 : bytes -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
-  external unsafe_set_int63  : bytes -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
-  external unsafe_set_int64  : bytes -> int -> int64 -> unit = "caml_extunix_set_h64" "noalloc"
+  external unsafe_set_uint8  : Bytes.t -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_int8   : Bytes.t -> int -> int -> unit = "caml_extunix_set_8" "noalloc"
+  external unsafe_set_uint16 : Bytes.t -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
+  external unsafe_set_int16  : Bytes.t -> int -> int -> unit = "caml_extunix_set_h16" "noalloc"
+  external unsafe_set_uint31 : Bytes.t -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
+  external unsafe_set_int31  : Bytes.t -> int -> int -> unit = "caml_extunix_set_h31" "noalloc"
+  external unsafe_set_int32  : Bytes.t -> int -> int32 -> unit = "caml_extunix_set_h32" "noalloc"
+  external unsafe_set_uint63 : Bytes.t -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
+  external unsafe_set_int63  : Bytes.t -> int -> int -> unit = "caml_extunix_set_h63" "noalloc"
+  external unsafe_set_int64  : Bytes.t -> int -> int64 -> unit = "caml_extunix_set_h64" "noalloc"
 
   (** [set_X buf off v] same as [unsafe_set_X] but with bounds checking. *)
   let set_uint8 str off v =
@@ -2272,7 +2272,7 @@ HAVE WRITE
 
 (** [all_write fd buf] writes up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
-    
+
     [all_write] repeats the write operation until all characters have
     been written or an error occurs. Returns less than the number of
     characters requested on EAGAIN, EWOULDBLOCK but never 0. Continues
