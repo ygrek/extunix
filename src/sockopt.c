@@ -22,6 +22,26 @@
 #define SO_REUSEPORT (-1)
 #endif
 
+#ifndef SO_ATTACH_BPF
+#define SO_ATTACH_BPF (-1)
+#endif
+
+#ifndef SO_ATTACH_REUSEPORT_EBPF
+#define SO_ATTACH_REUSEPORT_EBPF (-1)
+#endif
+
+#ifndef SO_DETACH_FILTER
+#define SO_DETACH_FILTER (-1)
+#endif
+
+#ifndef SO_DETACH_BPF
+#define SO_DETACH_BPF (-1)
+#endif
+
+#ifndef SO_LOCK_FILTER
+#define SO_LOCK_FILTER (-1)
+#endif
+
 struct option {
   int opt;
   int level;
@@ -32,6 +52,11 @@ static struct option tcp_options[] = {
   { TCP_KEEPIDLE, IPPROTO_TCP },
   { TCP_KEEPINTVL, IPPROTO_TCP },
   { SO_REUSEPORT, SOL_SOCKET },
+  { SO_ATTACH_BPF, SOL_SOCKET },
+  { SO_ATTACH_REUSEPORT_EBPF, SOL_SOCKET },
+  { SO_DETACH_FILTER, SOL_SOCKET },
+  { SO_DETACH_BPF, SOL_SOCKET },
+  { SO_LOCK_FILTER, SOL_SOCKET },
 };
 
 CAMLprim value caml_extunix_have_sockopt(value k)

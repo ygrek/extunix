@@ -815,12 +815,22 @@ type socket_int_option_ =
 | TCP_KEEPIDLE_
 | TCP_KEEPINTVL_
 | SO_REUSEPORT_
+| SO_ATTACH_BPF_
+| SO_ATTACH_REUSEPORT_EBPF_
+| SO_DETACH_FILTER_
+| SO_DETACH_BPF_
+| SO_LOCK_FILTER_
 
 let string_of_socket_int_option_ = function
 | TCP_KEEPCNT_ -> "TCP_KEEPCNT"
 | TCP_KEEPIDLE_ -> "TCP_KEEPIDLE"
 | TCP_KEEPINTVL_ -> "TCP_KEEPINTVL"
 | SO_REUSEPORT_ -> "SO_REUSEPORT"
+| SO_ATTACH_BPF_ -> "SO_ATTACH_BPF"
+| SO_ATTACH_REUSEPORT_EBPF_ -> "SO_ATTACH_REUSEPORT_EBPF"
+| SO_DETACH_FILTER_ -> "SO_DETACH_FILTER"
+| SO_DETACH_BPF_ -> "SO_DETACH_BPF"
+| SO_LOCK_FILTER_ -> "SO_LOCK_FILTER"
 
 external setsockopt_int : Unix.file_descr -> socket_int_option_ -> int -> unit = "caml_extunix_setsockopt_int"
 external getsockopt_int : Unix.file_descr -> socket_int_option_ -> int = "caml_extunix_getsockopt_int"
@@ -835,18 +845,33 @@ type socket_int_option =
 | TCP_KEEPIDLE (** The  time  (in  seconds)  the connection needs to remain idle before TCP starts sending
                    keepalive probes, if the socket option SO_KEEPALIVE has been set on this socket *)
 | TCP_KEEPINTVL (** The time (in seconds) between individual keepalive probes *)
+| SO_ATTACH_BPF (** file descriptor returned by the bpf(2), with program of type [BPF_PROG_TYPE_SOCKET_FILTER] *)
+| SO_ATTACH_REUSEPORT_EBPF (** same as for SO_ATTACH_BPF *)
 
 type socket_bool_option =
 | SO_REUSEPORT (** Permits multiple AF_INET or AF_INET6 sockets to be bound to an identical socket address. *)
+| SO_LOCK_FILTER (** Prevent changing the filters associated with the socket *)
+
+type socket_unit_option =
+| SO_DETACH_FILTER (** Remove classic or extended BPF program attached to a socket *)
+| SO_DETACH_BPF (** same *)
 
 let make_socket_int_option = function
 | TCP_KEEPCNT -> TCP_KEEPCNT_
 | TCP_KEEPIDLE -> TCP_KEEPIDLE_
 | TCP_KEEPINTVL -> TCP_KEEPINTVL_
+| SO_ATTACH_BPF -> SO_ATTACH_BPF_
+| SO_ATTACH_REUSEPORT_EBPF -> SO_ATTACH_REUSEPORT_EBPF_
 
 let make_socket_bool_option = function
 | SO_REUSEPORT -> SO_REUSEPORT_
+| SO_LOCK_FILTER -> SO_LOCK_FILTER_
 
+let make_socket_unit_option = function
+| SO_DETACH_FILTER -> SO_DETACH_FILTER_
+| SO_DETACH_BPF -> SO_DETACH_BPF_
+
+let have_sockopt_unit x = have_sockopt_int (make_socket_unit_option x)
 let have_sockopt_bool x = have_sockopt_int (make_socket_bool_option x)
 let have_sockopt_int x = have_sockopt_int (make_socket_int_option x)
 
@@ -855,6 +880,9 @@ let have_sockopt = have_sockopt_int
 
 let setsockopt_int sock opt v = try setsockopt_int sock opt v with Not_found -> raise (Not_available ("setsockopt " ^ string_of_socket_int_option_ opt))
 let getsockopt_int sock opt = try getsockopt_int sock opt with Not_found -> raise (Not_available ("getsockopt " ^ string_of_socket_int_option_ opt))
+
+(** Set the option without value on the given socket *)
+let setsockopt_unit sock opt = setsockopt_int sock (make_socket_unit_option opt) 0
 
 (** Set a boolean-valued option in the given socket *)
 let setsockopt sock opt v = setsockopt_int sock (make_socket_bool_option opt) (if v then 1 else 0)
