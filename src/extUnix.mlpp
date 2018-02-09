@@ -39,6 +39,38 @@ external eventfd_read : Unix.file_descr -> int64 = "caml_extunix_eventfd_read"
 external eventfd_write : Unix.file_descr -> int64 -> unit = "caml_extunix_eventfd_write"
 END
 
+HAVE SYSLOG
+module Syslog : sig
+type options = LOG_PID | LOG_CONS | LOG_NDELAY | LOG_ODELAY | LOG_NOWAIT
+type facility = LOG_KERN | LOG_USER | LOG_MAIL | LOG_NEWS | LOG_UUCP
+    | LOG_DAEMON | LOG_AUTH | LOG_CRON | LOG_LPR | LOG_LOCAL0 | LOG_LOCAL1
+    | LOG_LOCAL2 | LOG_LOCAL3 | LOG_LOCAL4 | LOG_LOCAL5 | LOG_LOCAL6
+    | LOG_LOCAL7
+type level = LOG_EMERG | LOG_ALERT | LOG_CRIT | LOG_ERR | LOG_WARNING
+    | LOG_NOTICE | LOG_INFO | LOG_DEBUG
+val setlogmask : level list -> level list
+val openlog : ?ident:string -> options list -> facility -> unit
+val closelog : unit -> unit
+val syslog : ?facility:facility -> level -> ('a, unit, string, unit) format4 -> 'a
+val syslog_st : ?facility:facility -> level -> ('a, unit, string, unit) format4 -> 'a
+end = struct
+type options = LOG_PID | LOG_CONS | LOG_NDELAY | LOG_ODELAY | LOG_NOWAIT
+type facility = LOG_KERN | LOG_USER | LOG_MAIL | LOG_NEWS | LOG_UUCP
+    | LOG_DAEMON | LOG_AUTH | LOG_CRON | LOG_LPR | LOG_LOCAL0 | LOG_LOCAL1
+    | LOG_LOCAL2 | LOG_LOCAL3 | LOG_LOCAL4 | LOG_LOCAL5 | LOG_LOCAL6
+    | LOG_LOCAL7
+type level = LOG_EMERG | LOG_ALERT | LOG_CRIT | LOG_ERR | LOG_WARNING
+    | LOG_NOTICE | LOG_INFO | LOG_DEBUG
+external setlogmask : level list -> level list = "caml_extunix_setlogmask"
+external openlog : ?ident:string -> options list -> facility -> unit = "caml_extunix_openlog"
+external closelog : unit -> unit = "caml_extunix_closelog"
+external ext_syslog : facility option -> level -> string -> unit = "caml_extunix_syslog"
+let syslog ?facility lvl = Printf.ksprintf (ext_syslog facility lvl)
+external ext_syslog_st : facility option -> level -> string -> unit = "caml_extunix_syslog_st"
+let syslog_st ?facility lvl = Printf.ksprintf (ext_syslog_st facility lvl)
+end
+END
+
 HAVE UNAME
 
 (** {b Author:} Sylvain Le Gall [sylvain\@le-gall.net] *)
