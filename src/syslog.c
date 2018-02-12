@@ -116,7 +116,6 @@ CAMLprim value caml_extunix_syslog_st(value v_facility, value v_level, value v_s
   CAMLparam3(v_facility, v_level, v_string);
   int facility, level;
   size_t index_level, index_facility;
-  char *str;
 
   facility = 0;
   if (Val_none != v_facility) {
