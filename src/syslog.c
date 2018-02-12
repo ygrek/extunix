@@ -98,7 +98,7 @@ CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_stri
     facility = facility_table[index_facility];
   }
 
-  index_level = Int_val(level);
+  index_level = Int_val(v_level);
   assert(index_level < (sizeof(level_table) / sizeof(int)));
   level = level_table[index_level];
   str = strdup(String_val(v_string));
@@ -125,7 +125,7 @@ CAMLprim value caml_extunix_syslog_st(value v_facility, value v_level, value v_s
     facility = facility_table[index_facility];
   }
 
-  index_level = Int_val(level);
+  index_level = Int_val(v_level);
   assert(index_level < (sizeof(level_table) / sizeof(int)));
   level = level_table[index_level];
 
