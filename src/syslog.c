@@ -53,7 +53,8 @@ static int facility_table[] = {
 
 CAMLprim value caml_extunix_openlog(value v_ident, value v_option, value v_facility) {
   CAMLparam3(v_ident, v_option, v_facility);
-  int option, facility, index_facility;
+  int option, facility;
+  size_t index_facility;
   char *ident;
 
   ident = (Val_none == v_ident) ? NULL : strdup(String_val(Some_val(v_ident)));
@@ -87,7 +88,7 @@ static int level_table[] = {
 CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_string) {
   CAMLparam3(v_facility, v_level, v_string);
   int facility, level;
-  int index_level, index_facility;
+  size_t index_level, index_facility;
   char *str;
 
   facility = 0;
@@ -97,7 +98,7 @@ CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_stri
     facility = facility_table[index_facility];
   }
 
-  index_level = Int_val(lvl);
+  index_level = Int_val(level);
   assert(index_level < (sizeof(level_table) / sizeof(int)));
   level = level_table[index_level];
   str = strdup(String_val(v_string));
@@ -114,7 +115,7 @@ CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_stri
 CAMLprim value caml_extunix_syslog_st(value v_facility, value v_level, value v_string) {
   CAMLparam3(v_facility, v_level, v_string);
   int facility, level;
-  int index_level, index_facility;
+  size_t index_level, index_facility;
   char *str;
 
   facility = 0;
@@ -124,7 +125,7 @@ CAMLprim value caml_extunix_syslog_st(value v_facility, value v_level, value v_s
     facility = facility_table[index_facility];
   }
 
-  index_level = Int_val(lvl);
+  index_level = Int_val(level);
   assert(index_level < (sizeof(level_table) / sizeof(int)));
   level = level_table[index_level];
 
