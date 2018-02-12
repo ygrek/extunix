@@ -52,7 +52,7 @@ Library extunix
             endian.c, read_cred.c, fexecve.c, sendmsg.c, mktemp.c,
             memalign.c, endianba.c, pread_pwrite_ba.c, bigarray.c,
             splice.c, sysconf.c, common.c, common.h, sockopt.c, poll.c,
-            sysinfo.c, mount.c, unshare.c
+            sysinfo.c, mount.c, unshare.c, syslog.c
   BuildDepends: unix, bigarray, bytes
 
 Executable test
