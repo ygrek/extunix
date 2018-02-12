@@ -4,6 +4,8 @@
 
 #if defined(EXTUNIX_HAVE_SYSLOG)
 
+#include <assert.h>
+
 static int mask_table[] = {
   LOG_MASK(LOG_EMERG), LOG_MASK(LOG_ALERT), LOG_MASK(LOG_CRIT),
   LOG_MASK(LOG_ERR), LOG_MASK(LOG_WARNING), LOG_MASK(LOG_NOTICE),
@@ -19,9 +21,9 @@ CAMLprim value caml_extunix_setlogmask(value v_level)
 
   mask = caml_convert_flag_list(v_level, mask_table);
 
-  caml_release_runtime_system();
+  caml_enter_blocking_section();
   nmask = setlogmask(mask);
-  caml_acquire_runtime_system();
+  caml_leave_blocking_section();
 
   // generate list from mask (invers of "caml_convert_flag_list")
   cli = Val_emptylist;
@@ -60,13 +62,13 @@ CAMLprim value caml_extunix_openlog(value v_ident, value v_option, value v_facil
   assert(index_facility < (sizeof(facility_table) / sizeof(int)));
   facility = facility_table[index_facility];
 
-  caml_release_runtime_system();
+  caml_enter_blocking_section();
   openlog(ident, option, facility);
 
   if (NULL != ident) {
     free(ident);
   }
-  caml_acquire_runtime_system();
+  caml_leave_blocking_section();
 
   CAMLreturn(Val_unit);
 }
@@ -100,9 +102,9 @@ CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_stri
   level = level_table[index_level];
   str = strdup(String_val(v_string));
 
-  caml_release_runtime_system();
+  caml_enter_blocking_section();
   syslog(level | facility, "%s", str);
-  caml_acquire_runtime_system();
+  caml_leave_blocking_section();
 
   free(str);
 
@@ -126,9 +128,9 @@ CAMLprim value caml_extunix_syslog_st(value v_facility, value v_level, value v_s
   assert(index_level < (sizeof(level_table) / sizeof(int)));
   level = level_table[index_level];
 
-  caml_release_runtime_system();
+  caml_enter_blocking_section();
   syslog(level | facility, "%s", String_val(v_string));
-  caml_acquire_runtime_system();
+  caml_leave_blocking_section();
 
   CAMLreturn(Val_unit);
 }
