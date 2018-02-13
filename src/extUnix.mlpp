@@ -53,6 +53,7 @@ val openlog : ?ident:string -> options list -> facility -> unit
 val closelog : unit -> unit
 val syslog : ?facility:facility -> level -> ('a, unit, string, unit) format4 -> 'a
 val syslog_st : ?facility:facility -> level -> ('a, unit, string, unit) format4 -> 'a
+val log_upto : level -> level list
 end = struct
 type options = LOG_PID | LOG_CONS | LOG_NDELAY | LOG_ODELAY | LOG_NOWAIT
 type facility = LOG_KERN | LOG_USER | LOG_MAIL | LOG_NEWS | LOG_UUCP
@@ -68,6 +69,16 @@ external ext_syslog : facility option -> level -> string -> unit = "caml_extunix
 let syslog ?facility lvl = Printf.ksprintf (ext_syslog facility lvl)
 external ext_syslog_st : facility option -> level -> string -> unit = "caml_extunix_syslog_st"
 let syslog_st ?facility lvl = Printf.ksprintf (ext_syslog_st facility lvl)
+let rec log_upto x =
+  match x with
+  | LOG_EMERG -> x :: log_upto LOG_ALERT
+  | LOG_ALERT -> x :: log_upto LOG_CRIT
+  | LOG_CRIT -> x :: log_upto LOG_ERR
+  | LOG_ERR -> x :: log_upto LOG_WARNING
+  | LOG_WARNING -> x :: log_upto LOG_NOTICE
+  | LOG_NOTICE -> x :: log_upto LOG_INFO
+  | LOG_INFO -> x :: log_upto LOG_DEBUG
+  | LOG_DEBUG -> [x]
 end
 END
 
