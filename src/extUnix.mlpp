@@ -71,14 +71,10 @@ external ext_syslog_st : facility option -> level -> string -> unit = "caml_extu
 let syslog_st ?facility lvl = Printf.ksprintf (ext_syslog_st facility lvl)
 let rec log_upto x =
   match x with
-  | LOG_EMERG -> x :: log_upto LOG_ALERT
-  | LOG_ALERT -> x :: log_upto LOG_CRIT
-  | LOG_CRIT -> x :: log_upto LOG_ERR
-  | LOG_ERR -> x :: log_upto LOG_WARNING
-  | LOG_WARNING -> x :: log_upto LOG_NOTICE
-  | LOG_NOTICE -> x :: log_upto LOG_INFO
-  | LOG_INFO -> x :: log_upto LOG_DEBUG
-  | LOG_DEBUG -> [x]
+  | LOG_EMERG -> [x] | LOG_ALERT -> x::log_upto LOG_EMERG
+  | LOG_CRIT -> x::log_upto LOG_ALERT | LOG_ERR -> x::log_upto LOG_CRIT
+  | LOG_WARNING -> x::log_upto LOG_ERR | LOG_NOTICE -> x::log_upto LOG_WARNING
+  | LOG_INFO -> x::log_upto LOG_NOTICE | LOG_DEBUG -> x::log_upto LOG_INFO
 end
 END
 
