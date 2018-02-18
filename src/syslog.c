@@ -112,28 +112,5 @@ CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_stri
   CAMLreturn(Val_unit);
 }
 
-CAMLprim value caml_extunix_syslog_st(value v_facility, value v_level, value v_string) {
-  CAMLparam3(v_facility, v_level, v_string);
-  int facility, level;
-  size_t index_level, index_facility;
-
-  facility = 0;
-  if (Val_none != v_facility) {
-    index_facility = Int_val(Some_val(v_facility));
-    assert(index_facility < (sizeof(facility_table) / sizeof(int)));
-    facility = facility_table[index_facility];
-  }
-
-  index_level = Int_val(v_level);
-  assert(index_level < (sizeof(level_table) / sizeof(int)));
-  level = level_table[index_level];
-
-  caml_enter_blocking_section();
-  syslog(level | facility, "%s", String_val(v_string));
-  caml_leave_blocking_section();
-
-  CAMLreturn(Val_unit);
-}
-
 #endif
 
