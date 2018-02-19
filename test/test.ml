@@ -146,9 +146,10 @@ let test_resource =
       *)
       let (soft,hard) = getrlimit r in
       begin
+        let open Unix in
         try setrlimit r ~soft ~hard
-        with Unix.Unix_error (Unix.(EPERM|EINVAL as error),_,_) ->
-          skip_if true (sprintf "setrlimit NOFILE %s %s : %s" (Rlimit.to_string soft) (Rlimit.to_string hard) (Unix.error_message error))
+        with Unix_error ((EPERM|EINVAL as error),_,_) ->
+          skip_if true (sprintf "setrlimit NOFILE %s %s : %s" (Rlimit.to_string soft) (Rlimit.to_string hard) (error_message error))
       end;
       getrlimit r
     | _ -> getrlimit r
