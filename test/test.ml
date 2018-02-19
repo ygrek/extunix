@@ -531,13 +531,14 @@ let test_sockopt () =
   require "setsockopt_int";
   require "getsockopt_int";
   let fd = Unix.socket Unix.PF_INET Unix.SOCK_STREAM 0 in
-  Unix.setsockopt fd Unix.SO_KEEPALIVE true;
-  setsockopt_int fd TCP_KEEPCNT 5;
-  setsockopt_int fd TCP_KEEPIDLE 30;
-  setsockopt_int fd TCP_KEEPINTVL 10;
   let test msg opt v =
-    assert_equal ~printer:string_of_int ~msg v (getsockopt_int fd opt)
+    try
+      setsockopt_int fd opt v;
+      assert_equal ~printer:string_of_int ~msg v (getsockopt_int fd opt)
+    with
+      Not_available _ -> skip_if true msg
   in
+  Unix.setsockopt fd Unix.SO_KEEPALIVE true;
   test "TCP_KEEPCNT" TCP_KEEPCNT 5;
   test "TCP_KEEPIDLE" TCP_KEEPIDLE 30;
   test "TCP_KEEPINTVL" TCP_KEEPINTVL 10;
