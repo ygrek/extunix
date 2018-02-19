@@ -141,10 +141,15 @@ let test_resource =
     | RLIMIT_NOFILE ->
       (* kernel may have lower limits on open files (fs.nr_open or kern.maxfilesperproc) than rlimit.
          In such situation setrlimit may either silently adjust rlimits to lower values (BSD)
+         or fail with EINVAL (Mac OS)
          or fail with EPERM (Linux)
       *)
       let (soft,hard) = getrlimit r in
-      begin try setrlimit r ~soft ~hard with Unix.Unix_error (Unix.EPERM,_,_) -> skip_if true "setrlimit NOFILE EPERM" end;
+      begin
+        try setrlimit r ~soft ~hard
+        with Unix.Unix_error (Unix.(EPERM|EINVAL as error),_,_) ->
+          skip_if true (sprintf "setrlimit NOFILE %s %s : %s" (Rlimit.to_string soft) (Rlimit.to_string hard) (Unix.error_message error))
+      end;
       getrlimit r
     | _ -> getrlimit r
     in
