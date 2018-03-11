@@ -2,7 +2,7 @@ OASISFormat:  0.4
 Name:         extunix
 Version:      0.1.5
 License:      LGPL-2.1 with OCaml linking exception
-Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy, Roman Vorobets, Pierre Chambart, Dmitry Grebeniuk, François Bobot
+Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy, Roman Vorobets, Pierre Chambart, Dmitry Grebeniuk, François Bobot, Markus W. Weissmann
 Copyrights:
               (C) 2010 ygrek,
               (C) 2009 Sylvain Le Gall,
@@ -18,7 +18,8 @@ Copyrights:
               (C) 2013 Roman Vorobets,
               (C) 2013 Pierre Chambart,
               (C) 2013 Dmitry Grebeniuk,
-              (C) 2015 François Bobot
+              (C) 2015 François Bobot,
+              (C) 2018 Markus W. Weissmann
 Homepage:     http://extunix.forge.ocamlcore.org/
 BuildTools:   ocamlbuild, camlp4
 Plugins:      DevFiles (0.3), META (0.3)

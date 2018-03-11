@@ -19,7 +19,9 @@ authors: [ "ygrek"
            "Roman Vorobets"
            "Pierre Chambart"
            "Dmitry Grebeniuk"
-           "François Bobot" ]
+           "François Bobot"
+           "Markus W. Weissmann"
+         ]
 build: [
   ["ocaml" "setup.ml" "-configure" "--%{ounit:enable}%-tests" "--prefix" prefix] {ocaml-version >= "4.02.0"}
   ["ocaml" "setup.ml" "-configure" "--prefix" prefix] {ocaml-version < "4.02.0"}
