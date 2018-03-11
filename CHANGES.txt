@@ -1,3 +1,10 @@
+0.1.6 - 11 Mar 2018
+* OCaml 4.05 compatibility (O_KEEPEXEC)
+* sockopt: add BPF options
+* make tests less fragile
+* New bindings:
+  * syslog
+
 0.1.5 - 28 Jun 2017
 * build with -safe-string
 
