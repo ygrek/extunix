@@ -55,7 +55,11 @@ CAMLprim value caml_extunix_openlog(value v_ident, value v_option, value v_facil
   CAMLparam3(v_ident, v_option, v_facility);
   int option, facility;
   size_t index_facility;
-  char *ident;
+  static char *ident = NULL; /* openlog does _not_ store ident -- keep a heap copy */
+
+  if (NULL != ident) {
+    free(ident);
+  }
 
   ident = (Val_none == v_ident) ? NULL : strdup(String_val(Some_val(v_ident)));
   option = caml_convert_flag_list(v_option, option_table);
@@ -66,9 +70,6 @@ CAMLprim value caml_extunix_openlog(value v_ident, value v_option, value v_facil
   caml_enter_blocking_section();
   openlog(ident, option, facility);
 
-  if (NULL != ident) {
-    free(ident);
-  }
   caml_leave_blocking_section();
 
   CAMLreturn(Val_unit);
