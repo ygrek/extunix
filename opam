@@ -1,10 +1,12 @@
 opam-version: "1.2"
+name: "extunix"
 maintainer: "ygrek@autistici.org"
 homepage: "http://ygrek.org.ua/p/extunix"
 dev-repo: "git://github.com/ygrek/extunix.git"
 bug-reports: "https://github.com/ygrek/extunix/issues"
 doc: "http://ygrek.org.ua/p/ocaml-extunix/api/index.html"
 license: "LGPL-2.1 with OCaml linking exception"
+tags: ["org:ygrek"]
 authors: [ "ygrek"
            "Sylvain Le Gall"
            "Stéphane Glondu"

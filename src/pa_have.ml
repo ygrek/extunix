@@ -1,6 +1,6 @@
 (**
-  New toplevel statement (structure item): HAVE <uident> { OR <uident> }* <structure_items> END
-  if (ExtUnixConfig.have "<uident>") is true (for any of the uident's provided) then enclosed structure items are left as is,
+  New toplevel statement (structure item): HAVE <uident> { OR <uident> | AND <uident> }* <structure_items> END
+  if "have" condition evaluates to true (applying ExtUnixConfig.have to each "<uident>") then enclosed structure items are left as is,
   otherwise:
     if -gen-all was specified then external declarations in the scope are rewritten to raise exception when called,
     otherwise all contents is dropped altogether
@@ -49,12 +49,22 @@ struct
     | None -> failwith ("Unregistered feature : " ^ name)
     | Some have -> have
 
+  let show_cond =
+    let show_and = String.concat " and " in
+    function
+    | `Or l -> String.concat " or " (List.map show_and l)
+    | `And l -> show_and l
+
+  let eval_cond = function
+  | `And l -> List.for_all check l
+  | `Or l -> List.exists (List.for_all check) l
+
   EXTEND Gram
     GLOBAL: str_item;
     str_item:
-      [ [ "HAVE"; names=alternatives_list; si=str_items; "END" ->
-          let have = List.for_all check names in
-          let name = String.concat " or " names in
+      [ [ "HAVE"; cond=alternatives; si=str_items; "END" ->
+          let have = eval_cond cond in
+          let name = show_cond cond in
           let _ = map_str_item (record_external have) <:str_item< $si$ >> in
           match have, !all with
           | true, _ -> show name "ok"; si
@@ -66,11 +76,18 @@ struct
           else
             <:str_item<>> ]
       ];
-    alternatives_list:
-      [ [ name=UIDENT ->
-          [ name ] ]
-      | [ rest=alternatives_list; "OR"; name=UIDENT ->
-          name :: rest ]
+    alternatives:
+      [ [ name=UIDENT -> `And [name] ]
+      | [ rest=alternatives; "OR"; name=UIDENT ->
+        match rest with
+        | `And l -> `Or [[name];l]
+        | `Or l -> `Or ([name]::l)
+        ]
+      | [ rest=alternatives; "AND"; name=UIDENT ->
+        match rest with
+        | `And l -> `And (name::l)
+        | `Or l -> `Or ([name]::l)
+        ]
       ]
     ;
   END
