@@ -17,6 +17,7 @@ type arg =
   | S of string (* check symbol available (e.g. function name) *)
   | V of string (* check value available (e.g. enum member) *)
   | D of string (* check symbol defined *)
+  | ND of string (* check symbol not defined *)
   | F of string * string (* check structure type available and specified field present in it *)
 
 type test =
@@ -79,6 +80,7 @@ let build_code args =
     | DEFINE _ -> ()
     | Z _ -> () (* no test required *)
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
+    | ND s -> pr "#ifdef %s" s; pr "#error %s defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
     | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
     | F (s,f) -> pr "size_t var_%d = (size_t)&((struct %s*)0)->%s;" (fresh ()) s f
@@ -182,13 +184,25 @@ let main config =
   show_ml "src/extUnixConfig.ml" result
 
 let features =
+  let fd_int = ND "Handle_val" in (* marker for bindings code assuming fd is represented as int *)
+  let statvfs =
+  [
+    I "sys/statvfs.h";
+    T "struct statvfs";
+    D "ST_RDONLY"; D "ST_NOSUID";
+    Z "ST_NODEV"; Z "ST_NOEXEC"; Z "ST_SYNCHRONOUS"; Z "ST_MANDLOCK"; Z "ST_WRITE";
+    Z "ST_APPEND"; Z "ST_IMMUTABLE"; Z "ST_NOATIME"; Z "ST_NODIRATIME"; Z "ST_RELATIME";
+  ]
+  in
   [
     "EVENTFD", L[
+      fd_int;
       I "sys/eventfd.h";
       T "eventfd_t";
       S "eventfd"; S "eventfd_read"; S "eventfd_write";
     ];
     "ATFILE", L[
+      fd_int;
       DEFINE "_ATFILE_SOURCE";
       I "fcntl.h";
       I "sys/types.h"; I "sys/stat.h";
@@ -197,19 +211,15 @@ let features =
       S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat"; S "linkat"; S "symlinkat"; S "readlinkat"; S "fchownat"; S "fchmodat";
     ];
     "DIRFD", L[
+      fd_int;
       I "sys/types.h";
       I "dirent.h";
       S "dirfd";
     ];
-    "STATVFS", L[
-      I "sys/statvfs.h";
-      T "struct statvfs";
-      S "statvfs"; S "fstatvfs";
-      D "ST_RDONLY"; D "ST_NOSUID";
-      Z "ST_NODEV"; Z "ST_NOEXEC"; Z "ST_SYNCHRONOUS"; Z "ST_MANDLOCK"; Z "ST_WRITE";
-      Z "ST_APPEND"; Z "ST_IMMUTABLE"; Z "ST_NOATIME"; Z "ST_NODIRATIME"; Z "ST_RELATIME";
-    ];
+    "STATVFS", L (statvfs@[S"statvfs"]);
+    "FSTATVFS", L ([fd_int]@statvfs@[S"fstatvfs"]);
     "SIOCGIFCONF", L[
+      fd_int;
       I "sys/ioctl.h";
       I "net/if.h";
       D "SIOCGIFCONF";
@@ -235,6 +245,7 @@ let features =
       S "uname";
     ];
     "FADVISE", L[
+      fd_int;
       I "fcntl.h";
       S "posix_fadvise"; S "posix_fadvise64";
       D "POSIX_FADV_NORMAL";
@@ -244,11 +255,12 @@ let features =
       [D "WIN32"; S "GetFileSizeEx"; ];
     ];
     "TTY_IOCTL", L[
+      fd_int;
       I "termios.h"; I "sys/ioctl.h";
       S "ioctl"; S "tcsetattr"; S "tcgetattr";
       D "CRTSCTS"; D "TCSANOW"; D "TIOCMGET"; D "TIOCMSET"; D "TIOCMBIC"; D "TIOCMBIS";
     ];
-    "TTYNAME", L[ I "unistd.h"; S "ttyname"; ];
+    "TTYNAME", L[ fd_int; I "unistd.h"; S "ttyname"; ];
     "CTERMID", L[ I "stdio.h"; S "ctermid"; V "L_ctermid"; ];
     "GETTID", L[ I "sys/syscall.h"; S "syscall"; V "SYS_gettid"; ];
     "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid"; S "getsid"; ];
@@ -263,11 +275,11 @@ let features =
     ];
     "SYNC", L[ I "unistd.h"; S "sync"];
     "SYNCFS", ANY[
-      [I "unistd.h"; S "syncfs"];
-      [DEFINE "EXTUNIX_USE_SYS_SYNCFS"; I "unistd.h"; I "sys/syscall.h"; S"syscall"; V"SYS_syncfs"];
+      [fd_int;I "unistd.h"; S "syncfs"];
+      [fd_int;DEFINE "EXTUNIX_USE_SYS_SYNCFS"; I "unistd.h"; I "sys/syscall.h"; S"syscall"; V"SYS_syncfs"];
     ];
     "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
-    "SIGNALFD", L[ I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; ];
+    "SIGNALFD", L[ fd_int; I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; ];
     "PTRACE", L[ I "sys/ptrace.h"; S "ptrace"; V "PTRACE_TRACEME"; V "PTRACE_ATTACH"; ];
     "RESOURCE", L[
       I "sys/time.h"; I "sys/resource.h";
@@ -278,11 +290,12 @@ let features =
     "STRTIME", L[ I "time.h"; S"strptime"; S"strftime"; S"asctime_r"; S"tzset"; S"tzname"; ];
     "TIMEZONE", L[ I "time.h"; S"tzset"; S"timezone"; S"daylight" ];
     "PTS", L[
+      fd_int;
       I "fcntl.h"; I "stdlib.h";
       S "posix_openpt"; S "grantpt"; S "unlockpt"; S "ptsname";
     ];
-    "FCNTL", L[ I"unistd.h"; I"fcntl.h"; S"fcntl"; V"F_GETFL"; ];
-    "TCPGRP", L[ I"unistd.h"; S"tcgetpgrp"; S"tcsetpgrp"; ];
+    "FCNTL", L[ fd_int; I"unistd.h"; I"fcntl.h"; S"fcntl"; V"F_GETFL"; ];
+    "TCPGRP", L[ fd_int; I"unistd.h"; S"tcgetpgrp"; S"tcsetpgrp"; ];
     "EXECINFO", L[ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; ];
     "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
@@ -297,18 +310,18 @@ let features =
       D"htobe32"; D"htole32"; D"be32toh"; D"le32toh";
       D"htobe64"; D"htole64"; D"be64toh"; D"le64toh";
     ];
-    "READ_CREDENTIALS", L[ I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
-    "FEXECVE", L[ I "unistd.h"; S"fexecve"; ];
+    "READ_CREDENTIALS", L[ fd_int; I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
+    "FEXECVE", L[ fd_int; I "unistd.h"; S"fexecve"; ];
     "SENDMSG", ANY[
-      [ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; D"CMSG_SPACE"; ];
-      [ I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; F("msghdr","msg_accrights"); ];
+      [ fd_int; I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; D"CMSG_SPACE"; ];
+      [ fd_int; I"sys/types.h"; I"sys/socket.h"; S"sendmsg"; S"recvmsg"; F("msghdr","msg_accrights"); ];
     ];
-    "PREAD", L[ I "unistd.h"; S"pread"; ];
-    "PWRITE", L[ I "unistd.h"; S"pwrite"; ];
-    "READ", L[ I "unistd.h"; S"read"; ];
-    "WRITE", L[ I "unistd.h"; S"write"; ];
-    "MKSTEMPS", L[ I "stdlib.h"; I "unistd.h"; S"mkstemps"; ];
-    "MKOSTEMPS", L[ I "stdlib.h"; I "unistd.h"; S"mkostemps"; ];
+    "PREAD", L[ fd_int; I "unistd.h"; S"pread"; ];
+    "PWRITE", L[ fd_int; I "unistd.h"; S"pwrite"; ];
+    "READ", L[ fd_int; I "unistd.h"; S"read"; ];
+    "WRITE", L[ fd_int; I "unistd.h"; S"write"; ];
+    "MKSTEMPS", L[ fd_int; I "stdlib.h"; I "unistd.h"; S"mkstemps"; ];
+    "MKOSTEMPS", L[ fd_int; I "stdlib.h"; I "unistd.h"; S"mkostemps"; ];
     "SETRESUID", L[ I"sys/types.h"; I"unistd.h"; S"setresuid"; S"setresgid" ];
     "SYSCONF", L[
       I "unistd.h";
@@ -316,10 +329,11 @@ let features =
       (* check for standard values and extensions *)
       D "_SC_VERSION"; D "_SC_2_VERSION";
     ];
-    "SPLICE", L[ I "fcntl.h"; S"splice"; ];
-    "TEE", L[ I "fcntl.h"; S"tee"; ];
-    "VMSPLICE", L[ I "fcntl.h"; S"vmsplice"; ];
+    "SPLICE", L[ fd_int; I "fcntl.h"; S"splice"; ];
+    "TEE", L[ fd_int; I "fcntl.h"; S"tee"; ];
+    "VMSPLICE", L[ fd_int; I "fcntl.h"; S"vmsplice"; ];
     "SOCKOPT", L[
+      fd_int;
       I "sys/socket.h"; I "netinet/in.h"; I"netinet/tcp.h";
       S"setsockopt"; S"getsockopt";
     ];
@@ -327,7 +341,7 @@ let features =
     "TCP_KEEPIDLE", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPIDLE"];
     "TCP_KEEPINTVL", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPINTVL"];
     "SO_REUSEPORT", L[I"sys/socket.h"; V"SO_REUSEPORT"];
-    "POLL", L[ I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
+    "POLL", L[ fd_int; I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
     "SYSINFO", L[ I"sys/sysinfo.h"; S"sysinfo"; F ("sysinfo","mem_unit")];
     "MCHECK", L[ I"mcheck.h"; S"mtrace"; S"muntrace" ];
     "MOUNT", L[ I"sys/mount.h"; S "mount"; S "umount2"; D "MS_REC" ];
