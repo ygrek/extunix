@@ -170,7 +170,15 @@ let test_strtime () =
 
 let test_pts () =
   require "posix_openpt";
-  let master = posix_openpt [Unix.O_RDWR] in
+  let master =
+    try
+      Some (posix_openpt [Unix.O_RDWR])
+    with
+      Unix.Unix_error (Unix.EPERM, _, _) -> None
+  in
+  match master with
+  | None -> skip_if true "posix_openpt EPERM"
+  | Some master ->
     grantpt master;
     unlockpt master;
     let name = ptsname master in
