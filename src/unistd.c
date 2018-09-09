@@ -47,7 +47,15 @@ CAMLprim value caml_extunix_ctermid(value v_unit)
 CAMLprim value caml_extunix_gettid(value v_unit)
 {
   UNUSED(v_unit);
-  return Val_int(syscall(SYS_gettid));
+  size_t tid =
+#if defined(WIN32)
+  GetCurrentThreadId();
+#elif defined(EXTUNIX_USE_THREAD_SELFID)
+  syscall(SYS_thread_selfid);
+#else
+  syscall(SYS_gettid);
+#endif
+  return Val_int(tid); /* XXX truncating size_t to int */
 }
 
 #endif

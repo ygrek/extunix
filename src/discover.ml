@@ -262,7 +262,11 @@ let features =
     ];
     "TTYNAME", L[ fd_int; I "unistd.h"; S "ttyname"; ];
     "CTERMID", L[ I "stdio.h"; S "ctermid"; V "L_ctermid"; ];
-    "GETTID", L[ I "sys/syscall.h"; S "syscall"; V "SYS_gettid"; ];
+    "GETTID", ANY[
+      [ D "WIN32"; S "GetCurrentThreadId" ];
+      [ DEFINE "EXTUNIX_USE_THREAD_SELFID"; I "sys/syscall.h"; S "syscall"; V "SYS_thread_selfid"];
+      [ I "sys/syscall.h"; S "syscall"; V "SYS_gettid"; ];
+    ];
     "PGID", L[ I "unistd.h"; S "getpgid"; S "setpgid"; S "getsid"; ];
     "SETREUID", L[ I "sys/types.h"; I "unistd.h"; S "setreuid"; S "setregid" ];
     "FSYNC", ANY[
