@@ -45,7 +45,7 @@ Library extunix
   Modules: ExtUnix, ExtUnixAll, ExtUnixSpecific, ExtUnixConfig
   if flag(strict) && ccomp_type(cc)
     CCOpt: -pedantic -Wno-long-long -Wextra
-  CSources: config.h,
+  CSources: config.h, endian_helper.h,
             eventfd.c, dirfd.c, fsync.c, statvfs.c, atfile.c,
             ioctl_siocgifconf.c, uname.c, fadvise.c, fallocate.c,
             tty_ioctl.c, unistd.c, stdlib.c, signalfd.c, ptrace.c,

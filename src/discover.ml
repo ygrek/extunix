@@ -309,11 +309,31 @@ let features =
     "MALLOC_INFO", L[ I"malloc.h"; S"malloc_info"; ];
     "MALLOC_STATS", L[ I"malloc.h"; S"malloc_stats"; ];
     "MEMALIGN", L[ I "stdlib.h"; S"posix_memalign"; ];
-    "ENDIAN", L[
-      I "endian.h";
-      D"htobe16"; D"htole16"; D"be16toh"; D"le16toh";
-      D"htobe32"; D"htole32"; D"be32toh"; D"le32toh";
-      D"htobe64"; D"htole64"; D"be64toh"; D"le64toh";
+    "ENDIAN", ANY[
+      [
+        I"endian.h";
+        D"htobe16"; D"htole16"; D"be16toh"; D"le16toh";
+        D"htobe32"; D"htole32"; D"be32toh"; D"le32toh";
+        D"htobe64"; D"htole64"; D"be64toh"; D"le64toh";
+      ];
+      [
+        I"sys/endian.h";
+        D"htobe16"; D"htole16";
+        D"htobe32"; D"htole32";
+        D"htobe64"; D"htole64";
+      ];
+      [
+        DEFINE "EXTUNIX_USE_OSBYTEORDER_H";
+        I"libkern/OSByteOrder.h";
+        D"OSSwapHostToBigInt32";
+      ];
+      [
+        DEFINE "EXTUNIX_USE_WINSOCK2_H";
+        I"winsock2.h"; I"sys/param.h";
+        D"htons"; D"ntohs";
+        D"htonl"; D"ntohl";
+        D"htonll"; D"ntohll";
+      ]
     ];
     "READ_CREDENTIALS", L[ fd_int; I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
     "FEXECVE", L[ fd_int; I "unistd.h"; S"fexecve"; ];

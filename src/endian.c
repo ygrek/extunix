@@ -1,5 +1,6 @@
 #define EXTUNIX_WANT_ENDIAN
 #include "config.h"
+#include "endian_helper.h"
 
 #include <stdint.h>
 
@@ -37,9 +38,6 @@ CAMLprim value caml_extunix_set_##name(value v_str, value v_off, value v_x) { \
 }
 
 #if defined(EXTUNIX_HAVE_ENDIAN)
-
-#include <endian.h>
-#include <arpa/inet.h>
 
 /* Big endian */
 CONV(htobe16,        uint16_t, htobe16, Long_val, Val_long)
