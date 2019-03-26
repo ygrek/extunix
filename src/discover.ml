@@ -325,14 +325,14 @@ let features =
       [
         DEFINE "EXTUNIX_USE_OSBYTEORDER_H";
         I"libkern/OSByteOrder.h";
-        D"OSSwapHostToBigInt32";
+        S"OSSwapHostToBigInt32";
       ];
       [
         DEFINE "EXTUNIX_USE_WINSOCK2_H";
         I"winsock2.h"; I"sys/param.h";
-        D"htons"; D"ntohs";
-        D"htonl"; D"ntohl";
-        D"htonll"; D"ntohll";
+        S"htons"; S"ntohs";
+        S"htonl"; S"ntohl";
+        S"htonll"; S"ntohll";
       ]
     ];
     "READ_CREDENTIALS", L[ fd_int; I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
