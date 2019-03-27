@@ -1,3 +1,8 @@
+0.1.7 - 27 Mar 2019
+* detect endian functions on more platforms
+* fix openlog
+* improve gettid on Mac OS
+
 0.1.6 - 11 Mar 2018
 * OCaml 4.05 compatibility (O_KEEPEXEC)
 * sockopt: add BPF options

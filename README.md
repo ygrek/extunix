@@ -13,7 +13,7 @@ Our motto: "Be to Unix, what extlib is to stdlib"
  * Provide common consistent ocaml interface: naming convention, exceptions.
  * Simple to build - no extra dependencies.
 
-Homepage: http://extunix.forge.ocamlcore.org/
+Homepage: https://ygrek.org.ua/p/ocaml-extunix/
 
 Why?
 ----
@@ -146,7 +146,6 @@ to project bugtracker at
 
 Current maintainer is reachable at :
 
-  * mailto:ygrek@autistici.org
-  * xmpp:ygrek@jabber.kiev.ua
+  mailto:ygrek@autistici.org
 
 ----
