@@ -325,7 +325,7 @@ let features =
       [
         DEFINE "EXTUNIX_USE_OSBYTEORDER_H";
         I"libkern/OSByteOrder.h";
-        S"OSSwapHostToBigInt32";
+        D"OSSwapHostToBigInt32";
       ];
       [
         DEFINE "EXTUNIX_USE_WINSOCK2_H";
