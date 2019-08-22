@@ -33,13 +33,13 @@ type open_flag = Unix.open_flag
   | O_SHARE_DELETE | O_CLOEXEC
 *)
 
-HAVE EVENTFD
+[%%have EVENTFD
 external eventfd : int -> Unix.file_descr = "caml_extunix_eventfd"
 external eventfd_read : Unix.file_descr -> int64 = "caml_extunix_eventfd_read"
 external eventfd_write : Unix.file_descr -> int64 -> unit = "caml_extunix_eventfd_write"
-END
+]
 
-HAVE SYSLOG
+[%%have SYSLOG
 module Syslog : sig
 type options = LOG_PID | LOG_CONS | LOG_NDELAY | LOG_ODELAY | LOG_NOWAIT
 type facility = LOG_KERN | LOG_USER | LOG_MAIL | LOG_NEWS | LOG_UUCP
@@ -74,9 +74,9 @@ let log_upto lvl =
   f [LOG_DEBUG; LOG_INFO; LOG_NOTICE; LOG_WARNING; LOG_ERR; LOG_CRIT;
       LOG_ALERT; LOG_EMERG]
 end
-END
+]
 
-HAVE UNAME
+[%%have UNAME
 
 (** {b Author:} Sylvain Le Gall [sylvain\@le-gall.net] *)
 module Uname = struct
@@ -95,34 +95,34 @@ end
 
 external uname : unit -> Uname.t = "caml_extunix_uname"
 
-END
+]
 
 (** {2 Filesystem} *)
 
-HAVE FSYNC
+[%%have FSYNC
 (** synchronize a file's in-core state with storage device *)
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
-END
+]
 
-HAVE FDATASYNC
+[%%have FDATASYNC
 external fdatasync : Unix.file_descr -> unit = "caml_extunix_fdatasync"
-END
+]
 
-HAVE SYNC
+[%%have SYNC
 (** causes all buffered modifications to file metadata and data to be written to the underlying file systems *)
 external sync : unit -> unit = "caml_extunix_sync"
-END
+]
 
-HAVE SYNCFS
+[%%have SYNCFS
 (** like {!sync}, but synchronizes just the file system containing file referred to by the open file descriptor [fd] *)
 external syncfs : Unix.file_descr -> unit = "caml_extunix_syncfs"
-END
+]
 
-HAVE DIRFD
+[%%have DIRFD
 external dirfd : Unix.dir_handle -> Unix.file_descr = "caml_extunix_dirfd"
-END
+]
 
-HAVE STATVFS
+[%%have STATVFS
 (** file system flags *)
 type st_flag =
   | ST_RDONLY       (** Mount read-only. *)
@@ -153,9 +153,9 @@ type statvfs = {
 }
 external statvfs : string -> statvfs = "caml_extunix_statvfs"
 external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
-END
+]
 
-HAVE ATFILE
+[%%have ATFILE
 (*
 external at_fdcwd : unit -> Unix.file_descr
 
@@ -177,7 +177,7 @@ external symlinkat : string -> Unix.file_descr -> string -> unit = "caml_extunix
 external readlinkat : Unix.file_descr -> string -> string = "caml_extunix_readlinkat"
 external fchownat : Unix.file_descr -> string -> int -> int -> at_flag list -> unit = "caml_extunix_fchownat"
 external fchmodat : Unix.file_descr -> string -> int -> at_flag list -> unit = "caml_extunix_fchmodat"
-END
+]
 
 (** @raise Not_available if OS does not represent file descriptors as numbers *)
 let int_of_file_descr : Unix.file_descr -> int =
@@ -193,20 +193,20 @@ let file_descr_of_int : int -> Unix.file_descr =
   else
     Obj.magic
 
-HAVE FCNTL
+[%%have FCNTL
 (** @return whether file descriptor is open *)
 external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
-END
+]
 
-HAVE REALPATH
+[%%have REALPATH
 (** [realpath path]
     @return the canonicalized absolute pathname of [path]
 *)
 external realpath : string -> string = "caml_extunix_realpath"
-END
+]
 
 
-HAVE FADVISE
+[%%have FADVISE
 
 (** {3 posix_fadvise}
 
@@ -230,9 +230,9 @@ type advice =
 (** predeclare an access pattern for file data *)
 external fadvise: Unix.file_descr -> int -> int -> advice -> unit = "caml_extunix_fadvise"
 
-END
+]
 
-HAVE FALLOCATE
+[%%have FALLOCATE
 
 (** {3 posix_fallocate} *)
 (** Allocate disk space for file
@@ -246,9 +246,9 @@ HAVE FALLOCATE
   *)
 external fallocate: Unix.file_descr -> int -> int -> unit = "caml_extunix_fallocate"
 
-END
+]
 
-HAVE PREAD
+[%%have PREAD
 (** {3 pread}
 
     {b Author:} Goswin von Brederlow *)
@@ -315,9 +315,9 @@ let intr_pread fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.intr_pread"
   else unsafe_intr_pread fd off buf ofs len
-END
+]
 
-HAVE PWRITE
+[%%have PWRITE
 (** {3 pwrite}
 
     {b Author:} Goswin von Brederlow *)
@@ -384,9 +384,9 @@ let intr_pwrite fd off buf ofs len =
   if off < 0 || ofs < 0 || len < 0 || ofs > String.length buf - len
   then invalid_arg "ExtUnix.intr_pwrite"
   else unsafe_intr_pwrite fd off buf ofs len
-END
+]
 
-HAVE READ
+[%%have READ
 (** {3 read}
 
     {b Author:} Goswin von Brederlow *)
@@ -448,9 +448,9 @@ let intr_read fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > Bytes.length buf - len
   then invalid_arg "ExtUnix.intr_read"
   else unsafe_intr_read fd buf ofs len
-END
+]
 
-HAVE WRITE
+[%%have WRITE
 (** {3 write}
 
     {b Author:} Goswin von Brederlow *)
@@ -511,7 +511,7 @@ let intr_write fd buf ofs len =
   if ofs < 0 || len < 0 || ofs > String.length buf - len
   then invalid_arg "ExtUnix.intr_write"
   else unsafe_intr_write fd buf ofs len
-END
+]
 
 (** {2 File operations on large files} *)
 
@@ -529,15 +529,15 @@ END
 module LargeFile =
 struct
 
-  HAVE FADVISE
+  [%%have FADVISE
   external fadvise: Unix.file_descr -> int64 -> int64 -> advice -> unit = "caml_extunix_fadvise64"
-  END
+  ]
 
-  HAVE FALLOCATE
+  [%%have FALLOCATE
   external fallocate: Unix.file_descr -> int64 -> int64 -> unit = "caml_extunix_fallocate64"
-  END
+  ]
 
-  HAVE PREAD
+  [%%have PREAD
   external unsafe_all_pread: Unix.file_descr -> int64 -> Bytes.t -> int -> int -> int = "caml_extunix_all_pread64"
 
   let all_pread fd off buf ofs len =
@@ -565,9 +565,9 @@ struct
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.intr_pread"
     else unsafe_intr_pread fd off buf ofs len
-  END
+  ]
 
-  HAVE PWRITE
+  [%%have PWRITE
   external unsafe_all_pwrite: Unix.file_descr -> int64 -> string -> int -> int -> int = "caml_extunix_all_pwrite64"
 
   let all_pwrite fd off buf ofs len =
@@ -595,14 +595,14 @@ struct
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.intr_pwrite"
     else unsafe_intr_pwrite fd off buf ofs len
-  END
+  ]
 
   (** {2 Bigarray variants} *)
 
   (** *)
   module BA = struct
 
-  HAVE PREAD
+  [%%have PREAD
   external unsafe_all_pread: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_all_pread64"
 
   let all_pread fd off buf =
@@ -630,9 +630,9 @@ struct
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.intr_pread"
     else unsafe_intr_pread fd off buf
-  END
+  ]
 
-  HAVE PWRITE
+  [%%have PWRITE
   external unsafe_all_pwrite: Unix.file_descr -> int64 -> ('a, 'b) carray -> int = "caml_extunixba_all_pwrite64"
 
   let all_pwrite fd off buf =
@@ -660,13 +660,13 @@ struct
     if off < Int64.zero
     then invalid_arg "ExtUnix.LargeFile.intr_pwrite"
     else unsafe_intr_pwrite fd off buf
-  END
+  ]
 
   end (* module BA *)
 
 end (* module LargeFile *)
 
-HAVE MOUNT
+[%%have MOUNT
 
 (** {3 mount system call} *)
 
@@ -685,19 +685,19 @@ type umount2_flag =
 
 external umount2: string -> umount2_flag list -> unit = "caml_extunix_umount2"
 
-END
+]
 
-HAVE CHROOT
+[%%have CHROOT
 
 (** {3 chroot system call} *)
 
 external chroot: string -> unit = "caml_extunix_chroot"
 
-END
+]
 
 (** {2 namespace} *)
 
-HAVE UNSHARE
+[%%have UNSHARE
 
 type clone_flag =
   | CLONE_FS | CLONE_FILES | CLONE_NEWNS | CLONE_SYSVSEM | CLONE_NEWUTS
@@ -705,7 +705,7 @@ type clone_flag =
 
 external unshare: clone_flag list -> unit = "caml_extunix_unshare"
 
-END
+]
 
 
 
@@ -714,13 +714,13 @@ END
 (** Control the underlying device parameters of special files *)
 module Ioctl = struct
 
-HAVE SIOCGIFCONF
+[%%have SIOCGIFCONF
 (** [siocgifconf sock], where [sock] is any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
   @return the list of interfaces and corresponding addresses ({b FIXME max 32}) ({b may change}) *)
 external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
-END
+]
 
-HAVE TTY_IOCTL
+[%%have TTY_IOCTL
 
 (** Enable RTS/CTS (hardware) flow control. See CRTSCTS in tcsetattr(3). 
     {b FIXME this is likely to disappear when separate interface for [tcsetattr] and [tcgetattr] gets implemented} *)
@@ -738,28 +738,28 @@ external tiocmbic : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBI
 (** Set the indicated modem bits. See TIOCMBIS in tty_ioctl(4). *)
 external tiocmbis : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBIS"
 
-END
+]
 
 end (* module Ioctl *)
 
 (** {2 Miscellaneous} *)
 
-HAVE TTYNAME
+[%%have TTYNAME
 (** @return name of terminal *)
 external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
-END
+]
 
-HAVE CTERMID
+[%%have CTERMID
 (** Get controlling terminal name *)
 external ctermid : unit -> string = "caml_extunix_ctermid"
-END
+]
 
-HAVE GETTID
+[%%have GETTID
 (** @return thread id *)
 external gettid : unit -> int = "caml_extunix_gettid"
-END
+]
 
-HAVE PGID
+[%%have PGID
 
 (** [setpgid pid pgid] sets the process group of the process specified by [pid] to [pgid].
     If [pid] is zero, then the process ID of the calling process is used. If
@@ -774,9 +774,9 @@ external getpgid : int -> int = "caml_extunix_getpgid"
     If [pid] is zero, the process ID of the calling process is used. *)
 external getsid : int -> int = "caml_extunix_getsid"
 
-END
+]
 
-HAVE SETREUID
+[%%have SETREUID
 
 (** [setreuid ruid euid] sets real and effective user IDs of the calling process.
     Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
@@ -788,9 +788,9 @@ external setreuid : int -> int -> unit = "caml_extunix_setreuid"
 *)
 external setregid : int -> int -> unit = "caml_extunix_setregid"
 
-END
+]
 
-HAVE SETRESUID
+[%%have SETRESUID
 
 (** [setresuid ruid euid suid] sets real, effective and saved user IDs of the calling process.
     Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
@@ -802,17 +802,17 @@ external setresuid: int -> int -> int -> unit = "caml_extunix_setresuid"
 *)
 external setresgid: int -> int -> int -> unit = "caml_extunix_setresgid"
 
-END
+]
 
-HAVE TCPGRP
+[%%have TCPGRP
 external tcgetpgrp : Unix.file_descr -> int = "caml_extunix_tcgetpgrp"
 external tcsetpgrp : Unix.file_descr -> int -> unit = "caml_extunix_tcsetpgrp"
-END
+]
 
 (** Exit process without running any [at_exit] hooks (implemented in Pervasives) *)
 external sys_exit : int -> 'a = "caml_sys_exit"
 
-HAVE SYSINFO
+[%%have SYSINFO
 (** NB all memory fields in this structure are the multiplies of [mem_unit] bytes *)
 type sysinfo = {
   uptime : int; (** Seconds since boot *)
@@ -834,18 +834,18 @@ external sysinfo : unit -> sysinfo = "caml_extunix_sysinfo"
 
 (** @return seconds since boot *)
 external uptime : unit -> int = "caml_extunix_uptime"
-END
+]
 
 (** {2 Network} *)
 
-HAVE IFADDRS
+[%%have IFADDRS
 
 (** @return the list of [PF_INET] interfaces and corresponding addresses ({b may change}) *)
 external getifaddrs : unit -> (string * string) list = "caml_extunix_getifaddrs"
 
-END
+]
 
-HAVE SOCKOPT
+[%%have SOCKOPT
 
 type socket_int_option_ =
 | TCP_KEEPCNT_
@@ -934,9 +934,9 @@ let setsockopt_int sock opt v = setsockopt_int sock (make_socket_int_option opt)
 let getsockopt_int sock opt = getsockopt_int sock (make_socket_int_option opt)
 
 
-END
+]
 
-HAVE POLL
+[%%have POLL
 
 module Poll : sig
 
@@ -990,9 +990,9 @@ external poll : (Unix.file_descr * Poll.t) array -> int -> float -> (Unix.file_d
 
 let poll a ?(n=Array.length a) t = poll a n t
 
-END
+]
 
-HAVE SIGNALFD
+[%%have SIGNALFD
 
 (** {2 signalfd} *)
 
@@ -1053,9 +1053,9 @@ external ssi_utime        : ssi -> int64 = "caml_extunix_ssi_utime"
 external ssi_stime        : ssi -> int64 = "caml_extunix_ssi_stime"
 external ssi_addr         : ssi -> int64 = "caml_extunix_ssi_addr"
 
-END
+]
 
-HAVE RESOURCE
+[%%have RESOURCE
 
 (** 
   {2 POSIX resource operations}
@@ -1154,11 +1154,11 @@ external setrlimit : resource -> soft:Rlimit.t -> hard:Rlimit.t -> unit = "caml_
     [Unix.times].
   *)
 
-END
+]
 
 (** {2 Memory management} *)
 
-HAVE MLOCKALL
+[%%have MLOCKALL
 
 (** mlockall flag *)
 type mlockall_flag = MCL_CURRENT | MCL_FUTURE
@@ -1169,9 +1169,9 @@ external mlockall : mlockall_flag list -> unit = "caml_extunix_mlockall"
 (** Unlock all pages mapped into the address space of the calling process. *)
 external munlockall : unit -> unit = "caml_extunix_munlockall"
 
-END
+]
 
-HAVE MEMALIGN
+[%%have MEMALIGN
 
 (** [memalign alignment size] creates a {!Bigarray.Array1.t} of [size] bytes,
     which data is aligned to [alignment] (must be a power of 2)
@@ -1180,11 +1180,11 @@ HAVE MEMALIGN
 *)
 external memalign: int -> int -> Bigarray.int8_unsigned_elt carray8 = "caml_extunix_memalign"
 
-END
+]
 
 (** {2 Time conversion} *)
 
-HAVE STRTIME
+[%%have STRTIME
 
 (** This function is the converse of the {!strftime} function.
   [strptime fmt data] convert a string containing time information [data]
@@ -1207,24 +1207,24 @@ external strftime: string -> Unix.tm -> string = "caml_extunix_strftime"
 *)
 external tzname : bool -> string = "caml_extunix_tzname"
 
-END
+]
 
-HAVE TIMEZONE
+[%%have TIMEZONE
 
 (** @return timezone (seconds  West  of UTC) and daylight (whether there is time during
   the year when daylight saving time applies in this timezone) *)
 external timezone : unit -> int * bool = "caml_extunix_timezone"
 
-END
+]
 
-HAVE TIMEGM
+[%%have TIMEGM
 
 (** Inverse of [Unix.gmtime] *)
 external timegm : Unix.tm -> float = "caml_extunix_timegm"
 
-END
+]
 
-HAVE PTS
+[%%have PTS
 
 (** 
   {2 Pseudo terminal management}
@@ -1245,11 +1245,11 @@ external unlockpt: Unix.file_descr -> unit = "caml_extunix_unlockpt"
 (** This function get the name of the slave pseudo-terminal. *)
 external ptsname: Unix.file_descr -> string = "caml_extunix_ptsname"
 
-END
+]
 
 (** {2 Application self-debugging and diagnostics} *)
 
-HAVE EXECINFO
+[%%have EXECINFO
 
 (** @return a backtrace for the calling program
 
@@ -1262,30 +1262,30 @@ HAVE EXECINFO
 *)
 external backtrace : unit -> string array = "caml_extunix_backtrace"
 
-END
+]
 
-HAVE MALLOC_STATS
+[%%have MALLOC_STATS
 
 (** Print brief heap summary statistics on stderr *)
 external malloc_stats : unit -> unit = "caml_extunix_malloc_stats"
 
-END
+]
 
-HAVE MALLOC_INFO
+[%%have MALLOC_INFO
 
 (** @return the information about state of allocator *)
 external malloc_info : unit -> string = "caml_extunix_malloc_info"
 
-END
+]
 
-HAVE MCHECK
+[%%have MCHECK
 
 external mtrace : unit -> unit = "caml_extunix_mtrace"
 external muntrace : unit -> unit = "caml_extunix_muntrace"
 
-END
+]
 
-HAVE PTRACE
+[%%have PTRACE
 
 external ptrace_traceme : unit -> unit = "caml_extunix_ptrace_traceme"
 external ptrace_peekdata : int -> nativeint -> nativeint = "caml_extunix_ptrace_peekdata"
@@ -1297,11 +1297,11 @@ type ptrace_request =
 
 external ptrace : int -> ptrace_request -> unit = "caml_extunix_ptrace"
 
-END
+]
 
 (** {2 Environment manipulation} *)
 
-HAVE SETENV
+[%%have SETENV
 
 (** [setenv name value overwrite] adds the variable [name] to the environment with the value [value], if [name]
 does not already exist or [overwrite] is true *)
@@ -1311,26 +1311,26 @@ external setenv : string -> string -> bool -> unit = "caml_extunix_setenv"
 succeeds, and the environment is unchanged. *)
 external unsetenv : string -> unit = "caml_extunix_unsetenv"
 
-END
+]
 
-HAVE CLEARENV
+[%%have CLEARENV
 
 (** Clear the environment of all name-value pairs *)
 external clearenv : unit -> unit = "caml_extunix_clearenv"
 
-END
+]
 
 (** {2 Temporary directories} *)
 
-HAVE MKDTEMP
+[%%have MKDTEMP
 
 (** [mkdtemp template] creates a unique temporary directory (with permissions 0700).
   Last six characters of [template] must be "XXXXXX". *)
 external mkdtemp : string -> string = "caml_extunix_mkdtemp"
 
-END
+]
 
-HAVE MKSTEMPS
+[%%have MKSTEMPS
 
 (**/**)
 
@@ -1347,9 +1347,9 @@ let mkstemp ?(suffix="") prefix =
   let s = prefix ^ "XXXXXX" ^ suffix in
   let fd = internal_mkstemps s (String.length suffix) in
   (fd, s)
-END
+]
 
-HAVE MKOSTEMPS
+[%%have MKOSTEMPS
 
 (**/**)
 
@@ -1367,7 +1367,7 @@ let mkostemp ?(suffix="") ?(flags=[]) prefix =
   let fd = internal_mkostemps s (String.length suffix) flags in
   (fd, s)
 
-END
+]
 
 (** {2 Byte order conversion} *)
 
@@ -1376,7 +1376,7 @@ END
     {b Author:} Goswin von Brederlow *)
 module BigEndian = struct
 
-HAVE ENDIAN
+[%%have ENDIAN
   (** Conversion functions from host to big endian byte order and back *)
 
   (** Conversion of 16bit integers *)
@@ -1580,7 +1580,7 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
-END
+]
 
 end
 
@@ -1589,7 +1589,7 @@ end
     {b Author:} Goswin von Brederlow *)
 module LittleEndian = struct
 
-HAVE ENDIAN
+[%%have ENDIAN
 
   (** Conversion functions from host to little endian byte order and back *)
 
@@ -1790,7 +1790,7 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 str off v
 
-END
+]
 
 end
 
@@ -1947,7 +1947,7 @@ module HostEndian = struct
 
 end
 
-HAVE READ_CREDENTIALS
+[%%have READ_CREDENTIALS
 
 (** {2 read_credentials }
 
@@ -1957,9 +1957,9 @@ HAVE READ_CREDENTIALS
     tuple containing the sender process' PID, UID and GID. *)
 external read_credentials : Unix.file_descr -> int * int * int = "caml_extunix_read_credentials"
 
-END
+]
 
-HAVE FEXECVE
+[%%have FEXECVE
 
 (** {2 fexecve }
 
@@ -1973,9 +1973,9 @@ HAVE FEXECVE
 *)
 external fexecve: Unix.file_descr -> string array -> string array -> 'a = "caml_extunix_fexecve"
 
-END
+]
 
-HAVE SENDMSG
+[%%have SENDMSG
 
 (** {2 sendmsg / recvmsg }
 
@@ -2014,9 +2014,9 @@ let recvmsg_nofd fd =
   | (Some fd, msg) -> Unix.close fd; msg
   | (None, msg) -> msg
 
-END
+]
 
-HAVE SYSCONF
+[%%have SYSCONF
 
 (** {2 sysconf}
 
@@ -2071,9 +2071,9 @@ let sysconf sc =
   with
     Not_found -> raise (Not_available "sysconf")
 
-END
+]
 
-HAVE SPLICE OR TEE OR VMSPLICE
+[%%have (SPLICE, TEE, VMSPLICE)
 
 (**
   {2 splice}
@@ -2100,9 +2100,9 @@ type splice_flag =
 
                           Only use for [vmsplice]. *)
 
-END
+]
 
-HAVE SPLICE
+[%%have SPLICE
 (** [splice fd_in off_in fd_out off_out len flags] moves data between two file
     descriptors without copying between kernel address space and user address
     space. It transfers up to [len] bytes of data from the file descriptor
@@ -2123,9 +2123,9 @@ HAVE SPLICE
     referred to by fd_in.
 *)
 external splice : Unix.file_descr -> int option -> Unix.file_descr -> int option -> int -> splice_flag list -> int = "caml_extunix_splice_bytecode" "caml_extunix_splice"
-END
+]
 
-HAVE TEE
+[%%have TEE
 
 (** [tee fd_in fd_out len flags] duplicates up to [len] bytes of data from the
     pipe [fd_in] to the pipe [fd_out]. It does not consume the data that is
@@ -2138,14 +2138,14 @@ HAVE TEE
     to the write end of the pipe referred to by fd_in.
 *)
 external tee : Unix.file_descr -> Unix.file_descr -> int -> splice_flag list -> int = "caml_extunix_tee"
-END
+]
 
 (** {2 Bigarray variants} *)
 
 (** *)
 module BA = struct
 
-HAVE PREAD
+[%%have PREAD
 (** {2 pread}
 
     {b Author:} Goswin von Brederlow *)
@@ -2213,9 +2213,9 @@ let intr_pread fd off buf =
   if off < 0
   then invalid_arg "ExtUnix.intr_pread"
   else unsafe_intr_pread fd off buf
-END
+]
 
-HAVE PWRITE
+[%%have PWRITE
 (** {2 pwrite}
 
     {b Author:} Goswin von Brederlow *)
@@ -2282,9 +2282,9 @@ let intr_pwrite fd off buf =
   if off < 0
   then invalid_arg "ExtUnix.intr_pwrite"
   else unsafe_intr_pwrite fd off buf
-END
+]
 
-HAVE READ
+[%%have READ
 (** {2 read}
 
     {b Author:} Goswin von Brederlow *)
@@ -2328,9 +2328,9 @@ external read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_read"
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
 external intr_read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_intr_read"
-END
+]
 
-HAVE WRITE
+[%%have WRITE
 (** {2 write}
 
     {b Author:} Goswin von Brederlow *)
@@ -2373,7 +2373,7 @@ external write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_writ
     continue on EINTR. Returns the number of characters written in all
     other cases. *)
 external intr_write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_intr_write"
-END
+]
 
 (** {2 Byte order conversion} *)
 
@@ -2382,7 +2382,7 @@ END
     {b Author:} Goswin von Brederlow *)
 module BigEndian = struct
 
-HAVE ENDIAN
+[%%have ENDIAN
   (** [unsafe_get_X buf off] extract integer of type [X] from a
       buffer [buf] starting at offset [off]. Unsigned types are 0
       extended and signed types are sign extended to fill the ocaml
@@ -2530,7 +2530,7 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 buf off v
 
-END
+]
 
 end (* module BigEndian *)
 
@@ -2539,7 +2539,7 @@ end (* module BigEndian *)
     {b Author:} Goswin von Brederlow *)
 module LittleEndian = struct
 
-HAVE ENDIAN
+[%%have ENDIAN
 
   (** [unsafe_get_X buf off] extract integer of type [X] from a
       buffer [buf] starting at offset [off]. Unsigned types are 0
@@ -2688,7 +2688,7 @@ HAVE ENDIAN
     then raise (Invalid_argument "index out of bounds");
     unsafe_set_int64 buf off v
 
-END
+]
 
 end (* module LittleEndian *)
 
@@ -2872,7 +2872,7 @@ let set_substr buf off str =
   then raise (Invalid_argument "index out of bounds");
   unsafe_set_substr buf off str
 
-HAVE VMSPLICE
+[%%have VMSPLICE
 
 (**
   {2 splice}
@@ -2890,7 +2890,7 @@ type 'a iov = {
 (** [vmsplice fd iovs flags] sends the data described by [iovs] to the pipe [fd]
     @return the number of bytes transferred to the pipe. *)
 external vmsplice : Unix.file_descr -> 'a iov array -> splice_flag list -> int = "caml_extunixba_vmsplice"
-END
+]
 
 end (* module BA *)
 
@@ -2905,7 +2905,7 @@ end (* module BA *)
 
   e.g. [have "eventfd"]
 *)
-SHOW ME THE MONEY
+[%%show_me_the_money]
 
 (* vim: ft=ocaml
 *)

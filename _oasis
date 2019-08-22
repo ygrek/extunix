@@ -21,7 +21,7 @@ Copyrights:
               (C) 2015 François Bobot,
               (C) 2018 Markus W. Weissmann
 Homepage:     http://extunix.forge.ocamlcore.org/
-BuildTools:   ocamlbuild, camlp4
+BuildTools:   ocamlbuild
 Plugins:      DevFiles (0.4), META (0.4)
 
 Synopsis: Extended functions for OCaml Unix module 

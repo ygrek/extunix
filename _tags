@@ -204,7 +204,7 @@ true: annot, bin_annot
 # OASIS_STOP
 true: my_warnings, safe_string
 "test/test.ml": warn_d
-"src/pa_have.ml": pkg_camlp4.quotations.r, pkg_camlp4.extend, syntax_camlp4o
+<src/ppx_have.*>: pkg_ocaml-migrate-parsetree
 <**/rootfs*>: -traverse
 <**/rootfs*>: not_hygienic
 "userns_test/": -traverse

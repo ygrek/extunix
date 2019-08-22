@@ -48,7 +48,7 @@ remove: [
 depends: [
   "ocaml"
   "ocamlfind" {build}
-  "camlp4" {build}
+  "ocaml-migrate-parsetree" {build}
   "ounit" {with-test & >= "1.0.3"}
   "base-bytes"
   "base-bigarray"
