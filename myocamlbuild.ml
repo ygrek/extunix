@@ -924,9 +924,9 @@ let gen gen_all prod =
     (S([P"src/ppx_have.byte";
       T (tags_of_pathname "src/extUnix.mlpp"++"ocaml"++"pp");
       A"--impl"; A"src/extUnix.mlpp";
-      A"--dump-ast";
-      A"-o"; A prod;
-      ] @ if gen_all then [A"--gen-all"] else [])))
+      A"-o"; A prod;]
+      @ (if Sys.ocaml_version < "4.03" then [A"--dump-ast"] else [])
+      @ (if gen_all then [A"--gen-all"] else []))))
 ;;
 
 gen true "src/extUnixAll.ml";;
