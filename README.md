@@ -140,9 +140,7 @@ Development
 -----------
 
 Many people contribute to extunix. Please submit your patches and/or feature requests
-to project bugtracker at
-
-	https://github.com/ygrek/extunix/issues
+to project bugtracker at https://github.com/ygrek/extunix/issues
 
 Current maintainer is reachable at :
 

@@ -1,6 +1,6 @@
 OASISFormat:  0.4
 Name:         extunix
-Version:      0.1.7
+Version:      0.2.0
 License:      LGPL-2.1 with OCaml linking exception
 Authors:      ygrek, Sylvain Le Gall, Stéphane Glondu, Kaustuv Chaudhuri, Joshua Smith, Niki Yoshiuchi, Gerd Stolpmann, Goswin von Brederlow, Andre Nathan, Zhenya Lykhovyd, Mehdi Dogguy, Roman Vorobets, Pierre Chambart, Dmitry Grebeniuk, François Bobot, Markus W. Weissmann
 Copyrights:
@@ -20,11 +20,11 @@ Copyrights:
               (C) 2013 Dmitry Grebeniuk,
               (C) 2015 François Bobot,
               (C) 2018 Markus W. Weissmann
-Homepage:     http://extunix.forge.ocamlcore.org/
+Homepage:     https://ygrek.org.ua/p/ocaml-extunix/
 BuildTools:   ocamlbuild
 Plugins:      DevFiles (0.4), META (0.4)
 
-Synopsis: Extended functions for OCaml Unix module 
+Synopsis: Extended functions for OCaml Unix module
 Description:
   Thin bindings to various low-level system APIs (often non-portable)
   which are not covered by Unix module.

@@ -1,3 +1,7 @@
+0.2.0 -  8 Nov 2019
+* camlp4 dependency replaced with ppx
+* use available endian functions on Mac OS
+
 0.1.7 - 27 Mar 2019
 * detect endian functions on more platforms
 * fix openlog
