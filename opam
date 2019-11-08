@@ -5,7 +5,7 @@ homepage: "https://ygrek.org.ua/p/ocaml-extunix"
 dev-repo: "git://github.com/ygrek/extunix.git"
 bug-reports: "https://github.com/ygrek/extunix/issues"
 doc: "https://ygrek.org.ua/p/ocaml-extunix/api/index.html"
-license: "LGPL-2.1 with OCaml linking exception"
+license: "LGPL-2.1-only with OCaml-LGPL-linking-exception"
 tags: ["org:ygrek"]
 authors: [ "ygrek"
            "Sylvain Le Gall"
@@ -29,21 +29,16 @@ build: [
     "ocaml"
     "setup.ml"
     "-configure"
-    "--%{ounit:enable}%-tests"
+    "--%{ounit:enable}%-tests" {ocaml:version >= "4.02.0"}
     "--prefix"
     prefix
-  ] {ocaml:version >= "4.02.0"}
-  ["ocaml" "setup.ml" "-configure" "--prefix" prefix]
-    {ocaml:version < "4.02.0"}
+  ]
   ["ocaml" "setup.ml" "-build"]
   ["ocaml" "setup.ml" "-test"] {with-test}
   ["ocaml" "setup.ml" "-doc"] {with-doc}
 ]
 install: [
   ["ocaml" "setup.ml" "-install"]
-]
-remove: [
-  ["ocamlfind" "remove" "extunix"]
 ]
 depends: [
   "ocaml"
@@ -62,9 +57,3 @@ Motto: "Be to Unix, what extlib is to stdlib"
  * Implement thin C bindings that directly map to underlying system API.
  * Provide common consistent ocaml interface: naming convention, exceptions.
  * Simple to build - no extra dependencies."""
-flags: light-uninstall
-url {
-  src: "https://ygrek.org.ua/p/release/ocaml-extunix/ocaml-extunix-0.1.7.tar.gz"
-  checksum: "md5=b868d1e409cdb444f3d168b9fe2c6d83"
-  mirrors: "https://github.com/ygrek/extunix/releases/download/v0.1.7/ocaml-extunix-0.1.7.tar.gz"
-}
