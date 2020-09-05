@@ -5,6 +5,7 @@
 #if defined(EXTUNIX_HAVE_SOCKOPT)
 
 #include <assert.h>
+#include <errno.h>
 
 #ifndef TCP_KEEPCNT
 #define TCP_KEEPCNT (-1)
@@ -87,6 +88,10 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
 
   if (0 != setsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, &optval, optlen))
   {
+    if (errno == ENOPROTOOPT) {
+      caml_raise_not_found();
+      assert(0);
+    }
     uerror("setsockopt_int", Nothing);
   }
 
@@ -111,6 +116,10 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
 
   if (0 != getsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, &optval, &optlen))
   {
+    if (errno == ENOPROTOOPT) {
+      caml_raise_not_found();
+      assert(0);
+    }
     uerror("getsockopt_int", Nothing);
   }
 
