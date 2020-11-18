@@ -840,7 +840,7 @@ external uptime : unit -> int = "caml_extunix_uptime"
 
 [%%have IFADDRS
 
-(** @return the list of [PF_INET] interfaces and corresponding addresses ({b may change}) *)
+(** @return the list of [AF_INET] and [AF_INET6] interfaces and corresponding addresses ({b may change}) *)
 external getifaddrs : unit -> (string * string) list = "caml_extunix_getifaddrs"
 
 ]

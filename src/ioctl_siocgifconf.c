@@ -1,6 +1,7 @@
 
 #define EXTUNIX_WANT_SIOCGIFCONF
 #define EXTUNIX_WANT_INET_NTOA
+#define EXTUNIX_WANT_INET_NTOP
 
 #define EXTUNIX_WANT_IFADDRS
 #include "config.h"
@@ -50,6 +51,7 @@ CAMLprim value caml_extunix_getifaddrs(value v)
 
     struct ifaddrs *ifaddrs = NULL;
     struct ifaddrs *iter = NULL;
+    char addr_str[INET6_ADDRSTRLEN];
 
     lst = Val_emptylist;
 
@@ -63,15 +65,29 @@ CAMLprim value caml_extunix_getifaddrs(value v)
 
     while(iter != NULL)
     {
-      if (iter->ifa_addr != NULL && iter->ifa_addr->sa_family == AF_INET)
+      if (iter->ifa_addr != NULL)
       {
-        cons = caml_alloc(2, 0);
-        item = caml_alloc(2, 0);
-        Store_field(item, 0, caml_copy_string(iter->ifa_name));
-        Store_field(item, 1, caml_copy_string(inet_ntoa(((struct sockaddr_in *)iter->ifa_addr)->sin_addr)));
-        Store_field(cons, 0, item); /* head */
-        Store_field(cons, 1, lst);  /* tail */
-        lst = cons;
+        const sa_family_t family = iter->ifa_addr->sa_family;
+        if (family == AF_INET || family == AF_INET6)
+        {
+          cons = caml_alloc(2, 0);
+          item = caml_alloc(2, 0);
+          Store_field(item, 0, caml_copy_string(iter->ifa_name));
+          if (family == AF_INET)
+          {
+            if (NULL == inet_ntop(family, &((struct sockaddr_in *)iter->ifa_addr)->sin_addr, addr_str, INET_ADDRSTRLEN))
+              uerror("inet_ntop", Nothing);
+          }
+          else
+          {
+            if (NULL == inet_ntop(family, &((struct sockaddr_in6 *)iter->ifa_addr)->sin6_addr, addr_str, INET6_ADDRSTRLEN))
+              uerror("inet_ntop", Nothing);
+          }
+          Store_field(item, 1, caml_copy_string(addr_str));
+          Store_field(cons, 0, item); /* head */
+          Store_field(cons, 1, lst);  /* tail */
+          lst = cons;
+        }
       }
       iter = iter->ifa_next;
     }

@@ -239,6 +239,10 @@ let features =
       I "arpa/inet.h";
       S "inet_ntoa";
     ];
+    "INET_NTOP", L[
+      I "arpa/inet.h";
+      S "inet_ntop";
+    ];
     "UNAME", L[
       I "sys/utsname.h";
       T "struct utsname";
