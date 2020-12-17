@@ -4,25 +4,29 @@ These functions are thin wrappers for underlying system API, consult
 the corresponding man pages and/or system documentation for details.
 *)
 
-(** [Not_available "symbol"] may be raised by [ExtUnix.All.func]
+(** [Not_available "symbol"] may be raised by functions in {!ExtUnix.All}
     if the wrapped C function or constant is not available on this platform.
 
-    [ExtUnix.Specific] includes only functions available on the current
+    {!ExtUnix.Specific} includes only functions available on the current
     platform and will not raise [Not_available].
-    Note that libc wrappers underlying [ExtUnix.Specific] functions may still raise
+    Note that libc wrappers underlying {!ExtUnix.Specific} functions may still raise
     [ENOSYS] (Not implemented) error even though the function is available. *)
 exception Not_available of string
 
 (** type of bigarray used by BA submodules that read from files into
     bigarrays or write bigarrays into files.  The only constraint here
-    is [Bigarray.c_layout].  Naming: "bigarray with C layout" -> "carray". *)
+    is [Bigarray.c_layout].
+
+    Naming: "bigarray with C layout" -> "carray". *)
 type ('a, 'b) carray =
     ('a, 'b, Bigarray.c_layout) Bigarray.Array1.t
 
 (** type of bigarray used by BA submodules that work with endianness
-    and memory.  Constraints are: 1. [Bigarray.c_layout],
-    2. bigarray contains 8-bit integers.  Naming: "bigarray with C layout
-    and 8-bit elements" -> "carray8". *)
+    and memory.  Constraints are:
+    + [Bigarray.c_layout],
+    + bigarray contains 8-bit integers.
+
+    Naming: "bigarray with C layout and 8-bit elements" -> "carray8". *)
 type 'a carray8 =
     ('a, Bigarray.int8_unsigned_elt, Bigarray.c_layout) Bigarray.Array1.t
 
@@ -78,7 +82,7 @@ end
 
 [%%have UNAME
 
-(** {b Author:} Sylvain Le Gall [sylvain\@le-gall.net] *)
+(** @author Sylvain Le Gall <sylvain@le-gall.net> *)
 module Uname = struct
 type t =
     {
@@ -100,6 +104,7 @@ external uname : unit -> Uname.t = "caml_extunix_uname"
 (** {2 Filesystem} *)
 
 [%%have FSYNC
+
 (** synchronize a file's in-core state with storage device *)
 external fsync : Unix.file_descr -> unit = "caml_extunix_fsync"
 ]
@@ -109,11 +114,13 @@ external fdatasync : Unix.file_descr -> unit = "caml_extunix_fdatasync"
 ]
 
 [%%have SYNC
+
 (** causes all buffered modifications to file metadata and data to be written to the underlying file systems *)
 external sync : unit -> unit = "caml_extunix_sync"
 ]
 
 [%%have SYNCFS
+
 (** like {!sync}, but synchronizes just the file system containing file referred to by the open file descriptor [fd] *)
 external syncfs : Unix.file_descr -> unit = "caml_extunix_syncfs"
 ]
@@ -123,6 +130,7 @@ external dirfd : Unix.dir_handle -> Unix.file_descr = "caml_extunix_dirfd"
 ]
 
 [%%have STATVFS
+
 (** file system flags *)
 type st_flag =
   | ST_RDONLY       (** Mount read-only. *)
@@ -164,18 +172,28 @@ let at_fdcwd = at_fdcwd ()
 *)
 
 type at_flag = AT_EACCESS | AT_SYMLINK_NOFOLLOW | AT_REMOVEDIR | AT_SYMLINK_FOLLOW | AT_NO_AUTOMOUNT
+
 external openat : Unix.file_descr -> string -> open_flag list -> Unix.file_perm -> Unix.file_descr = "caml_extunix_openat"
+
 (** Supported flags : [AT_SYMLINK_NOFOLLOW AT_NO_AUTOMOUNT] *)
 external fstatat : Unix.file_descr -> string -> at_flag list -> Unix.stats = "caml_extunix_fstatat"
+
 (** Supported flags : [AT_REMOVEDIR] *)
 external unlinkat : Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_unlinkat"
+
 external renameat : Unix.file_descr -> string -> Unix.file_descr -> string -> unit = "caml_extunix_renameat"
+
 external mkdirat : Unix.file_descr -> string -> int -> unit = "caml_extunix_mkdirat"
+
 (** Supported flags : [AT_SYMLINK_FOLLOW] *)
 external linkat : Unix.file_descr -> string -> Unix.file_descr -> string -> at_flag list -> unit = "caml_extunix_linkat"
+
 external symlinkat : string -> Unix.file_descr -> string -> unit = "caml_extunix_symlinkat"
+
 external readlinkat : Unix.file_descr -> string -> string = "caml_extunix_readlinkat"
+
 external fchownat : Unix.file_descr -> string -> int -> int -> at_flag list -> unit = "caml_extunix_fchownat"
+
 external fchmodat : Unix.file_descr -> string -> int -> at_flag list -> unit = "caml_extunix_fchmodat"
 ]
 
@@ -194,11 +212,13 @@ let file_descr_of_int : int -> Unix.file_descr =
     Obj.magic
 
 [%%have FCNTL
+
 (** @return whether file descriptor is open *)
 external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
 ]
 
 [%%have REALPATH
+
 (** [realpath path]
     @return the canonicalized absolute pathname of [path]
 *)
@@ -210,7 +230,7 @@ external realpath : string -> string = "caml_extunix_realpath"
 
 (** {3 posix_fadvise}
 
-{b Author:} Sylvain Le Gall *)
+@author Sylvain Le Gall *)
 
 (** access pattern *)
 type advice =
@@ -223,7 +243,7 @@ type advice =
                               order.  *)
   | POSIX_FADV_NOREUSE    (** The specified data will be accessed only once.  *)
   | POSIX_FADV_WILLNEED   (** The specified data will be accessed in the near
-                              future.  *) 
+                              future.  *)
   | POSIX_FADV_DONTNEED   (** The specified data will not be accessed in the
                               near future.  *)
 
@@ -237,11 +257,11 @@ external fadvise: Unix.file_descr -> int -> int -> advice -> unit = "caml_extuni
 (** {3 posix_fallocate} *)
 (** Allocate disk space for file
 
-    {b Author:} Sylvain Le Gall
+    @author Sylvain Le Gall
   *)
 
 (** [fallocate fd off len] allocates disk space to ensure that subsequent writes
-    between [off] and [off + len] in [fd] will not fail because of lack of disk 
+    between [off] and [off + len] in [fd] will not fail because of lack of disk
     space. The file size is modified if [off + len] is bigger than the current size.
   *)
 external fallocate: Unix.file_descr -> int -> int -> unit = "caml_extunix_fallocate"
@@ -249,9 +269,10 @@ external fallocate: Unix.file_descr -> int -> int -> unit = "caml_extunix_falloc
 ]
 
 [%%have PREAD
+
 (** {3 pread}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_pread fd off buf ofs len] reads up to [len] bytes from file
     descriptor [fd] at offset [off] (from the start of the file) into
@@ -318,9 +339,10 @@ let intr_pread fd off buf ofs len =
 ]
 
 [%%have PWRITE
+
 (** {3 pwrite}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_pwrite fd off buf ofs len] writes up to [len] bytes from file
     descriptor [fd] at offset [off] (from the start of the file) into
@@ -387,9 +409,10 @@ let intr_pwrite fd off buf ofs len =
 ]
 
 [%%have READ
+
 (** {3 read}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_read fd buf ofs len] reads up to [len] bytes from file
     descriptor [fd] into the string [buf] at offset [ofs].
@@ -451,9 +474,10 @@ let intr_read fd buf ofs len =
 ]
 
 [%%have WRITE
+
 (** {3 write}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_write fd buf ofs len] writes up to [len] bytes from file
     descriptor [fd] into the string [buf] at offset [ofs].
@@ -516,11 +540,11 @@ let intr_write fd buf ofs len =
 (** {2 File operations on large files} *)
 
 (** File operations on large files. This sub-module provides 64-bit
-    variants of the functions ExtUnix.fadvise (for predeclaring an
-    access pattern for file data), ExtUnix.fallocate (for allocating
-    disk space for a file), ExtUnix.all_pread, ExtUnix.single_pread,
-    ExtUnix.pread, ExtUnix.intr_pread, ExtUnix.all_pwrite,
-    ExtUnix.single_pwrite, ExtUnix.pwrite and ExtUnix.intr_pwrite
+    variants of the functions [ExtUnix.fadvise] (for predeclaring an
+    access pattern for file data), [ExtUnix.fallocate] (for allocating
+    disk space for a file), [ExtUnix.all_pread], [ExtUnix.single_pread],
+    [ExtUnix.pread], [ExtUnix.intr_pread], [ExtUnix.all_pwrite],
+    [ExtUnix.single_pwrite], [ExtUnix.pwrite] and [ExtUnix.intr_pwrite]
     (for reading from or writing to a file descriptor at a given
     offset). These alternate functions represent positions and sizes
     by 64-bit integers (type int64) instead of regular integers
@@ -708,13 +732,13 @@ external unshare: clone_flag list -> unit = "caml_extunix_unshare"
 ]
 
 
-
 (** {2 ioctl} *)
 
 (** Control the underlying device parameters of special files *)
 module Ioctl = struct
 
 [%%have SIOCGIFCONF
+
 (** [siocgifconf sock], where [sock] is any socket, e.g. [socket PF_INET SOCK_DGRAM 0]
   @return the list of interfaces and corresponding addresses ({b FIXME max 32}) ({b may change}) *)
 external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_extunix_ioctl_siocgifconf"
@@ -722,7 +746,7 @@ external siocgifconf : sock:Unix.file_descr -> (string * string) list = "caml_ex
 
 [%%have TTY_IOCTL
 
-(** Enable RTS/CTS (hardware) flow control. See CRTSCTS in tcsetattr(3). 
+(** Enable RTS/CTS (hardware) flow control. See CRTSCTS in tcsetattr(3).
     {b FIXME this is likely to disappear when separate interface for [tcsetattr] and [tcgetattr] gets implemented} *)
 external crtscts : Unix.file_descr -> int = "caml_extunix_crtscts"
 
@@ -745,16 +769,19 @@ end (* module Ioctl *)
 (** {2 Miscellaneous} *)
 
 [%%have TTYNAME
+
 (** @return name of terminal *)
 external ttyname : Unix.file_descr -> string = "caml_extunix_ttyname"
 ]
 
 [%%have CTERMID
+
 (** Get controlling terminal name *)
 external ctermid : unit -> string = "caml_extunix_ctermid"
 ]
 
 [%%have GETTID
+
 (** @return thread id *)
 external gettid : unit -> int = "caml_extunix_gettid"
 ]
@@ -779,12 +806,12 @@ external getsid : int -> int = "caml_extunix_getsid"
 [%%have SETREUID
 
 (** [setreuid ruid euid] sets real and effective user IDs of the calling process.
-    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
+    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged.
 *)
 external setreuid : int -> int -> unit = "caml_extunix_setreuid"
 
 (** [setregid rgid egid] sets real and effective group IDs of the calling process.
-    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged. 
+    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged.
 *)
 external setregid : int -> int -> unit = "caml_extunix_setregid"
 
@@ -793,12 +820,12 @@ external setregid : int -> int -> unit = "caml_extunix_setregid"
 [%%have SETRESUID
 
 (** [setresuid ruid euid suid] sets real, effective and saved user IDs of the calling process.
-    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged. 
+    Supplying a value of -1 for either the real or effective user ID forces the system to leave that ID unchanged.
 *)
 external setresuid: int -> int -> int -> unit = "caml_extunix_setresuid"
 
 (** [setresgid rgid egid sgid] sets real, effective and saved group IDs of the calling process.
-    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged. 
+    Supplying a value of -1 for either the real or effective group ID forces the system to leave that ID unchanged.
 *)
 external setresgid: int -> int -> int -> unit = "caml_extunix_setresgid"
 
@@ -813,6 +840,7 @@ external tcsetpgrp : Unix.file_descr -> int -> unit = "caml_extunix_tcsetpgrp"
 external sys_exit : int -> 'a = "caml_sys_exit"
 
 [%%have SYSINFO
+
 (** NB all memory fields in this structure are the multiplies of [mem_unit] bytes *)
 type sysinfo = {
   uptime : int; (** Seconds since boot *)
@@ -945,15 +973,20 @@ type t = private int
 (** [is_set flags flag]
   @return whether [flag] is set in [flags] *)
 val is_set : t -> t -> bool
+
 (** [is_inter flags1 flags2]
   @return whether [flags1] and [flags2] have non-empty intersection *)
 val is_inter : t -> t -> bool
+
 (** @return intersection of two flags (AND) *)
 val inter : t -> t -> t
+
 (** @return union of two flags (OR) *)
 val union : t -> t -> t
+
 (** @return union of several flags (OR) *)
 val join : t list -> t
+
 (** equivalent to [union] *)
 val (+) : t -> t -> t
 
@@ -998,7 +1031,7 @@ let poll a ?(n=Array.length a) t = poll a n t
 
 (** OCaml bindings for signalfd(2) and related functions
 
-    {b Author:} Kaustuv Chaudhuri <kaustuv.chaudhuri\@inria.fr>
+    @author Kaustuv Chaudhuri <kaustuv.chaudhuri@inria.fr>
 *)
 
 (******************************************************************************)
@@ -1027,7 +1060,7 @@ type ssi
     non-signalfds. Every successful read consumes a pending signal. *)
 external signalfd_read    : Unix.file_descr -> ssi = "caml_extunix_signalfd_read"
 
-(** {6 Functions to query the signal information structure.} *)
+(** {3 Functions to query the signal information structure.} *)
 
 (** Get the signal value. This form is compatible with the signal
     values defined in the standard {!Sys} module.
@@ -1057,10 +1090,10 @@ external ssi_addr         : ssi -> int64 = "caml_extunix_ssi_addr"
 
 [%%have RESOURCE
 
-(** 
+(**
   {2 POSIX resource operations}
 
-  {b Author:} Sylvain Le Gall <sylvain\@le-gall.net>
+  @author Sylvain Le Gall <sylvain@le-gall.net>
 *)
 
 (** priority target *)
@@ -1100,7 +1133,7 @@ module Rlimit = struct
       let q = Int64.div sz 1024L in
       let r = Int64.rem sz 1024L in
       let acc = if r <> 0L then Printf.sprintf "%Ld %s" r e :: acc else acc in
-      (q, acc)) (n, []) ["B"; "KB"; "MB"; "GB"] 
+      (q, acc)) (n, []) ["B"; "KB"; "MB"; "GB"]
     in
     let acc = if sz <> 0L then Printf.sprintf "%Ld TB" sz :: acc else acc in
     match acc with
@@ -1110,10 +1143,10 @@ module Rlimit = struct
   let to_string ?r = function
   | None -> "infinity"
   | Some l ->
-    match r with 
+    match r with
     | None -> Int64.to_string l
     | Some RLIMIT_CORE
-    | Some RLIMIT_DATA 
+    | Some RLIMIT_DATA
     | Some RLIMIT_FSIZE
     | Some RLIMIT_STACK
     | Some RLIMIT_AS -> string_of_bytes l
@@ -1136,12 +1169,13 @@ module Rlimit = struct
 end (* Rlimit *)
 
 (** Get nice value *)
-external getpriority : which_prio_t -> priority = "caml_extunix_getpriority" 
+external getpriority : which_prio_t -> priority = "caml_extunix_getpriority"
 
 (** Set nice value *)
 external setpriority : which_prio_t -> priority -> unit = "caml_extunix_setpriority"
 
-(** Get maximum resource consumption. @return [(soft,hard)] limits *)
+(** Get maximum resource consumption.
+    @return [(soft,hard)] limits *)
 external getrlimit : resource -> Rlimit.t * Rlimit.t = "caml_extunix_getrlimit"
 
 (** Set maximum resource consumption *)
@@ -1150,7 +1184,7 @@ external setrlimit : resource -> soft:Rlimit.t -> hard:Rlimit.t -> unit = "caml_
 (* let unlimit_soft r = let (_,hard) = getrlimit r in setrlimit r ~soft:hard ~hard *)
 
 (** [getrusage] is not implemented because the only meaningful information it
-    provides are [ru_utime] and [ru_stime] which can be accessed through 
+    provides are [ru_utime] and [ru_stime] which can be accessed through
     [Unix.times].
   *)
 
@@ -1176,7 +1210,7 @@ external munlockall : unit -> unit = "caml_extunix_munlockall"
 (** [memalign alignment size] creates a {!Bigarray.Array1.t} of [size] bytes,
     which data is aligned to [alignment] (must be a power of 2)
 
-    {b Author:} Goswin von Brederlow
+    @author Goswin von Brederlow
 *)
 external memalign: int -> int -> Bigarray.int8_unsigned_elt carray8 = "caml_extunix_memalign"
 
@@ -1192,7 +1226,7 @@ external memalign: int -> int -> Bigarray.int8_unsigned_elt carray8 = "caml_extu
 external strptime: string -> string -> Unix.tm = "caml_extunix_strptime"
 
 (** Return the ascii representation of a given [tm] argument. The
-  ascii time is returned in the form of a string like 
+  ascii time is returned in the form of a string like
   'Wed Jun 30, 21:21:21 2005\n' *)
 external asctime: Unix.tm -> string = "caml_extunix_asctime"
 
@@ -1201,7 +1235,7 @@ external asctime: Unix.tm -> string = "caml_extunix_asctime"
   according to the format specified by [fmt]. *)
 external strftime: string -> Unix.tm -> string = "caml_extunix_strftime"
 
-(** [tzname isdst] 
+(** [tzname isdst]
   @param isdst specifies whether daylight saving is in effect
   @return abbreviated name of the current timezone
 *)
@@ -1226,14 +1260,14 @@ external timegm : Unix.tm -> float = "caml_extunix_timegm"
 
 [%%have PTS
 
-(** 
+(**
   {2 Pseudo terminal management}
 
-  {b Author:} Niki Yoshiuchi <aplusbi\@gmail.com> 
+  @author Niki Yoshiuchi <aplusbi@gmail.com>
 *)
 
 (** This function opens a pseudo-terminal device. *)
-external posix_openpt : open_flag list -> 
+external posix_openpt : open_flag list ->
   Unix.file_descr = "caml_extunix_posix_openpt"
 
 (** This function grants access to the slave pseudo-terminal. *)
@@ -1373,13 +1407,15 @@ let mkostemp ?(suffix="") ?(flags=[]) prefix =
 
 (** {2 big endian functions}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 module BigEndian = struct
 
 [%%have ENDIAN
+
   (** Conversion functions from host to big endian byte order and back *)
 
   (** Conversion of 16bit integers *)
+
   (** [uint16_from_host u16] converts an unsigned 16bit integer from host to
       big endian byte order *)
   external uint16_from_host : int -> int = "caml_extunix_htobe16" [@@noalloc]
@@ -1400,6 +1436,7 @@ module BigEndian = struct
       On 64bit platforms this actualy converts 32bit integers without
       the need to allocate a new int32. On 32bit platforms it produces
       garbage. For use on 64bit platforms only! *)
+
   (** [uint31_from_host u31] converts an unsigned 31bit integer from
       host to big endian byte order *)
   external uint31_from_host : int -> int = "caml_extunix_htobe31" [@@noalloc]
@@ -1417,6 +1454,7 @@ module BigEndian = struct
   external int31_to_host : int -> int = "caml_extunix_be31toh_signed" [@@noalloc]
 
   (** Conversion of 32bit integers *)
+
   (** [int32_from_host int32] converts a 32bit integer from host to big
       endian byte order *)
   external int32_from_host : int32 -> int32 = "caml_extunix_htobe32"
@@ -1426,6 +1464,7 @@ module BigEndian = struct
   external int32_to_host : int32 -> int32 = "caml_extunix_be32toh"
 
   (** Conversion of 64bit integers *)
+
   (** [int64_from_host int64] converts a 64bit integer from host to big
       endian byte order *)
   external int64_from_host : int64 -> int64 = "caml_extunix_htobe64"
@@ -1586,7 +1625,7 @@ end
 
 (** {2 little endian functions}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 module LittleEndian = struct
 
 [%%have ENDIAN
@@ -1594,6 +1633,7 @@ module LittleEndian = struct
   (** Conversion functions from host to little endian byte order and back *)
 
   (** Conversion of 16bit integers *)
+
   (** [uint16_from_host u16] converts an unsigned 16bit integer from host to
       little endian byte order *)
   external uint16_from_host : int -> int = "caml_extunix_htole16" [@@noalloc]
@@ -1614,6 +1654,7 @@ module LittleEndian = struct
       On 64bit platforms this actualy converts 32bit integers without
       the need to allocate a new int32. On 32bit platforms it produces
       garbage. For use on 64bit platforms only! *)
+
   (** [uint31_from_host u31] converts an unsigned 31bit integer from
       host to little endian byte order *)
   external uint31_from_host : int -> int = "caml_extunix_htole31" [@@noalloc]
@@ -1631,6 +1672,7 @@ module LittleEndian = struct
   external int31_to_host : int -> int = "caml_extunix_le31toh_signed" [@@noalloc]
 
   (** Conversion of 32bit integers *)
+
   (** [int32_from_host int32] converts a 32bit integer from host to little
       endian byte order *)
   external int32_from_host : int32 -> int32 = "caml_extunix_htole32"
@@ -1640,6 +1682,7 @@ module LittleEndian = struct
   external int32_to_host : int32 -> int32 = "caml_extunix_le32toh"
 
   (** Conversion of 64bit integers *)
+
   (** [int64_from_host int64] converts a 64bit integer from host to little
       endian byte order *)
   external int64_from_host : int64 -> int64 = "caml_extunix_htole64"
@@ -1647,7 +1690,7 @@ module LittleEndian = struct
   (** [int64_to_host int64] converts a 64bit integer from little endian to
       host byte order *)
   external int64_to_host : int64 -> int64 = "caml_extunix_le64toh"
-  
+
   (** [unsafe_get_X str off] extract integer of type [X] from string
       [str] starting at offset [off]. Unsigned types are 0 extended
       and signed types are sign extended to fill the ocaml type.
@@ -1796,7 +1839,7 @@ end
 
 (** {2 host endian functions}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 module HostEndian = struct
 
   (** [unsafe_get_X str off] extract integer of type [X] from string
@@ -1951,7 +1994,7 @@ end
 
 (** {2 read_credentials }
 
-      {b Author:} Andre Nathan *)
+      @author Andre Nathan *)
 
 (** Reads sender credentials from a file descriptor, returning a 3-element
     tuple containing the sender process' PID, UID and GID. *)
@@ -1963,7 +2006,7 @@ external read_credentials : Unix.file_descr -> int * int * int = "caml_extunix_r
 
 (** {2 fexecve }
 
-    {b Author:} Andre Nathan *)
+    @author Andre Nathan *)
 
 (** [fexecve fd args env] executes the program in file represented by
     file descriptor [fd] with arguments [args] and environment
@@ -1979,7 +2022,7 @@ external fexecve: Unix.file_descr -> string array -> string array -> 'a = "caml_
 
 (** {2 sendmsg / recvmsg }
 
-    {b Author:} Andre Nathan *)
+    @author Andre Nathan *)
 
 (** Send a message and optionally a file descriptor through a socket. Passing
     file descriptors requires UNIX domain sockets and a non-empty message. *)
@@ -2020,7 +2063,7 @@ let recvmsg_nofd fd =
 
 (** {2 sysconf}
 
-{b Author:} Roman Vorobets *)
+@author Roman Vorobets *)
 
 (** name of the variable *)
 type sysconf_name =
@@ -2078,7 +2121,7 @@ let sysconf sc =
 (**
   {2 splice}
 
-  {b Author:} Pierre Chambart <pierre.chambart\@ocamlpro.com>
+  @author Pierre Chambart <pierre.chambart@ocamlpro.com>
 *)
 
 (** splice functions flags *)
@@ -2103,6 +2146,7 @@ type splice_flag =
 ]
 
 [%%have SPLICE
+
 (** [splice fd_in off_in fd_out off_out len flags] moves data between two file
     descriptors without copying between kernel address space and user address
     space. It transfers up to [len] bytes of data from the file descriptor
@@ -2146,9 +2190,10 @@ external tee : Unix.file_descr -> Unix.file_descr -> int -> splice_flag list -> 
 module BA = struct
 
 [%%have PREAD
+
 (** {2 pread}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_pread fd off buf] reads up to [size of buf] bytes from file
     descriptor [fd] at offset [off] (from the start of the file) into
@@ -2216,9 +2261,10 @@ let intr_pread fd off buf =
 ]
 
 [%%have PWRITE
+
 (** {2 pwrite}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_pwrite fd off buf] writes up to [size of buf] bytes from file
     descriptor [fd] at offset [off] (from the start of the file) into
@@ -2285,9 +2331,10 @@ let intr_pwrite fd off buf =
 ]
 
 [%%have READ
+
 (** {2 read}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_read fd buf] reads up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2331,9 +2378,10 @@ external intr_read: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba_
 ]
 
 [%%have WRITE
+
 (** {2 write}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 
 (** [all_write fd buf] writes up to [size of buf] bytes from file
     descriptor [fd] into the buffer [buf].
@@ -2379,10 +2427,11 @@ external intr_write: Unix.file_descr -> ('a, 'b) carray -> int = "caml_extunixba
 
 (** {2 big endian functions}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 module BigEndian = struct
 
 [%%have ENDIAN
+
   (** [unsafe_get_X buf off] extract integer of type [X] from a
       buffer [buf] starting at offset [off]. Unsigned types are 0
       extended and signed types are sign extended to fill the ocaml
@@ -2465,7 +2514,7 @@ module BigEndian = struct
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. 
+      will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit function.
   *)
   external unsafe_set_uint8  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" [@@noalloc]
@@ -2536,7 +2585,7 @@ end (* module BigEndian *)
 
 (** {2 little endian functions}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 module LittleEndian = struct
 
 [%%have ENDIAN
@@ -2694,7 +2743,7 @@ end (* module LittleEndian *)
 
 (** {2 host endian functions}
 
-    {b Author:} Goswin von Brederlow *)
+    @author Goswin von Brederlow *)
 module HostEndian = struct
 
   (** [unsafe_get_X buf off] extract integer of type [X] from a
@@ -2779,7 +2828,7 @@ module HostEndian = struct
 
       Note: The 31bit functions store an ocaml int as 32bit
       integer. On 32bit platforms ocaml integers are 31bit signed and
-      will be sign extended to 32bit first. Use with care. 
+      will be sign extended to 32bit first. Use with care.
       Note: The same applies to 63bit functions.
   *)
   external unsafe_set_uint8  : 'a carray8 -> int -> int -> unit = "caml_extunixba_set_8" [@@noalloc]
@@ -2877,7 +2926,7 @@ let set_substr buf off str =
 (**
   {2 splice}
 
-  {b Author:} Pierre Chambart <pierre.chambart\@ocamlpro.com>
+  @author Pierre Chambart <pierre.chambart@ocamlpro.com>
 *)
 
 (** I/O vector. Used to send multiple data using a single system call *)
