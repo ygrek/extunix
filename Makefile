@@ -1,50 +1,12 @@
-# OASIS_START
-# DO NOT EDIT (digest: a3c674b4239234cbbe53afe090018954)
-
-SETUP = ocaml setup.ml
-
-build: setup.data
-	$(SETUP) -build $(BUILDFLAGS)
-
-doc: setup.data build
-	$(SETUP) -doc $(DOCFLAGS)
-
-test: setup.data build
-	$(SETUP) -test $(TESTFLAGS)
-
-all:
-	$(SETUP) -all $(ALLFLAGS)
-
-install: setup.data
-	$(SETUP) -install $(INSTALLFLAGS)
-
-uninstall: setup.data
-	$(SETUP) -uninstall $(UNINSTALLFLAGS)
-
-reinstall: setup.data
-	$(SETUP) -reinstall $(REINSTALLFLAGS)
-
+build:
+	dune build @install
 clean:
-	$(SETUP) -clean $(CLEANFLAGS)
-
-distclean:
-	$(SETUP) -distclean $(DISTCLEANFLAGS)
-
-setup.data:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
-
-configure:
-	$(SETUP) -configure $(CONFIGUREFLAGS)
-
-.PHONY: build doc test all install uninstall reinstall clean distclean configure
-
-# OASIS_STOP
-
-VERSION=$(shell oasis query version)
-NAME=ocaml-extunix-$(VERSION)
-
-.PHONY: release
+	dune clean
+doc:
+	dune build @doc
 release:
-	git tag -a -m $(VERSION) v$(VERSION)
-	git archive --prefix=$(NAME)/ v$(VERSION) | gzip > $(NAME).tar.gz
-	gpg -a -b $(NAME).tar.gz
+	dune-release tag
+	dune-release
+test:
+	dune runtest
+.PHONY: build clean doc release test

@@ -1,11 +1,6 @@
 _build
-*.native
-*.byte
-*.docdir
-setup.data
-setup.log
-src/config.h
-src/extUnixConfig.ml
+.merlin
+*.install
 web/index.html
 *~
 /userns_test/

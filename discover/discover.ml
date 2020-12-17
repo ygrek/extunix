@@ -5,8 +5,6 @@
   and generation of config file listing all the discovered features
 *)
 
-#warnings "+a-4"
-
 open Printf
 
 type arg =
@@ -180,8 +178,8 @@ let show_ml file result =
 
 let main config =
   let result = List.map discover config in
-  show_c "src/config.h" result;
-  show_ml "src/extUnixConfig.ml" result
+  show_c "config.h" result;
+  show_ml "extUnixConfig.ml" result
 
 let features =
   let fd_int = ND "Handle_val" in (* marker for bindings code assuming fd is represented as int *)
@@ -388,11 +386,10 @@ let () =
   ] in
   let args1 = List.map (fun (name,_) ->
     assert (not (String.contains name ' '));
-    "--disable-" ^ String.lowercase name,
+    "--disable-" ^ String.lowercase_ascii name,
     Arg.Unit (fun () -> disabled := name :: !disabled),
     " disable " ^ name) features
   in
   let args = Arg.align (args0 @ args1) in
   Arg.parse args failwith ("Options are:");
   main features
-

@@ -1,0 +1,5 @@
+(copy_files ../src/extUnixConfig.ml)
+
+(executable
+ (name ppx_have)
+ (libraries ocaml-migrate-parsetree))
