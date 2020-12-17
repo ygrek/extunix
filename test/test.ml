@@ -223,7 +223,8 @@ let test_setenv () =
 
 let test_mkdtemp () =
   require "mkdtemp";
-  let tmpl = Filename.concat Filename.temp_dir_name "extunix_test_XXXXXX" in
+  let name = "extunix_test_XXXXXX" in
+  let tmpl = Filename.concat (Filename.get_temp_dir_name ()) name  in
   let d1 = mkdtemp tmpl in
   let d2 = mkdtemp tmpl in
   try
