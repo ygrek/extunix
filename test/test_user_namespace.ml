@@ -23,7 +23,7 @@ let mount_base dir =
     ~flags:[MS_NOSUID; MS_STRICTATIME; MS_NODEV]
     ~data:"mode=755" ();
 
-  (** for aptitude *)
+  (* for aptitude *)
   mkdir (Filename.concat dir "/run/lock")
 
 let do_chroot dest =
@@ -222,7 +222,7 @@ let goto_child ~exec_in_parent =
   let fin,fout = Unix.pipe () in
   match Unix.fork () with
   | -1 -> Printf.eprintf "Fork failed\n%!"; exit 1
-  | 0 -> (** child *)
+  | 0 -> (* child *)
     Unix.close fout;
     ignore (Unix.read fin (Bytes.create 1) 0 1);
     Unix.close fin
@@ -241,7 +241,7 @@ let exec_in_child (type a) f =
   let fin,fout = Unix.pipe () in
   match Unix.fork () with
   | -1 -> Printf.eprintf "Fork failed\n%!"; exit 1
-  | 0 -> (** child *)
+  | 0 -> (* child *)
     Unix.close fout;
     let cin = Unix.in_channel_of_descr fin in
     let arg = (Marshal.from_channel cin : a) in
@@ -266,7 +266,7 @@ let exec_in_child (type a) f =
 let exec_now_in_child f arg =
   match Unix.fork () with
   | -1 -> Printf.eprintf "Fork failed\n%!"; exit 1
-  | 0 -> (** child *)
+  | 0 -> (* child *)
     f arg;
     exit 0
   | pid ->
@@ -280,7 +280,7 @@ let exec_now_in_child f arg =
 let just_goto_child () =
   match Unix.fork () with
   | -1 -> Printf.eprintf "Fork failed\n%!"; exit 1
-  | 0 -> (** child *) ()
+  | 0 -> (* child *) ()
   | pid ->
     let _, status = Unix.waitpid [] pid in
     match status with
@@ -290,18 +290,18 @@ let just_goto_child () =
 
 
 let go_in_userns idmap =
-  (** the usermap can be set only completely outside the namespace, so we
-      keep a child for doing that when we have a pid completely inside the
-      namespace *)
+  (* the usermap can be set only completely outside the namespace, so we
+     keep a child for doing that when we have a pid completely inside the
+     namespace *)
   let call_set_usermap = exec_in_child (set_usermap idmap) in
   unshare [ CLONE_NEWNS;
             CLONE_NEWIPC;
             CLONE_NEWPID;
             CLONE_NEWUTS;
             CLONE_NEWUSER;
-          ];
-  (** only the child will be in the new pid namespace, the parent is in an
-      intermediary state not interesting *)
+    ];
+  (* only the child will be in the new pid namespace, the parent is in
+     an intermediary state not interesting *)
   goto_child ~exec_in_parent:call_set_usermap
   (* Printf.printf "User: %i (%i)\n%!" (Unix.getuid ()) (Unix.geteuid ()); *)
   (* Printf.printf "Pid: %i\n%!" (Unix.getpid ()); *)
@@ -401,11 +401,11 @@ let () =
     let rootfsdir = create_rootfs ~arch ~distr ~release testdir in
     command_no_fail "cp /etc/resolv.conf %S"
       (Filename.concat rootfsdir "etc/resolv.conf");
-    (** make the mount private and mount basic directories *)
+    (* make the mount private and mount basic directories *)
     mount_base rootfsdir;
-    (** chroot in the directory *)
+    (* chroot in the directory *)
     do_chroot rootfsdir;
-    (** group must be changed before uid... *)
+    (* group must be changed before uid... *)
     setresgid setgid setgid setgid;
     setresuid setuid setuid setuid;
     let path =
