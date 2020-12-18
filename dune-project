@@ -6,6 +6,7 @@
 (package
  (name extunix)
  (depends
+  (dune-configurator :build)
   (ocaml-migrate-parsetree (and :build (< 2.0.0)))
   (ounit2 :with-test)
   base-bytes

@@ -35,6 +35,7 @@ doc: "https://ygrek.org.ua/p/ocaml-extunix"
 bug-reports: "https://github.com/ygrek/extunix/issues"
 depends: [
   "dune" {>= "2.8"}
+  "dune-configurator" {build}
   "ocaml-migrate-parsetree" {build & < "2.0.0"}
   "ounit2" {with-test}
   "base-bytes"

@@ -1,2 +1,3 @@
 (executable
- (name discover))
+ (name discover)
+ (libraries dune.configurator))

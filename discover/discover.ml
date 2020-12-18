@@ -5,6 +5,8 @@
   and generation of config file listing all the discovered features
 *)
 
+module C = Configurator.V1
+
 open Printf
 
 type arg =
@@ -24,8 +26,6 @@ type test =
 
 type t = YES of (string * arg list) | NO of string
 
-let ocamlc = ref "ocamlc"
-let ext_obj = ref ".o"
 let verbose = ref 1
 let disabled = ref []
 
@@ -86,26 +86,22 @@ let build_code args =
   pr "int main() { return 0; }";
   Buffer.contents b
 
-let dev_null = match Sys.os_type with "Win32" -> "NUL" | _ -> "/dev/null"
-
-let execute code =
-  let (tmp,ch) = Filename.open_temp_file "discover" ".c" in
-  output_string ch code;
-  flush ch;
-  close_out ch;
-  let cmd = sprintf "%s -c %s%s" !ocamlc (Filename.quote tmp) (if !verbose >= 1 then "" else " 2> " ^ dev_null) in
-  let ret = Sys.command cmd in
-  Sys.remove tmp;
-  (* assumption: C compiler puts object file in current directory *)
-  let base = Filename.chop_extension (Filename.basename tmp) in
-  begin try Sys.remove (base ^ !ext_obj) with Sys_error _ -> () end;
-  ret = 0
-
-let discover (name,test) =
+let discover c (name,test) =
   print_string ("checking " ^ name ^ (String.make (20 - String.length name) '.'));
+  (* Workaround for a bug in dune-configurator. To remove when a
+     release of Dune (> 2.8.2) contains
+     https://github.com/ocaml/dune/pull/4088. *)
+  let link_flags =
+    match C.ocaml_config_var c "native_c_libraries" with
+    | Some c_libraries -> C.Flags.extract_blank_separated_words c_libraries
+    | None ->
+       match C.ocaml_config_var c "bytecomp_c_libraries" with
+       | Some c_libraries -> C.Flags.extract_blank_separated_words c_libraries
+       | None -> []
+  in
   let rec loop args other =
     let code = build_code args in
-    match execute code, other with
+    match C.c_test c ~link_flags code, other with
     | false, [] ->
         if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
@@ -176,8 +172,8 @@ let show_ml file result =
   | NO name -> pr "| `%s -> false" name) result;
   close_out ch
 
-let main config =
-  let result = List.map discover config in
+let main c config =
+  let result = List.map (discover c) config in
   show_c "config.h" result;
   show_ml "extUnixConfig.ml" result
 
@@ -379,8 +375,6 @@ let features =
 
 let () =
   let args0 = [
-    "-ocamlc", Arg.Set_string ocamlc, "<path> ocamlc";
-    "-ext_obj", Arg.Set_string ext_obj, "<ext> C object files extension";
     "-v", Arg.Unit (fun () -> verbose := 2), " Show code for failed tests";
     "-q", Arg.Unit (fun () -> verbose := 0), " Do not show stderr from children";
   ] in
@@ -391,5 +385,4 @@ let () =
     " disable " ^ name) features
   in
   let args = Arg.align (args0 @ args1) in
-  Arg.parse args failwith ("Options are:");
-  main features
+  C.main ~args:args ~name:"extunix" (fun c -> main c features)
