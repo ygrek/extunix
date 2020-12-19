@@ -1,12 +1,3 @@
-open Migrate_parsetree
-
-(********************)
-
-(* Define the rewriter on OCaml 4.05 AST *)
-let ocaml_version = Versions.ocaml_405
-
-(********************)
-
 let all = ref false
 let funcs = Hashtbl.create 16
 
@@ -23,7 +14,8 @@ let check name = match Config.feature name with
   | None -> failwith ("Unregistered feature : " ^ name)
   | Some have -> have
 
-open Ast_405
+open Migrate_parsetree
+open OCaml_current.Ast
 open Parsetree
 open Asttypes
 open Ast_helper
@@ -167,6 +159,6 @@ let mapper _config _cookies =
 let () =
   Driver.register
     ~name:"ppx_have" ~args:args_spec ~reset_args
-    ocaml_version mapper
+    Versions.ocaml_current mapper
 
 let () = Driver.run_main ()
