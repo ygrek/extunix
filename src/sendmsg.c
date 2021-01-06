@@ -140,8 +140,7 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   }
 #endif
 
-  data = caml_alloc_string(len);
-  memcpy(String_val(data), buf, len);
+  data = caml_alloc_initialized_string(len, buf);
   Store_field(res, 1, data);
 
   CAMLreturn (res);

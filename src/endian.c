@@ -18,7 +18,7 @@ CAMLprim value caml_extunix_##name(value v_x)		\
 /* Get an intX_t out of a string */
 #define GET(name, type, conv, Val_type)					\
 CAMLprim value caml_extunix_get_##name(value v_str, value v_off) {	\
-  char *str = String_val(v_str);					\
+  const char *str = String_val(v_str);					\
   size_t off = Long_val(v_off);						\
   type x;								\
   memcpy(&x, str + off, sizeof(x));					\
@@ -29,7 +29,7 @@ CAMLprim value caml_extunix_get_##name(value v_str, value v_off) {	\
 /* Store an intX_t in a string */
 #define SET(name, type, conv, Type_val)					\
 CAMLprim value caml_extunix_set_##name(value v_str, value v_off, value v_x) { \
-  char *str = String_val(v_str);					\
+  unsigned char *str = Bytes_val(v_str);				\
   size_t off = Long_val(v_off);						\
   type x = Type_val(v_x);						\
   x = conv(x);								\

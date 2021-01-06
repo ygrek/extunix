@@ -31,7 +31,7 @@ CAMLprim value caml_extunix_mkdtemp(value v_path)
 CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixlen)
 {
   CAMLparam2(v_template, v_suffixlen);
-  char *template = String_val(v_template);
+  unsigned char *template = Bytes_val(v_template);
   int suffixlen = Int_val(v_suffixlen);
   int ret;
 
@@ -57,7 +57,7 @@ CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixle
 CAMLprim value caml_extunix_internal_mkostemps(value v_template, value v_suffixlen, value v_flags)
 {
   CAMLparam3(v_template, v_suffixlen, v_flags);
-  char *template = String_val(v_template);
+  unsigned char *template = Bytes_val(v_template);
   int flags = extunix_open_flags(v_flags) | O_CLOEXEC;
   int suffixlen = Int_val(v_suffixlen);
   int ret;
