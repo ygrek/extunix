@@ -14,6 +14,7 @@ type arg =
   | T of string (* check type available *)
   | DEFINE of string (* define symbol prior to including header files (promoted to config) *)
   | Z of string (* define symbol to zero if not defined after the includes (promoted to config) *)
+  | SVC of string * string * string (* define symbol S to value V if condition C is met after the includes (promoted to config) *)
   | S of string (* check symbol available (e.g. function name) *)
   | V of string (* check value available (e.g. enum member) *)
   | D of string (* check symbol defined *)
@@ -32,9 +33,11 @@ let disabled = ref []
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
 let print_zdefine b s = bprintf b "#ifndef %s\n#define %s 0\n#endif\n" s s
+let print_svcdefine b (symbol,value,condition) = bprintf b "#if %s\n#define %s %s\n#endif\n" condition symbol value
 let filter_map f l = List.rev (List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l)
 let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_zdefines = filter_map (function Z s -> Some s | _ -> None)
+let get_svcdefines = filter_map (function SVC (s,v,c) -> Some (s,v,c) | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
 
 let config_defines = [
@@ -45,7 +48,7 @@ let config_defines = [
   "_DARWIN_C_SOURCE";
   "_LARGEFILE64_SOURCE";
   "WIN32_LEAN_AND_MEAN";
-  "_WIN32_WINNT 0x500";
+  "_WIN32_WINNT 0x0600"; (* Vista *)
   "CAML_NAME_SPACE";
   "_GNU_SOURCE"
   ]
@@ -76,7 +79,7 @@ let build_code args =
     | I _ -> ()
     | T s -> pr "%s var_%d;" s (fresh ())
     | DEFINE _ -> ()
-    | Z _ -> () (* no test required *)
+    | Z _ | SVC _ -> () (* no test required *)
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | ND s -> pr "#ifdef %s" s; pr "#error %s defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
@@ -142,12 +145,13 @@ let show_c file result =
     | YES (name,args) ->
         pr "";
         pr "#define EXTUNIX_HAVE_%s" name;
-        match get_includes args, get_zdefines args with
-        | [],[] -> ()
-        | includes,zdefines ->
+        match get_includes args, get_zdefines args, get_svcdefines args with
+        | [],[],[] -> ()
+        | includes,zdefines,svcdefines ->
           pr "#if defined(EXTUNIX_WANT_%s)" name;
           List.iter (print_include b) includes;
           List.iter (print_zdefine b) zdefines;
+          List.iter (print_svcdefine b) svcdefines;
           pr "#endif";
   end result;
   pr "";
@@ -227,15 +231,13 @@ let features =
       S "freeifaddrs";
       T "struct ifaddrs";
     ];
-    "INET_NTOA", L[
-      I "sys/socket.h";
-      I "netinet/in.h";
-      I "arpa/inet.h";
-      S "inet_ntoa";
+    "INET_NTOA", ANY[
+      [ I "sys/socket.h"; I "netinet/in.h"; I "arpa/inet.h"; S "inet_ntoa"; ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; S "inet_ntoa"; ];
     ];
-    "INET_NTOP", L[
-      I "arpa/inet.h";
-      S "inet_ntop";
+    "INET_NTOP", ANY[
+      [ I "arpa/inet.h"; S "inet_ntop"; ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; S "inet_ntop"; ];
     ];
     "UNAME", L[
       I "sys/utsname.h";
@@ -355,14 +357,29 @@ let features =
     "SPLICE", L[ fd_int; I "fcntl.h"; S"splice"; ];
     "TEE", L[ fd_int; I "fcntl.h"; S"tee"; ];
     "VMSPLICE", L[ fd_int; I "fcntl.h"; S"vmsplice"; ];
-    "SOCKOPT", L[
-      fd_int;
-      I "sys/socket.h"; I "netinet/in.h"; I"netinet/tcp.h";
-      S"setsockopt"; S"getsockopt";
+    "SOCKOPT", ANY[
+      [
+        fd_int;
+        I "sys/socket.h"; I "netinet/in.h"; I"netinet/tcp.h";
+        S"setsockopt"; S"getsockopt";
+      ];
+      [
+        I "winsock2.h"; I "ws2tcpip.h";
+        S"setsockopt"; S"getsockopt";
+      ]
     ];
-    "TCP_KEEPCNT", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPCNT"];
-    "TCP_KEEPIDLE", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPIDLE"];
-    "TCP_KEEPINTVL", L[I"netinet/in.h"; I"netinet/tcp.h";V"TCP_KEEPINTVL"];
+    "TCP_KEEPCNT", ANY[
+      [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPCNT" ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; SVC ("TCP_KEEPCNT", "0x10", "!defined(TCP_KEEPCNT) && defined(__MINGW32__)") ];
+    ];
+    "TCP_KEEPIDLE", ANY[
+      [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPIDLE" ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; SVC ("TCP_KEEPIDLE", "0x03", "!defined(TCP_KEEPIDLE) && defined(__MINGW32__)") ];
+    ];
+    "TCP_KEEPINTVL", ANY[
+      [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPINTVL" ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; SVC ("TCP_KEEPINTVL", "0x11", "!defined(TCP_KEEPINTVL) && defined(__MINGW32__)") ];
+    ];
     "SO_REUSEPORT", L[I"sys/socket.h"; V"SO_REUSEPORT"];
     "POLL", L[ fd_int; I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
     "SYSINFO", L[ I"sys/sysinfo.h"; S"sysinfo"; F ("sysinfo","mem_unit")];

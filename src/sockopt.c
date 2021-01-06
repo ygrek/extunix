@@ -88,7 +88,11 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
 
   if (0 != setsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, &optval, optlen))
   {
+#ifdef _WIN32
+    if (WSAGetLastError() == WSAENOPROTOOPT) {
+#else
     if (errno == ENOPROTOOPT) {
+#endif
       caml_raise_not_found();
       assert(0);
     }
@@ -116,7 +120,11 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
 
   if (0 != getsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, &optval, &optlen))
   {
+#ifdef _WIN32
+    if (WSAGetLastError() == WSAENOPROTOOPT) {
+#else
     if (errno == ENOPROTOOPT) {
+#endif
       caml_raise_not_found();
       assert(0);
     }
