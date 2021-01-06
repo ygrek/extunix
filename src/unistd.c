@@ -177,10 +177,11 @@ CAMLprim value caml_extunix_tcsetpgrp(value v_fd, value v_pgid)
 
 #endif
 
-enum mode_bits { BIT_ONCE, BIT_NOERROR, BIT_NOINTR };
-#define ONCE (1 << BIT_ONCE)
-#define NOERROR (1 << BIT_NOERROR)
-#define NOINTR (1 << BIT_NOINTR)
+enum mode_bits {
+    BIT_ONCE = 1 << 0,
+    BIT_NOERROR = 1 << 1,
+    BIT_NOINTR = 1 << 2
+};
 
 #if defined(EXTUNIX_HAVE_PREAD)
 
@@ -202,10 +203,10 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
 	caml_leave_blocking_section();
 	if (ret == 0) break;
 	if (ret == -1) {
-	    if (errno == EINTR && (mode & NOINTR)) continue;
+	    if (errno == EINTR && (mode & BIT_NOINTR)) continue;
 	    if (processed > 0) {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
-		if (mode & NOERROR) break;
+		if (mode & BIT_NOERROR) break;
 	    }
 	    uerror("pread", Nothing);
 	}
@@ -214,7 +215,7 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
 	off += ret;
 	ofs += ret;
 	len -= ret;
-	if (mode & ONCE) break;
+	if (mode & BIT_ONCE) break;
     }
 
     CAMLreturn(Val_long(processed));
@@ -223,49 +224,49 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
 value caml_extunix_all_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR);
 }
 
 value caml_extunix_single_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, ONCE);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_ONCE);
 }
 
 value caml_extunix_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR | BIT_NOERROR);
 }
 
 value caml_extunix_intr_pread(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, NOERROR);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOERROR);
 }
 
 value caml_extunix_all_pread64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR);
 }
 
 value caml_extunix_single_pread64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, ONCE);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_ONCE);
 }
 
 value caml_extunix_pread64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR | BIT_NOERROR);
 }
 
 value caml_extunix_intr_pread64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, NOERROR);
+    return caml_extunix_pread_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOERROR);
 }
 #endif
 
@@ -290,10 +291,10 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
 	caml_leave_blocking_section();
 	if (ret == 0) break;
 	if (ret == -1) {
-	    if (errno == EINTR && (mode & NOINTR)) continue;
+	    if (errno == EINTR && (mode & BIT_NOINTR)) continue;
 	    if (processed > 0){
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
-		if (mode & NOERROR) break;
+		if (mode & BIT_NOERROR) break;
 	    }
 	    uerror("pwrite", Nothing);
 	}
@@ -301,7 +302,7 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
 	off += ret;
 	ofs += ret;
 	len -= ret;
-	if (mode & ONCE) break;
+	if (mode & BIT_ONCE) break;
     }
 
     CAMLreturn(Val_long(processed));
@@ -310,49 +311,49 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
 value caml_extunix_all_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR);
 }
 
 value caml_extunix_single_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, ONCE);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_ONCE);
 }
 
 value caml_extunix_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR | BIT_NOERROR);
 }
 
 value caml_extunix_intr_pwrite(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Long_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOERROR);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOERROR);
 }
 
 value caml_extunix_all_pwrite64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR);
 }
 
 value caml_extunix_single_pwrite64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, ONCE);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_ONCE);
 }
 
 value caml_extunix_pwrite64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOINTR | BIT_NOERROR);
 }
 
 value caml_extunix_intr_pwrite64(value v_fd, value v_off, value v_buf, value v_ofs, value v_len)
 {
     off_t off = Int64_val(v_off);
-    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, NOERROR);
+    return caml_extunix_pwrite_common(v_fd, off, v_buf, v_ofs, v_len, BIT_NOERROR);
 }
 #endif
 
@@ -376,10 +377,10 @@ CAMLprim value caml_extunix_read_common(value v_fd, value v_buf, value v_ofs, va
 	caml_leave_blocking_section();
 	if (ret == 0) break;
 	if (ret == -1) {
-	    if (errno == EINTR && (mode & NOINTR)) continue;
+	    if (errno == EINTR && (mode & BIT_NOINTR)) continue;
 	    if (processed > 0) {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
-		if (mode & NOERROR) break;
+		if (mode & BIT_NOERROR) break;
 	    }
 	    uerror("read", Nothing);
 	}
@@ -387,7 +388,7 @@ CAMLprim value caml_extunix_read_common(value v_fd, value v_buf, value v_ofs, va
 	processed += ret;
 	ofs += ret;
 	len -= ret;
-	if (mode & ONCE) break;
+	if (mode & BIT_ONCE) break;
     }
 
     CAMLreturn(Val_long(processed));
@@ -395,22 +396,22 @@ CAMLprim value caml_extunix_read_common(value v_fd, value v_buf, value v_ofs, va
 
 value caml_extunix_all_read(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, NOINTR);
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, BIT_NOINTR);
 }
 
 value caml_extunix_single_read(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, ONCE);
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, BIT_ONCE);
 }
 
 value caml_extunix_read(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, BIT_NOINTR | BIT_NOERROR);
 }
 
 value caml_extunix_intr_read(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, NOERROR);
+    return caml_extunix_read_common(v_fd, v_buf, v_ofs, v_len, BIT_NOERROR);
 }
 #endif
 
@@ -435,17 +436,17 @@ CAMLprim value caml_extunix_write_common(value v_fd, value v_buf, value v_ofs, v
 	caml_leave_blocking_section();
 	if (ret == 0) break;
 	if (ret == -1) {
-	    if (errno == EINTR && (mode & NOINTR)) continue;
+	    if (errno == EINTR && (mode & BIT_NOINTR)) continue;
 	    if (processed > 0){
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
-		if (mode & NOERROR) break;
+		if (mode & BIT_NOERROR) break;
 	    }
 	    uerror("write", Nothing);
 	}
 	processed += ret;
 	ofs += ret;
 	len -= ret;
-	if (mode & ONCE) break;
+	if (mode & BIT_ONCE) break;
     }
 
     CAMLreturn(Val_long(processed));
@@ -453,22 +454,22 @@ CAMLprim value caml_extunix_write_common(value v_fd, value v_buf, value v_ofs, v
 
 value caml_extunix_all_write(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, NOINTR);
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, BIT_NOINTR);
 }
 
 value caml_extunix_single_write(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, ONCE);
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, BIT_ONCE);
 }
 
 value caml_extunix_write(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, NOINTR | NOERROR);
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, BIT_NOINTR | BIT_NOERROR);
 }
 
 value caml_extunix_intr_write(value v_fd, value v_buf, value v_ofs, value v_len)
 {
-    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, NOERROR);
+    return caml_extunix_write_common(v_fd, v_buf, v_ofs, v_len, BIT_NOERROR);
 }
 #endif
 
