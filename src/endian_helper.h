@@ -44,9 +44,14 @@ From https://gist.github.com/panzi/6856583
 #		define be32toh(x) ntohl(x)
 #		define le32toh(x) (x)
 
-#		define htobe64(x) htonll(x)
+#		if defined(__MINGW32__)
+#			define htobe64(x) __builtin_bswap64(x)
+#			define be64toh(x) __builtin_bswap64(x)
+#		else
+#			define htobe64(x) htonll(x)
+#			define be64toh(x) ntohll(x)
+#		endif
 #		define htole64(x) (x)
-#		define be64toh(x) ntohll(x)
 #		define le64toh(x) (x)
 
 #	elif BYTE_ORDER == BIG_ENDIAN

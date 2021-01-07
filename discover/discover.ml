@@ -48,7 +48,7 @@ let config_defines = [
   "_DARWIN_C_SOURCE";
   "_LARGEFILE64_SOURCE";
   "WIN32_LEAN_AND_MEAN";
-  "_WIN32_WINNT 0x0600"; (* Vista *)
+  "_WIN32_WINNT 0x0602"; (* Windows 8 *)
   "CAML_NAME_SPACE";
   "_GNU_SOURCE"
   ]
@@ -329,10 +329,10 @@ let features =
       ];
       [
         DEFINE "EXTUNIX_USE_WINSOCK2_H";
-        I"winsock2.h"; I"sys/param.h";
+        I"winsock2.h";
         S"htons"; S"ntohs";
         S"htonl"; S"ntohl";
-        S"htonll"; S"ntohll";
+        (* S"htonll"; S"ntohll"; 2020-01-06: not supported by mingw-w64 yet *)
       ]
     ];
     "READ_CREDENTIALS", L[ fd_int; I"sys/types.h"; I"sys/socket.h"; D"SO_PEERCRED"; ];
