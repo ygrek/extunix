@@ -1,6 +1,7 @@
 (copy_files ../src/config.ml)
 
-(executable
+(library
  (name ppx_have)
  (modules Ppx_have Config)
- (libraries ocaml-migrate-parsetree))
+ (kind ppx_rewriter)
+ (libraries ppxlib))

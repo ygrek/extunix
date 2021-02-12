@@ -1,164 +1,158 @@
 let all = ref false
+
 let funcs = Hashtbl.create 16
 
-let args_spec = [
-    "--gen-all", Arg.Set all,
-    " generate values from all [%%have ...] sections"
+let args_spec =
+  [
+    ("--gen-all", Arg.Set all, "generate values from all [%%have ...] sections");
   ]
 
-let reset_args () = Hashtbl.clear funcs
+module ExtUnixConfig = Config
+open Ppxlib
 
-(********************)
-
-let check name = match Config.feature name with
-  | None -> failwith ("Unregistered feature : " ^ name)
+let check ~loc name =
+  match ExtUnixConfig.feature name with
+  | None -> Location.raise_errorf ~loc "Unregistered feature %s" name
   | Some have -> have
 
-open Migrate_parsetree
-open OCaml_current.Ast
-open Parsetree
-open Asttypes
-open Ast_helper
-
-(* Helpers *)
-
-let ident x =
-  Location.mknoloc (Longident.Lident x)
-
-let incl x =
-  {pincl_mod = x; pincl_loc = !default_loc; pincl_attributes = []}
-
-let case pc_lhs pc_rhs =
-  {pc_lhs; pc_guard = None; pc_rhs}
-
-(* Core of the preprocessing *)
-
-let rec make_dummy_f body typ =
-  match typ.ptyp_desc with
-  | Ptyp_arrow (l, arg, ret) ->
-     let arg =
-       match l with
-       | Optional _ -> Typ.constr (ident "option") [arg]
-       | _ -> arg
-     in
-     Exp.fun_ l None (Pat.constraint_ (Pat.any ()) arg)
-       (make_dummy_f body ret)
-  | _ -> Exp.constraint_ body typ
-
-let raise_not_available x =
-  Exp.apply (Exp.ident (ident "raise"))
-    [
-      Nolabel,
-      Exp.construct (ident "Not_available")
-        (Some (Exp.constant (Const.string x)))
-    ]
-
-let invalid_external_mapper =
-  let open Ast_mapper in
-  let structure_item mapper x =
-    match x.pstr_desc with
-    | Pstr_primitive p ->
-       let body = raise_not_available p.pval_name.txt in
-       let pattern = Pat.var p.pval_name in
-       let vb = Vb.mk pattern (make_dummy_f body p.pval_type) in
-       Str.value Nonrecursive [vb]
-    | _ -> default_mapper.structure_item mapper x
-  in
-  {default_mapper with structure_item}
-
-let invalid_external x =
-  invalid_external_mapper.Ast_mapper.structure_item invalid_external_mapper x
-
-let record_external_mapper have =
-  let open Ast_mapper in
-  let structure_item mapper x =
-    match x.pstr_desc with
-    | Pstr_primitive p -> Hashtbl.replace funcs p.pval_name.txt have; x
-    | _ -> default_mapper.structure_item mapper x
-  in
-  {default_mapper with structure_item}
-
-let record_external have x =
-  let mapper = record_external_mapper have in
-  ignore (mapper.Ast_mapper.structure_item mapper x)
-
-let make_have () =
-  Hashtbl.fold
-    (fun func have acc ->
-      (case (Pat.constant (Const.string func))
-         (Exp.construct (ident "Some")
-            (Some (Exp.construct (ident (string_of_bool have)) None))))
-      :: acc)
-    funcs
-    [case (Pat.any ()) (Exp.construct (ident "None") None)]
+let ident x = Ocaml_common.Location.mknoloc (lident x)
 
 (* Evaluating conditions *)
 
-let atom_of_expr expr =
+let atom_of_expr ~loc expr =
   match expr.pexp_desc with
-  | Pexp_construct ({txt = Longident.Lident x; _}, None) -> x
-  | _ -> failwith "have: atom_of_expr"
+  | Pexp_construct ({ txt = Longident.Lident x; _ }, None) -> x
+  | _ -> Location.raise_errorf ~loc "have: atom_of_expr"
 
-let conj_of_expr expr =
+let conj_of_expr ~loc expr =
   match expr.pexp_desc with
-  | Pexp_construct ({Location.txt = Longident.Lident x; _}, None) -> [x]
-  | Pexp_tuple args -> List.map atom_of_expr args
-  | _ -> failwith "have: conj_of_expr"
+  | Pexp_construct _ -> [ atom_of_expr ~loc expr ]
+  | Pexp_tuple args -> List.map (atom_of_expr ~loc) args
+  | _ -> Location.raise_errorf ~loc "have: conj_of_expr"
 
-let disj_of_expr expr =
+let disj_of_expr ~loc expr =
   match expr.pexp_desc with
-  | Pexp_construct ({Location.txt = Longident.Lident x; _}, None) -> [[x]]
-  | Pexp_tuple args -> List.map conj_of_expr args
-  | _ -> failwith "have: disj_of_expr"
+  | Pexp_construct _ -> [ [ atom_of_expr ~loc expr ] ]
+  | Pexp_tuple args -> List.map (conj_of_expr ~loc) args
+  | _ -> Location.raise_errorf ~loc "have: disj_of_expr"
 
-let eval_cond cond =
+let eval_cond ~loc cond =
   match cond.pstr_desc with
   | Pstr_eval (expr, _attributes) ->
-     List.exists (List.for_all check) (disj_of_expr expr)
-  | _ -> failwith "have: eval_cond"
+      List.exists (List.for_all (check ~loc)) (disj_of_expr ~loc expr)
+  | _ -> Location.raise_errorf ~loc "have: eval_cond"
 
-(* The rewriter itself *)
+(* have rule *)
 
-let mapper _config _cookies =
-  let open Ast_mapper in
-  let structure_item mapper pstr =
-    match pstr.pstr_desc with
-    | Pstr_extension (({txt = "have"; loc}, payload), _) ->
-       (match payload with
-        | PStr (cond :: items) ->
-           let have = eval_cond cond in
-           List.iter (record_external have) items;
-           let items =
-             match have, !all with
-             | true, _ -> items
-             | false, true -> List.map invalid_external items
-             | false, false -> []
-           in
-           Str.include_ ~loc (incl (Mod.structure items))
-        | _ -> failwith "have: structure_item"
-       )
-    | Pstr_extension (({txt = "show_me_the_money"; loc}, _), _) ->
-       let items =
-         if !all then
-           let body = Exp.function_ (make_have ()) in
-           let pattern = Pat.var (Location.mknoloc "have") in
-           let vb = Vb.mk pattern body in
-           [Str.value Nonrecursive [vb]]
-         else
-           []
-       in
-       Str.include_ ~loc (incl (Mod.structure items))
-    | _ -> default_mapper.structure_item mapper pstr
+let invalid_external ~loc =
+  let open Ast_builder.Default in
+  let rec make_dummy_f ~loc body typ =
+    match typ.ptyp_desc with
+    | Ptyp_arrow (l, arg, ret) ->
+        let arg =
+          match l with
+          | Optional _ -> ptyp_constr ~loc (ident "option") [ arg ]
+          | _ -> arg
+        in
+        pexp_fun ~loc l None
+          (ppat_constraint ~loc (ppat_any ~loc) arg)
+          (make_dummy_f ~loc body ret)
+    | _ -> pexp_constraint ~loc body typ
   in
-  {default_mapper with structure_item}
+  let raise_not_available ~loc x =
+    eapply ~loc (evar ~loc "raise")
+      [
+        pexp_construct ~loc (ident "Not_available")
+          (Some (pexp_constant ~loc (Pconst_string (x, loc, None))));
+      ]
+  in
+  let externals_of =
+    object
+      inherit Ast_traverse.map as super
 
-(********************)
+      method! structure_item x =
+        match x.pstr_desc with
+        | Pstr_primitive p ->
+            let body = raise_not_available ~loc p.pval_name.txt in
+            let expr = make_dummy_f ~loc body p.pval_type in
+            let pat = ppat_var ~loc p.pval_name in
+            let vb = value_binding ~loc ~pat ~expr in
+            let vb =
+              { vb with pvb_attributes = p.pval_attributes @ vb.pvb_attributes }
+            in
+            pstr_value ~loc Nonrecursive [ vb ]
+        | _ -> super#structure_item x
+    end
+  in
+  externals_of#structure_item
 
-(* Registration *)
+let record_external have =
+  let externals_of =
+    object
+      inherit Ast_traverse.iter as super
+
+      method! structure_item x =
+        match x.pstr_desc with
+        | Pstr_primitive p -> Hashtbl.replace funcs p.pval_name.txt have
+        | _ -> super#structure_item x
+    end
+  in
+  externals_of#structure_item
+
+let have_expand ~ctxt cond items =
+  let loc = Expansion_context.Extension.extension_point_loc ctxt in
+  let have = eval_cond ~loc cond in
+  List.iter (record_external have) items;
+  match (have, !all) with
+  | true, _ -> items
+  | false, true -> List.map (invalid_external ~loc) items
+  | false, false -> []
+
+let have_extension =
+  Extension.V3.declare_inline "have" Extension.Context.structure_item
+    Ast_pattern.(pstr (__ ^:: __))
+    have_expand
+
+let have_rule = Context_free.Rule.extension have_extension
+
+(* show_me_the_money rule *)
+
+let show_me_the_money_expand ~ctxt doc =
+  let loc = Expansion_context.Extension.extension_point_loc ctxt in
+  let open Ast_builder.Default in
+  let make_have () =
+    Hashtbl.fold
+      (fun func have acc ->
+        let lhs = ppat_constant ~loc (Pconst_string (func, loc, None)) in
+        let rhs =
+          pexp_construct ~loc (ident "Some")
+            (Some (pexp_construct ~loc (ident (string_of_bool have)) None))
+        in
+        case ~lhs ~guard:None ~rhs :: acc)
+      funcs
+      [
+        case ~lhs:(ppat_any ~loc) ~guard:None
+          ~rhs:(pexp_construct ~loc (ident "None") None);
+      ]
+  in
+  if !all then
+    let expr = pexp_function ~loc (make_have ()) in
+    let pat = ppat_var ~loc (Ocaml_common.Location.mknoloc "have") in
+    let vb = value_binding ~loc ~pat ~expr in
+    let vb = { vb with pvb_attributes = doc :: vb.pvb_attributes } in
+    [ pstr_value ~loc Nonrecursive [ vb ] ]
+  else []
+
+let show_me_the_money_extension =
+  Extension.V3.declare_inline "show_me_the_money"
+    Extension.Context.structure_item
+    Ast_pattern.(pstr (pstr_attribute __ ^:: nil))
+    show_me_the_money_expand
+
+let show_me_the_money_rule =
+  Context_free.Rule.extension show_me_the_money_extension
 
 let () =
-  Driver.register
-    ~name:"ppx_have" ~args:args_spec ~reset_args
-    Versions.ocaml_current mapper
-
-let () = Driver.run_main ()
+  List.iter (fun (key, spec, doc) -> Driver.add_arg key spec ~doc) args_spec;
+  let rules = [ have_rule; show_me_the_money_rule ] in
+  Driver.register_transformation ~rules "ppx_have"

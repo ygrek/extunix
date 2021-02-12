@@ -6,20 +6,22 @@
   (run %{gen})))
 
 (rule
- (targets all.ml specific.ml)
- (deps
-  (:extUnix extUnix.pp.ml)
-  (:gen ../ppx_have/ppx_have.exe))
  (action
   (progn
-   (run %{gen} --impl %{extUnix} -o all.ml --gen-all)
-   (run %{gen} --impl %{extUnix} -o specific.ml))))
+   (copy extUnix.pp.ml all.ml)
+   (copy extUnix.pp.ml specific.ml))))
 
 (library
  (name ExtUnix)
  (public_name extunix)
  (modules_without_implementation ExtUnix)
  (libraries unix bigarray bytes)
+ (preprocess
+  (per_module
+   ((pps ppx_have --gen-all)
+    All)
+   ((pps ppx_have)
+    Specific)))
  (foreign_stubs
   (language c)
   (flags :standard)

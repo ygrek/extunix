@@ -7,7 +7,7 @@
  (name extunix)
  (depends
   (dune-configurator :build)
-  (ocaml-migrate-parsetree (and :build (< 2.0.0)))
+  (ppxlib (>= 0.22))
   (ounit2 :with-test)
   base-bytes
   base-bigarray

@@ -2946,15 +2946,16 @@ end (* module BA *)
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)
-(** [have name]
+
+[%%show_me_the_money
+  [@@@ocaml.doc {|
+[have name]
   @return indication whether function [name] is available
   - [Some true] if available
   - [Some false] if not available
   - [None] if not known
 
-  e.g. [have "eventfd"]
-*)
-[%%show_me_the_money]
+  e.g. [have "eventfd"]|}]]
 
 (* vim: ft=ocaml
 *)
