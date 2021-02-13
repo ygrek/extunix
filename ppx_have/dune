@@ -4,4 +4,6 @@
  (name ppx_have)
  (modules Ppx_have Config)
  (kind ppx_rewriter)
- (libraries ppxlib))
+ (libraries ppxlib)
+ (preprocess
+  (pps ppxlib.metaquot)))

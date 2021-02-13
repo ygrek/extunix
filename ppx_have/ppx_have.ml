@@ -50,21 +50,15 @@ let invalid_external ~loc =
     match typ.ptyp_desc with
     | Ptyp_arrow (l, arg, ret) ->
         let arg =
-          match l with
-          | Optional _ -> ptyp_constr ~loc (ident "option") [ arg ]
-          | _ -> arg
+          match l with Optional _ -> [%type: [%t arg] option] | _ -> arg
         in
-        pexp_fun ~loc l None
-          (ppat_constraint ~loc (ppat_any ~loc) arg)
-          (make_dummy_f ~loc body ret)
-    | _ -> pexp_constraint ~loc body typ
+        let e = make_dummy_f ~loc body ret in
+        pexp_fun ~loc l None [%pat? (_ : [%t arg])] e
+    | _ -> [%expr ([%e body] : [%t typ])]
   in
   let raise_not_available ~loc x =
-    eapply ~loc (evar ~loc "raise")
-      [
-        pexp_construct ~loc (ident "Not_available")
-          (Some (pexp_constant ~loc (Pconst_string (x, loc, None))));
-      ]
+    let e = pexp_constant ~loc (Pconst_string (x, loc, None)) in
+    [%expr raise (Not_available [%e e])]
   in
   let externals_of =
     object
@@ -124,16 +118,10 @@ let show_me_the_money_expand ~ctxt doc =
     Hashtbl.fold
       (fun func have acc ->
         let lhs = ppat_constant ~loc (Pconst_string (func, loc, None)) in
-        let rhs =
-          pexp_construct ~loc (ident "Some")
-            (Some (pexp_construct ~loc (ident (string_of_bool have)) None))
-        in
-        case ~lhs ~guard:None ~rhs :: acc)
+        let e = pexp_construct ~loc (ident (string_of_bool have)) None in
+        case ~lhs ~guard:None ~rhs:[%expr Some [%e e]] :: acc)
       funcs
-      [
-        case ~lhs:(ppat_any ~loc) ~guard:None
-          ~rhs:(pexp_construct ~loc (ident "None") None);
-      ]
+      [ case ~lhs:[%pat? _] ~guard:None ~rhs:[%expr None] ]
   in
   if !all then
     let expr = pexp_function ~loc (make_have ()) in
