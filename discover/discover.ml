@@ -175,7 +175,7 @@ let show_ml file result =
 let main c config =
   let result = List.map (discover c) config in
   show_c "config.h" result;
-  show_ml "extUnixConfig.ml" result
+  show_ml "config.ml" result
 
 let features =
   let fd_int = ND "Handle_val" in (* marker for bindings code assuming fd is represented as int *)

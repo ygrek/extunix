@@ -85,11 +85,11 @@ Build infrastructure:
   responsible for inclusion of system-specific headers - this ensures
   coherent result at configure and build steps.
 
-* Generated `extUnixConfig.ml` describes the same features for the
-  ocaml syntax extension [`ppx_have`][], which preprocesses
-  [`src/extUnix.pp.ml`][] and generates two modules: `ExtUnixAll`
+* Generated `config.ml` describes the same features for the ocaml
+  syntax extension [`ppx_have`][], which preprocesses
+  [`src/extUnix.pp.ml`][] and generates two modules: `ExtUnix.All`
   where bindings to missing functions are rewritten to raise exception
-  and `ExtUnixSpecific` which drops bindings to missing functions.
+  and `ExtUnix.Specific` which drops bindings to missing functions.
 
 [`discover`]: discover/discover.ml
 [`ppx_have`]: ppx_have/ppx_have.ml

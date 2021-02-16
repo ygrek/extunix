@@ -1,23 +1,24 @@
 (rule
- (targets config.h extUnixConfig.ml)
+ (targets config.h config.ml)
  (deps
   (:gen ../discover/discover.exe))
  (action
   (run %{gen})))
 
 (rule
- (targets extUnixAll.ml extUnixSpecific.ml)
+ (targets all.ml specific.ml)
  (deps
   (:extUnix extUnix.pp.ml)
   (:gen ../ppx_have/ppx_have.exe))
  (action
   (progn
-   (run %{gen} --impl %{extUnix} -o extUnixAll.ml --gen-all)
-   (run %{gen} --impl %{extUnix} -o extUnixSpecific.ml))))
+   (run %{gen} --impl %{extUnix} -o all.ml --gen-all)
+   (run %{gen} --impl %{extUnix} -o specific.ml))))
 
 (library
  (name ExtUnix)
  (public_name extunix)
+ (modules_without_implementation ExtUnix)
  (libraries unix bigarray bytes)
  (foreign_stubs
   (language c)

@@ -3,7 +3,6 @@ open Migrate_parsetree
 (********************)
 
 (* Define the rewriter on OCaml 4.05 AST *)
-open Ast_405
 let ocaml_version = Versions.ocaml_405
 
 (********************)
@@ -20,10 +19,11 @@ let reset_args () = Hashtbl.clear funcs
 
 (********************)
 
-let check name = match ExtUnixConfig.feature name with
+let check name = match Config.feature name with
   | None -> failwith ("Unregistered feature : " ^ name)
   | Some have -> have
 
+open Ast_405
 open Parsetree
 open Asttypes
 open Ast_helper
