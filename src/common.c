@@ -1,15 +1,13 @@
-
 #include "config.h"
 #include <fcntl.h>
 
 /* otherlibs/unix/open.c */
 
 #ifndef O_NONBLOCK
-#ifdef __MINGW32__
-#define O_NONBLOCK 0 /* no O_NONBLOCK on mingw */
-#else
-#define O_NONBLOCK O_NDELAY
+#ifndef O_NDELAY
+#define O_NDELAY 0
 #endif
+#define O_NONBLOCK O_NDELAY
 #endif
 #ifndef O_NOCTTY
 #define O_NOCTTY 0
