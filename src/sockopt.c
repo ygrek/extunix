@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_SOCKOPT
 #include "config.h"
 
@@ -74,6 +73,14 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
 {
   int optval = Int_val(v);
   socklen_t optlen = sizeof(optval);
+#ifdef _WIN32
+  SOCKET s = INVALID_SOCKET;
+  if (KIND_SOCKET != Descr_kind_val(fd))
+    caml_invalid_argument("setsockopt_int");
+  s = Socket_val(fd);
+#else
+  int s = Int_val(fd);
+#endif
 
   if (Int_val(k) < 0 || (unsigned int)Int_val(k) >= sizeof(tcp_options) / sizeof(tcp_options[0]))
   {
@@ -86,7 +93,7 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
     assert(0);
   }
 
-  if (0 != setsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, (void *)&optval, optlen))
+  if (0 != setsockopt(s, tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, (void *)&optval, optlen))
   {
 #ifdef _WIN32
     if (WSAGetLastError() == WSAENOPROTOOPT) {
@@ -106,6 +113,14 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
 {
   int optval;
   socklen_t optlen = sizeof(optval);
+#ifdef _WIN32
+  SOCKET s = INVALID_SOCKET;
+  if (KIND_SOCKET != Descr_kind_val(fd))
+    caml_invalid_argument("getsockopt_int");
+  s = Socket_val(fd);
+#else
+  int s = Int_val(fd);
+#endif
 
   if (Int_val(k) < 0 || (unsigned int)Int_val(k) >= sizeof(tcp_options) / sizeof(tcp_options[0]))
   {
@@ -118,7 +133,7 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
     assert(0);
   }
 
-  if (0 != getsockopt(Int_val(fd), tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, (void *)&optval, &optlen))
+  if (0 != getsockopt(s, tcp_options[Int_val(k)].level, tcp_options[Int_val(k)].opt, (void *)&optval, &optlen))
   {
 #ifdef _WIN32
     if (WSAGetLastError() == WSAENOPROTOOPT) {
