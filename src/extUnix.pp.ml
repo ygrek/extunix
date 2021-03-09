@@ -1218,12 +1218,16 @@ external memalign: int -> int -> Bigarray.int8_unsigned_elt carray8 = "caml_extu
 
 (** {2 Time conversion} *)
 
-[%%have STRTIME
+[%%have STRPTIME
 
 (** This function is the converse of the {!strftime} function.
   [strptime fmt data] convert a string containing time information [data]
   into a [tm] struct according to the format specified by [fmt]. *)
 external strptime: string -> string -> Unix.tm = "caml_extunix_strptime"
+
+]
+
+[%%have STRTIME
 
 (** Return the ascii representation of a given [tm] argument. The
   ascii time is returned in the form of a string like
@@ -1231,7 +1235,7 @@ external strptime: string -> string -> Unix.tm = "caml_extunix_strptime"
 external asctime: Unix.tm -> string = "caml_extunix_asctime"
 
 (** This functions is the converse of the {!strptime} function.
-  [strftime fmt data] convert a a [tm] structure [data] into a string
+  [strftime fmt data] converts a [tm] structure [data] into a string
   according to the format specified by [fmt]. *)
 external strftime: string -> Unix.tm -> string = "caml_extunix_strftime"
 

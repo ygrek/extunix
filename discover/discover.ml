@@ -20,12 +20,14 @@ type arg =
   | D of string (* check symbol defined *)
   | ND of string (* check symbol not defined *)
   | F of string * string (* check structure type available and specified field present in it *)
+  | Ldlib of string (* ccomp_type *) * string (* library flag or name given to compilers when they
+                                                 are supposed to invoke the linker *)
 
 type test =
   | L of arg list
   | ANY of arg list list
 
-type t = YES of (string * arg list) | NO of string
+type t = YES of (string * arg list * string list) | NO of string
 
 let verbose = ref 1
 let disabled = ref []
@@ -39,6 +41,7 @@ let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_zdefines = filter_map (function Z s -> Some s | _ -> None)
 let get_svcdefines = filter_map (function SVC (s,v,c) -> Some (s,v,c) | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
+let get_ldlibs ccomp_type = filter_map (function Ldlib (ct, lib) when ct = ccomp_type -> Some lib | _ -> None)
 
 let config_defines = [
   "_POSIX_C_SOURCE 200809L";
@@ -76,7 +79,7 @@ let build_code args =
   List.iter (print_include b) (get_includes args);
 (*  pr "#include <stddef.h>"; (* size_t *)*)
   List.iter begin function
-    | I _ -> ()
+    | I _ | Ldlib _ -> ()
     | T s -> pr "%s var_%d;" s (fresh ())
     | DEFINE _ -> ()
     | Z _ | SVC _ -> () (* no test required *)
@@ -94,7 +97,7 @@ let discover c (name,test) =
   (* Workaround for a bug in dune-configurator. To remove when a
      release of Dune (> 2.8.2) contains
      https://github.com/ocaml/dune/pull/4088. *)
-  let link_flags =
+  let c_libraries =
     match C.ocaml_config_var c "native_c_libraries" with
     | Some c_libraries -> C.Flags.extract_blank_separated_words c_libraries
     | None ->
@@ -102,14 +105,17 @@ let discover c (name,test) =
        | Some c_libraries -> C.Flags.extract_blank_separated_words c_libraries
        | None -> []
   in
+  let ccomp_type = C.ocaml_config_var_exn c "ccomp_type" in
   let rec loop args other =
     let code = build_code args in
+    let ldlibs = get_ldlibs ccomp_type args in
+    let link_flags = c_libraries @ ldlibs in
     match C.c_test c ~link_flags code, other with
     | false, [] ->
         if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
-    | true, _ -> print_endline "ok"; YES (name,args)
+    | true, _ -> print_endline "ok"; YES (name, args, ldlibs)
   in
   match List.mem name !disabled with
   | true -> print_endline "disabled"; NO name
@@ -126,7 +132,7 @@ let show_c file result =
   List.iter (print_define b) config_defines;
   List.iter begin function
     | NO _ -> ();
-    | YES (name,args) ->
+    | YES (name, args, _) ->
         match get_defines args with
         | [] -> ()
         | l ->
@@ -142,7 +148,7 @@ let show_c file result =
     | NO name ->
       pr "";
       pr "#undef EXTUNIX_HAVE_%s" name;
-    | YES (name,args) ->
+    | YES (name, args, _) ->
         pr "";
         pr "#define EXTUNIX_HAVE_%s" name;
         match get_includes args, get_zdefines args, get_svcdefines args with
@@ -165,21 +171,34 @@ let show_ml file result =
   pr "(** @return whether feature is available *)";
   pr "let feature = function";
   List.iter (function
-  | YES (name,_) -> pr "| %S -> Some true" name
+  | YES (name, _, _) -> pr "| %S -> Some true" name
   | NO name -> pr "| %S -> Some false" name) result;
   pr "| _ -> None";
   pr "";
   pr "(** @return whether feature is available *)";
   pr "let have = function";
   List.iter (function
-  | YES (name,_) -> pr "| `%s -> true" name
+  | YES (name, _, _) -> pr "| `%s -> true" name
   | NO name -> pr "| `%s -> false" name) result;
+  close_out ch
+
+let show_ldlibs_sexp file result =
+  let ch = open_out file in
+  let pr fmt = ksprintf (fun s -> output_string ch s) fmt in
+  pr "(";
+  List.(fold_left (fun acc -> function
+      | YES (_, _, ldlibs) when not (mem ldlibs acc) -> ldlibs :: acc
+      | _ -> acc)
+    []
+    result |> concat |> iter (fun ldlib -> pr "%s " ldlib));
+  pr ")\n";
   close_out ch
 
 let main c config =
   let result = List.map (discover c) config in
   show_c "config.h" result;
-  show_ml "config.ml" result
+  show_ml "config.ml" result;
+  show_ldlibs_sexp "ldlibs.sexp" result
 
 let features =
   let fd_int = ND "Handle_val" in (* marker for bindings code assuming fd is represented as int *)
@@ -292,8 +311,20 @@ let features =
       V "PRIO_PROCESS"; V "RLIMIT_NOFILE"; V "RLIM_INFINITY";
       ];
     "MLOCKALL", L[ I "sys/mman.h"; S "mlockall"; S "munlockall"; V "MCL_CURRENT"; V "MCL_FUTURE"; ];
-    "STRTIME", L[ I "time.h"; S"strptime"; S"strftime"; S"asctime_r"; S"tzset"; S"tzname"; ];
-    "TIMEZONE", L[ I "time.h"; S"tzset"; S"timezone"; S"daylight" ];
+    "STRPTIME", L[ I "time.h"; S "strptime"; ];
+    "STRTIME", ANY[
+      [ I "time.h"; S"strftime"; S"asctime_r"; S"tzset"; S"tzname"; ];
+      [ DEFINE"CAML_NAME_SPACE"; DEFINE"CAML_INTERNALS"; I"caml/osdeps.h"; I "time.h"; Ldlib ("cc", "-lucrtbase");
+        S"wcsftime"; S"_wasctime_s"; S"_tzset"; S"_get_tzname"; ];
+    ];
+    "TIMEZONE", ANY[
+      [ I "time.h"; S"tzset"; S"timezone"; S"daylight" ];
+      [ I "time.h"; Ldlib ("cc", "-lucrtbase"); S"_tzset"; S"_get_timezone"; S"_get_daylight" ];
+    ];
+    "TIMEGM", ANY[
+      [ I "time.h"; S"timegm"; ];
+      [ I "time.h"; Ldlib ("cc", "-lucrtbase"); S"_mkgmtime" ];
+    ];
     "PTS", L[
       fd_int;
       I "fcntl.h"; I "stdlib.h";
@@ -305,7 +336,6 @@ let features =
     "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
     "MKDTEMP", L[ I"stdlib.h"; I"unistd.h"; S"mkdtemp"; ];
-    "TIMEGM", L[ I"time.h"; S"timegm"; ];
     "MALLOC_INFO", L[ I"malloc.h"; S"malloc_info"; ];
     "MALLOC_STATS", L[ I"malloc.h"; S"malloc_stats"; ];
     "MEMALIGN", L[ I "stdlib.h"; S"posix_memalign"; ];

@@ -1,5 +1,5 @@
 (rule
- (targets config.h config.ml)
+ (targets config.h config.ml ldlibs.sexp)
  (deps
   (:gen ../discover/discover.exe))
  (action
@@ -22,6 +22,8 @@
     All)
    ((pps ppx_have)
     Specific)))
+ (c_library_flags
+  (:include ldlibs.sexp))
  (foreign_stubs
   (language c)
   (flags :standard)
