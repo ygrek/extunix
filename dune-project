@@ -44,6 +44,6 @@
  (maintainers "ygrek@autistici.org")
  (source (github ygrek/extunix))
  (bug_reports "https://github.com/ygrek/extunix/issues")
- (homepage "https://ygrek.org.ua/p/ocaml-extunix")
- (documentation "https://ygrek.org.ua/p/ocaml-extunix")
+ (homepage "https://ygrek.org/p/ocaml-extunix")
+ (documentation "https://ygrek.org/p/ocaml-extunix")
  (tags ("org:ygrek")))

@@ -12,13 +12,12 @@ Our motto: "Be to Unix, what extlib is to stdlib"
 * Provide common consistent ocaml interface: naming convention, exceptions.
 * Simple to build - no extra dependencies.
 
-Homepage: <https://ygrek.org.ua/p/ocaml-extunix/>
+Homepage: <https://ygrek.org/p/ocaml-extunix/>
 
 Why?
 ----
 
-Currently, everybody writes his own bindings to fulfil particular needs. Most
-of the system API don't deserve fully fledged library.
+Most of the system API don't deserve fully fledged library.
 
 The ExtUnix project aims to collect these in one place. Read the
 "[ExtUnix integration requirements](#extunix-integration-requirements)"
@@ -29,7 +28,7 @@ Installation
 
 Dependencies :
 
-* OCaml, Dune, ocaml-migrate-parsetree for build and installation
+* OCaml, Dune, ppxlib for build and installation
 * (optional) oUnit2 for tests, odoc for documentation
 
 Build and install:
