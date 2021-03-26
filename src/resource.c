@@ -31,8 +31,6 @@
 
 #if defined(EXTUNIX_HAVE_RESOURCE)
 
-#include <assert.h>
-
 static void decode_which_prio(value vwprio, int *pwhich, id_t *pwho)
 {
   CAMLparam1(vwprio);

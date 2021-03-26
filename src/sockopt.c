@@ -3,9 +3,6 @@
 
 #if defined(EXTUNIX_HAVE_SOCKOPT)
 
-#include <assert.h>
-#include <errno.h>
-
 #ifndef TCP_KEEPCNT
 #define TCP_KEEPCNT (-1)
 #endif

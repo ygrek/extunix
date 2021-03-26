@@ -4,8 +4,6 @@
 
 #if defined(EXTUNIX_HAVE_SYSLOG)
 
-#include <assert.h>
-
 static int mask_table[] = {
   LOG_MASK(LOG_EMERG), LOG_MASK(LOG_ALERT), LOG_MASK(LOG_CRIT),
   LOG_MASK(LOG_ERR), LOG_MASK(LOG_WARNING), LOG_MASK(LOG_NOTICE),

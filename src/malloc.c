@@ -18,7 +18,6 @@ CAMLprim value caml_extunix_malloc_stats(value v_unit)
 #if defined(EXTUNIX_HAVE_MALLOC_INFO)
 
 #include <stdio.h>
-#include <memory.h>
 
 CAMLprim value caml_extunix_malloc_info(value v_unit)
 {
