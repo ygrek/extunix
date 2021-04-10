@@ -16,7 +16,7 @@ NAME=ocaml-extunix-$(VERSION)
 release:
 	git tag -a -m $(VERSION) v$(VERSION)
 	git archive --prefix=$(NAME)/ v$(VERSION) | gzip > $(NAME).tar.gz
-	gpg -a -b $(NAME).tar.gz
+	gpg -a -b $(NAME).tar.gz -o $(NAME).tar.gz.asc
 
 dune-release:
 	dune-release tag
