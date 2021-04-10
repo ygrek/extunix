@@ -1,5 +1,5 @@
-(lang dune 2.8)
-(use_standard_c_and_cxx_flags true)
+(lang dune 2.2)
+;(use_standard_c_and_cxx_flags true)
 (name extunix)
 (generate_opam_files true)
 
@@ -7,7 +7,7 @@
  (name extunix)
  (depends
   (dune-configurator :build)
-  (ppxlib (>= 0.22))
+  (ppxlib (>= 0.18))
   (ounit2 :with-test)
   base-bytes
   base-bigarray

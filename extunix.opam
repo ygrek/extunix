@@ -34,17 +34,16 @@ homepage: "https://ygrek.org/p/ocaml-extunix"
 doc: "https://ygrek.org/p/ocaml-extunix"
 bug-reports: "https://github.com/ygrek/extunix/issues"
 depends: [
-  "dune" {>= "2.8"}
+  "dune" {>= "2.2"}
   "dune-configurator" {build}
-  "ppxlib" {>= "0.22"}
+  "ppxlib" {>= "0.18"}
   "ounit2" {with-test}
   "base-bytes"
   "base-bigarray"
   "base-unix"
-  "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {dev}
+  ["dune" "subst"] {pinned}
   [
     "dune"
     "build"
