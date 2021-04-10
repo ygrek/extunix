@@ -1,3 +1,11 @@
+## v0.3.0 - 10 Apr 2021
+* build: switch to dune, dune-configurator and ppxlib
+* sockopt: handle missing options at runtime
+* Add IPv6 support to getifaddrs
+* better Windows support
++ Support Endian module on Windows
++ Enable asctime, strftime, tzname, timezone, timegm on Windows
+
 ## v0.2.0 -  8 Nov 2019
 * camlp4 dependency replaced with ppx
 * use available endian functions on Mac OS
