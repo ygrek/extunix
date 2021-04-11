@@ -1,5 +1,5 @@
 (rule
- (targets config.h config.ml ldlibs.sexp)
+ (targets config.h extUnixConfig.ml ldlibs.sexp)
  (deps
   (:gen ../discover/discover.exe))
  (action
@@ -8,20 +8,21 @@
 (rule
  (action
   (progn
-   (copy extUnix.pp.ml all.ml)
-   (copy extUnix.pp.ml specific.ml))))
+   (copy extUnix.pp.ml extUnixAll.ml)
+   (copy extUnix.pp.ml extUnixSpecific.ml))))
 
 (library
  (name ExtUnix)
  (public_name extunix)
  (modules_without_implementation ExtUnix)
+ (wrapped (transition "use ExtUnix.All or ExtUnix.Specific instead, top-level modules ExtUnixAll and ExtUnixSpecific will be gone soon."))
  (libraries unix bigarray bytes)
  (preprocess
   (per_module
    ((pps ppx_have --gen-all)
-    All)
+    ExtUnixAll)
    ((pps ppx_have)
-    Specific)))
+    ExtUnixSpecific)))
  (c_library_flags
   (:include ldlibs.sexp))
  (foreign_stubs

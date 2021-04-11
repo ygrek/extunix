@@ -197,7 +197,7 @@ let show_ldlibs_sexp file result =
 let main c config =
   let result = List.map (discover c) config in
   show_c "config.h" result;
-  show_ml "config.ml" result;
+  show_ml "extUnixConfig.ml" result;
   show_ldlibs_sexp "ldlibs.sexp" result
 
 let features =
