@@ -136,6 +136,7 @@ Checklist for release
 ---------------------
 
 * Review `git log` and update [`CHANGES.txt`][]
+* Increase VERSION in Makefile
 * Commit
 * `make release`
 

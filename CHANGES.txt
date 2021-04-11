@@ -1,3 +1,6 @@
+## v0.3.1 - 11 Apr 2021
+* temporarily keep backward compatibility wrt top-level module names
+
 ## v0.3.0 - 10 Apr 2021
 * build: switch to dune, dune-configurator and ppxlib
 * sockopt: handle missing options at runtime
