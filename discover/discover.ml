@@ -27,7 +27,16 @@ type test =
   | L of arg list
   | ANY of arg list list
 
-type t = YES of (string * arg list * string list) | NO of string
+type t =
+  | YES of {
+      name : string;
+      args : arg list;
+      ldlibs : string list;
+      (* list of flags to give to the linker. Required if functions
+         looked for with this test aren't in the set of libraries
+         linked by default. *)
+    }
+  | NO of string
 
 let verbose = ref 1
 let disabled = ref []
@@ -115,7 +124,7 @@ let discover c (name,test) =
         if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
     | false, (x::xs) -> loop x xs
-    | true, _ -> print_endline "ok"; YES (name, args, ldlibs)
+    | true, _ -> print_endline "ok"; YES {name; args; ldlibs}
   in
   match List.mem name !disabled with
   | true -> print_endline "disabled"; NO name
@@ -132,7 +141,7 @@ let show_c file result =
   List.iter (print_define b) config_defines;
   List.iter begin function
     | NO _ -> ();
-    | YES (name, args, _) ->
+    | YES {name; args; _} ->
         match get_defines args with
         | [] -> ()
         | l ->
@@ -148,7 +157,7 @@ let show_c file result =
     | NO name ->
       pr "";
       pr "#undef EXTUNIX_HAVE_%s" name;
-    | YES (name, args, _) ->
+    | YES {name; args; _} ->
         pr "";
         pr "#define EXTUNIX_HAVE_%s" name;
         match get_includes args, get_zdefines args, get_svcdefines args with
@@ -171,14 +180,14 @@ let show_ml file result =
   pr "(** @return whether feature is available *)";
   pr "let feature = function";
   List.iter (function
-  | YES (name, _, _) -> pr "| %S -> Some true" name
+  | YES {name; _} -> pr "| %S -> Some true" name
   | NO name -> pr "| %S -> Some false" name) result;
   pr "| _ -> None";
   pr "";
   pr "(** @return whether feature is available *)";
   pr "let have = function";
   List.iter (function
-  | YES (name, _, _) -> pr "| `%s -> true" name
+  | YES {name; _} -> pr "| `%s -> true" name
   | NO name -> pr "| `%s -> false" name) result;
   close_out ch
 
@@ -187,7 +196,7 @@ let show_ldlibs_sexp file result =
   let pr fmt = ksprintf (fun s -> output_string ch s) fmt in
   pr "(";
   List.(fold_left (fun acc -> function
-      | YES (_, _, ldlibs) when not (mem ldlibs acc) -> ldlibs :: acc
+      | YES {ldlibs; _} when not (mem ldlibs acc) -> ldlibs :: acc
       | _ -> acc)
     []
     result |> concat |> iter (fun ldlib -> pr "%s " ldlib));
