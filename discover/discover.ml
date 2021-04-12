@@ -14,7 +14,9 @@ type arg =
   | T of string (* check type available *)
   | DEFINE of string (* define symbol prior to including header files (promoted to config) *)
   | Z of string (* define symbol to zero if not defined after the includes (promoted to config) *)
-  | SVC of string * string * string (* define symbol S to value V if condition C is met after the includes (promoted to config) *)
+  | IF of string * string * string
+  (* let [(cond, symbol, value)], then if [cond] is met after the
+     includes, define [symbol] to [value] (promoted to config) *)
   | S of string (* check symbol available (e.g. function name) *)
   | V of string (* check value available (e.g. enum member) *)
   | D of string (* check symbol defined *)
@@ -48,7 +50,7 @@ let print_svcdefine b (symbol,value,condition) = bprintf b "#if %s\n#define %s %
 let filter_map f l = List.rev (List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l)
 let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_zdefines = filter_map (function Z s -> Some s | _ -> None)
-let get_svcdefines = filter_map (function SVC (s,v,c) -> Some (s,v,c) | _ -> None)
+let get_ifdefines = filter_map (function IF (c,s,v) -> Some (c,s,v) | _ -> None)
 let get_includes = filter_map (function I s -> Some s | _ -> None)
 let get_ldlibs ccomp_type = filter_map (function Ldlib (ct, lib) when ct = ccomp_type -> Some lib | _ -> None)
 
@@ -91,7 +93,7 @@ let build_code args =
     | I _ | Ldlib _ -> ()
     | T s -> pr "%s var_%d;" s (fresh ())
     | DEFINE _ -> ()
-    | Z _ | SVC _ -> () (* no test required *)
+    | Z _ | IF _ -> () (* no test required *)
     | D s -> pr "#ifndef %s" s; pr "#error %s not defined" s; pr "#endif"
     | ND s -> pr "#ifdef %s" s; pr "#error %s defined" s; pr "#endif"
     | S s -> pr "size_t var_%d = (size_t)&%s;" (fresh ()) s
@@ -160,7 +162,7 @@ let show_c file result =
     | YES {name; args; _} ->
         pr "";
         pr "#define EXTUNIX_HAVE_%s" name;
-        match get_includes args, get_zdefines args, get_svcdefines args with
+        match get_includes args, get_zdefines args, get_ifdefines args with
         | [],[],[] -> ()
         | includes,zdefines,svcdefines ->
           pr "#if defined(EXTUNIX_WANT_%s)" name;
@@ -409,15 +411,15 @@ let features =
     ];
     "TCP_KEEPCNT", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPCNT" ];
-      [ I "winsock2.h"; I "ws2tcpip.h"; SVC ("TCP_KEEPCNT", "0x10", "!defined(TCP_KEEPCNT) && defined(__MINGW32__)") ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPCNT) && defined(__MINGW32__)", "TCP_KEEPCNT", "0x10") ];
     ];
     "TCP_KEEPIDLE", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPIDLE" ];
-      [ I "winsock2.h"; I "ws2tcpip.h"; SVC ("TCP_KEEPIDLE", "0x03", "!defined(TCP_KEEPIDLE) && defined(__MINGW32__)") ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPIDLE) && defined(__MINGW32__)", "TCP_KEEPIDLE", "0x03") ];
     ];
     "TCP_KEEPINTVL", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPINTVL" ];
-      [ I "winsock2.h"; I "ws2tcpip.h"; SVC ("TCP_KEEPINTVL", "0x11", "!defined(TCP_KEEPINTVL) && defined(__MINGW32__)") ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPINTVL) && defined(__MINGW32__)", "TCP_KEEPINTVL", "0x11") ];
     ];
     "SO_REUSEPORT", L[I"sys/socket.h"; V"SO_REUSEPORT"];
     "POLL", L[ fd_int; I "poll.h"; S "poll"; D "POLLIN"; D "POLLOUT"; Z "POLLRDHUP" ];
