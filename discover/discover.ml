@@ -343,7 +343,10 @@ let features =
     ];
     "FCNTL", L[ fd_int; I"unistd.h"; I"fcntl.h"; S"fcntl"; V"F_GETFL"; ];
     "TCPGRP", L[ fd_int; I"unistd.h"; S"tcgetpgrp"; S"tcsetpgrp"; ];
-    "EXECINFO", L[ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; ];
+    "EXECINFO", ANY[
+      [ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; ];
+      [ I"execinfo.h"; S"backtrace"; S"backtrace_symbols"; Ldlib ("cc", "-lexecinfo")];
+    ];
     "SETENV", L[ I"stdlib.h"; S"setenv"; S"unsetenv"; ];
     "CLEARENV", L[ I"stdlib.h"; S"clearenv"; ];
     "MKDTEMP", L[ I"stdlib.h"; I"unistd.h"; S"mkdtemp"; ];
