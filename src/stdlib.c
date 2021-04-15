@@ -40,7 +40,8 @@ CAMLprim value caml_extunix_realpath(value v_path)
 
 CAMLprim value caml_extunix_realpath(value v_path)
 {
-  char *path = String_val(v_path);
+  CAMLparam1(v_path);
+  const char *path = String_val(v_path);
   /* [realpath] is inherently broken without GNU-extension, and this
      seems like a reasonable thing to do if we do not build against
      GLIBC. */
