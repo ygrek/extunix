@@ -46,7 +46,7 @@ let disabled = ref []
 let print_define b s = bprintf b "#define %s\n" s
 let print_include b s = bprintf b "#include <%s>\n" s
 let print_zdefine b s = bprintf b "#ifndef %s\n#define %s 0\n#endif\n" s s
-let print_svcdefine b (symbol,value,condition) = bprintf b "#if %s\n#define %s %s\n#endif\n" condition symbol value
+let print_ifdefine b (condition,symbol,value) = bprintf b "#if %s\n#define %s (%s)\n#endif\n" condition symbol value
 let filter_map f l = List.rev (List.fold_left (fun acc x -> match f x with Some s -> s::acc | None -> acc) [] l)
 let get_defines = filter_map (function DEFINE s -> Some s | _ -> None)
 let get_zdefines = filter_map (function Z s -> Some s | _ -> None)
@@ -164,11 +164,11 @@ let show_c file result =
         pr "#define EXTUNIX_HAVE_%s" name;
         match get_includes args, get_zdefines args, get_ifdefines args with
         | [],[],[] -> ()
-        | includes,zdefines,svcdefines ->
+        | includes,zdefines,ifdefines ->
           pr "#if defined(EXTUNIX_WANT_%s)" name;
           List.iter (print_include b) includes;
           List.iter (print_zdefine b) zdefines;
-          List.iter (print_svcdefine b) svcdefines;
+          List.iter (print_ifdefine b) ifdefines;
           pr "#endif";
   end result;
   pr "";
