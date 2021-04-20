@@ -412,13 +412,13 @@ let features =
         S"setsockopt"; S"getsockopt";
       ]
     ];
-    "TCP_KEEPCNT", ANY[
-      [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPCNT" ];
-      [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPCNT) && defined(__MINGW32__)", "TCP_KEEPCNT", "0x10") ];
-    ];
     "TCP_KEEPIDLE", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPIDLE" ];
       [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPIDLE) && defined(__MINGW32__)", "TCP_KEEPIDLE", "0x03") ];
+    ];
+    "TCP_KEEPCNT", ANY[
+      [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPCNT" ];
+      [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPCNT) && defined(__MINGW32__)", "TCP_KEEPCNT", "0x10") ];
     ];
     "TCP_KEEPINTVL", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPINTVL" ];
