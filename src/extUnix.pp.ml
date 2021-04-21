@@ -875,6 +875,7 @@ external getifaddrs : unit -> (string * string) list = "caml_extunix_getifaddrs"
 
 [%%have SOCKOPT
 
+(**/**)
 type socket_int_option_ =
 | TCP_KEEPCNT_
 | TCP_KEEPIDLE_
@@ -901,6 +902,15 @@ external setsockopt_int : Unix.file_descr -> socket_int_option_ -> int -> unit =
 external getsockopt_int : Unix.file_descr -> socket_int_option_ -> int = "caml_extunix_getsockopt_int"
 external have_sockopt_int : socket_int_option_ -> bool = "caml_extunix_have_sockopt"
 
+let setsockopt_int sock opt v =
+  try setsockopt_int sock opt v
+  with Not_found -> raise (Not_available ("setsockopt " ^ string_of_socket_int_option_ opt))
+
+let getsockopt_int sock opt =
+  try getsockopt_int sock opt
+  with Not_found -> raise (Not_available ("getsockopt " ^ string_of_socket_int_option_ opt))
+(**/**)
+
 (** Extra socket options with integer value not covered in {!Unix} module.
   NB Not all options available on all platforms, use {!have_sockopt} to check at runtime
   (even when function is defined in [Specific] module)
@@ -921,6 +931,7 @@ type socket_unit_option =
 | SO_DETACH_FILTER (** Remove classic or extended BPF program attached to a socket *)
 | SO_DETACH_BPF (** same *)
 
+(**/**)
 let make_socket_int_option = function
 | TCP_KEEPCNT -> TCP_KEEPCNT_
 | TCP_KEEPIDLE -> TCP_KEEPIDLE_
@@ -935,6 +946,7 @@ let make_socket_bool_option = function
 let make_socket_unit_option = function
 | SO_DETACH_FILTER -> SO_DETACH_FILTER_
 | SO_DETACH_BPF -> SO_DETACH_BPF_
+(**/**)
 
 let have_sockopt_unit x = have_sockopt_int (make_socket_unit_option x)
 let have_sockopt_bool x = have_sockopt_int (make_socket_bool_option x)
@@ -942,9 +954,6 @@ let have_sockopt_int x = have_sockopt_int (make_socket_int_option x)
 
 (** obsolete, compatibility *)
 let have_sockopt = have_sockopt_int
-
-let setsockopt_int sock opt v = try setsockopt_int sock opt v with Not_found -> raise (Not_available ("setsockopt " ^ string_of_socket_int_option_ opt))
-let getsockopt_int sock opt = try getsockopt_int sock opt with Not_found -> raise (Not_available ("getsockopt " ^ string_of_socket_int_option_ opt))
 
 (** Set the option without value on the given socket *)
 let setsockopt_unit sock opt = setsockopt_int sock (make_socket_unit_option opt) 0
