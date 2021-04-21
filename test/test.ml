@@ -202,7 +202,7 @@ let test_execinfo () =
 
 let test_statvfs () =
   require "statvfs";
-  let st = statvfs "." in
+  let st = statvfs (if Sys.win32 then "C:\\" else ".") in
   assert_bool "blocks" (st.f_blocks >= st.f_bfree && st.f_bfree >= st.f_bavail);
   assert_bool "inodes" (st.f_files >= st.f_ffree && st.f_ffree >= st.f_favail);
   assert_bool "bsize" (st.f_bsize > 0)
