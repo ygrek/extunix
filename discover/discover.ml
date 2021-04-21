@@ -325,7 +325,7 @@ let features =
     "STRPTIME", L[ I "time.h"; S "strptime"; ];
     "STRTIME", ANY[
       [ I "time.h"; S"strftime"; S"asctime_r"; S"tzset"; S"tzname"; ];
-      [ DEFINE"CAML_NAME_SPACE"; DEFINE"CAML_INTERNALS"; I"caml/osdeps.h"; I "time.h"; Ldlib ("cc", "-lucrtbase");
+      [ DEFINE"CAML_INTERNALS"; I"caml/osdeps.h"; I "time.h"; Ldlib ("cc", "-lucrtbase");
         S"wcsftime"; S"_wasctime_s"; S"_tzset"; S"_get_tzname"; ];
     ];
     "TIMEZONE", ANY[
