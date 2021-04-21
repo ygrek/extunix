@@ -129,7 +129,7 @@ external syncfs : Unix.file_descr -> unit = "caml_extunix_syncfs"
 external dirfd : Unix.dir_handle -> Unix.file_descr = "caml_extunix_dirfd"
 ]
 
-[%%have STATVFS
+[%%have (STATVFS, FSTATVFS)
 
 (** file system flags *)
 type st_flag =
@@ -159,7 +159,21 @@ type statvfs = {
   f_flags : st_flag list; (** mount flags (decoded) *)
   f_namemax : int; (** maximum filename length *)
 }
+]
+
+[%%have STATVFS
+
+(** On Windows, [statvfs root] is emulated. [root] must be the root
+   directory of the volume to be described. A trailing backslash is
+   required. The [f_flag] and [f_fsid] fields are retrieved from a
+   call to [GetVolumeInformation]. Filesystem flags are provided raw
+   in [f_flag], and only [FILE_READ_ONLY_VOLUME] is mapped to
+   [ST_RDONLY] in [f_flags]. *)
 external statvfs : string -> statvfs = "caml_extunix_statvfs"
+]
+
+[%%have FSTATVFS
+
 external fstatvfs : Unix.file_descr -> statvfs = "caml_extunix_fstatvfs"
 ]
 

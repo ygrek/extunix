@@ -244,7 +244,10 @@ let features =
       I "dirent.h";
       S "dirfd";
     ];
-    "STATVFS", L (statvfs@[S"statvfs"]);
+    "STATVFS", ANY [
+      statvfs@[S"statvfs"];
+      [ DEFINE "CAML_INTERNALS"; I "windows.h"; S "GetDiskFreeSpaceW"; S "GetDiskFreeSpaceExW"; S "GetVolumeInformationW"];
+    ];
     "FSTATVFS", L ([fd_int]@statvfs@[S"fstatvfs"]);
     "SIOCGIFCONF", L[
       fd_int;
