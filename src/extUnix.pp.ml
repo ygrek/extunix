@@ -912,8 +912,8 @@ let getsockopt_int sock opt =
 (**/**)
 
 (** Extra socket options with integer value not covered in {!Unix} module.
-  NB Not all options available on all platforms, use {!have_sockopt} to check at runtime
-  (even when function is defined in [Specific] module)
+  NB: Not all options available on all platforms, use {!have_sockopt_int} to check at runtime
+  (even when function is defined in [Specific] module).
 *)
 type socket_int_option =
 | TCP_KEEPCNT (** The maximum number of keepalive probes TCP should send before dropping the connection *)
@@ -952,8 +952,10 @@ let have_sockopt_unit x = have_sockopt_int (make_socket_unit_option x)
 let have_sockopt_bool x = have_sockopt_int (make_socket_bool_option x)
 let have_sockopt_int x = have_sockopt_int (make_socket_int_option x)
 
-(** obsolete, compatibility *)
+(** Obsolete, compatibility, use {!have_sockopt_int}.
+   @deprecated *)
 let have_sockopt = have_sockopt_int
+  [@@deprecated "Obsolete, compatibility, use have_sockopt_int."]
 
 (** Set the option without value on the given socket *)
 let setsockopt_unit sock opt = setsockopt_int sock (make_socket_unit_option opt) 0
