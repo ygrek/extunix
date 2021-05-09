@@ -1,3 +1,7 @@
+## v0.3.2 - 09 May 2021
+* Emulate statvfs on Windows
+* build: mark ppxlib as build-time dep, depend on OCaml >= 4.06
+
 ## v0.3.1 - 11 Apr 2021
 * temporarily keep backward compatibility wrt top-level module names
 
