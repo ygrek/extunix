@@ -8,7 +8,7 @@ Motto: "Be to Unix, what extlib is to stdlib"
 * Provide common consistent ocaml interface: naming convention, exceptions.
 * Simple to build - no extra dependencies.
 """
-maintainer: ["ygrek@autistici.org"]
+maintainer: ["ygrek@autistici.org" "Antonin Décimo <antonin@tarides.com>"]
 authors: [
   "Andre Nathan"
   "Antonin Décimo"

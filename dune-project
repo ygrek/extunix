@@ -42,7 +42,7 @@
   "ygrek"
   "Zhenya Lykhovyd"
  )
- (maintainers "ygrek@autistici.org")
+ (maintainers "ygrek@autistici.org" "Antonin Décimo <antonin@tarides.com>")
  (source (github ygrek/extunix))
  (bug_reports "https://github.com/ygrek/extunix/issues")
  (homepage "https://ygrek.org/p/ocaml-extunix")
