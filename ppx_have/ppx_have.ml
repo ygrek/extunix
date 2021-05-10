@@ -7,7 +7,7 @@ let args_spec =
     ("--gen-all", Arg.Set all, "generate values from all [%%have ...] sections");
   ]
 
-(* module ExtUnixConfig = Config *)
+module ExtUnixConfig = Config
 open Ppxlib
 
 let check ~loc name =

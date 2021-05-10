@@ -1,8 +1,8 @@
-(copy_files ../src/extUnixConfig.ml)
+(copy_files ../src/config.ml)
 
 (library
  (name ppx_have)
- (modules Ppx_have ExtUnixConfig)
+ (modules Ppx_have Config)
  (kind ppx_rewriter)
  (libraries ppxlib)
  (preprocess

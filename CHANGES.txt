@@ -1,3 +1,7 @@
+## unreleased
+* Remove top-level module names, modules should be accessed via
+  ExtUnix top-level module.
+
 ## v0.3.2 - 09 May 2021
 * Emulate statvfs on Windows
 * build: mark ppxlib as build-time dep, depend on OCaml >= 4.06
@@ -96,7 +100,7 @@
 * List email contacts (bug #1108)
 
 ## v0.0.4 - 19 May 2012
-* ExtUnix now depends on Bigarray and provides variants of 
+* ExtUnix now depends on Bigarray and provides variants of
   some bindings operating on bigarray buffers (BA submodule)
 * New bindings :
   * timegm
@@ -165,4 +169,3 @@
   * fadvise fallocate
   * ttyname setpgid getpgid setreuid setregid
   * realpath
-
