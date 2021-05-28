@@ -64,7 +64,9 @@ let config_defines = [
   "WIN32_LEAN_AND_MEAN";
   "_WIN32_WINNT 0x0602"; (* Windows 8 *)
   "CAML_NAME_SPACE";
-  "_GNU_SOURCE"
+  "_GNU_SOURCE";
+  "UNICODE";
+  "_UNICODE";
   ]
 
 let config_includes = [
@@ -246,7 +248,7 @@ let features =
     ];
     "STATVFS", ANY [
       statvfs@[S"statvfs"];
-      [ DEFINE "CAML_INTERNALS"; I "windows.h"; S "GetDiskFreeSpaceW"; S "GetDiskFreeSpaceExW"; S "GetVolumeInformationW"];
+      [ DEFINE "CAML_INTERNALS"; I "windows.h"; S "GetDiskFreeSpace"; S "GetDiskFreeSpaceEx"; S "GetVolumeInformation"];
     ];
     "FSTATVFS", L ([fd_int]@statvfs@[S"fstatvfs"]);
     "SIOCGIFCONF", L[

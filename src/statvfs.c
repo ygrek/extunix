@@ -50,12 +50,12 @@ CAMLprim value caml_extunix_statvfs(value v_path)
   char_os *path = caml_stat_strdup_to_os(String_val(v_path));
   BOOL rc;
 
-  rc = GetDiskFreeSpaceW(path, &sectorsPerCluster, &bytesPerSector,
-                         &numberOfFreeClusters, &totalNumberOfClusters)
-    && GetDiskFreeSpaceExW(path, NULL, NULL,
-                           (PULARGE_INTEGER) &totalNumberOfFreeBytes)
-    && GetVolumeInformationW(path, NULL, 0, &serialNumber, NULL,
-                             &fileSystemFlags, NULL, 0);
+  rc = GetDiskFreeSpace(path, &sectorsPerCluster, &bytesPerSector,
+                        &numberOfFreeClusters, &totalNumberOfClusters)
+    && GetDiskFreeSpaceEx(path, NULL, NULL,
+                          (PULARGE_INTEGER) &totalNumberOfFreeBytes)
+    && GetVolumeInformation(path, NULL, 0, &serialNumber, NULL,
+                            &fileSystemFlags, NULL, 0);
   caml_stat_free(path);
 
   if (!rc)

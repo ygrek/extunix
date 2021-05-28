@@ -14,8 +14,6 @@
 /**************************************************************************/
 
 #define EXTUNIX_WANT_REALPATH
-#define UNICODE
-#define _UNICODE
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_REALPATH)
