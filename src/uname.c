@@ -10,7 +10,7 @@ CAMLprim value caml_extunix_uname(value u)
 
   CAMLparam1(u);
   CAMLlocal2(result, domainname);
- 
+
   memset(&uname_data, 0, sizeof(uname_data));
 
   if (uname(&uname_data) == 0)

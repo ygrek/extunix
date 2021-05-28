@@ -61,7 +61,7 @@ CAMLprim value caml_extunix_getpriority(value vwprio)
 {
   CAMLparam1(vwprio);
   int  which;
-  id_t who; 
+  id_t who;
   int  res = -1;
 
   decode_which_prio(vwprio, &which, &who);
@@ -80,7 +80,7 @@ CAMLprim value caml_extunix_setpriority(value vwprio, value vprio)
 {
   CAMLparam2(vwprio, vprio);
   int  which;
-  id_t who; 
+  id_t who;
 
   decode_which_prio(vwprio, &which, &who);
 
@@ -94,7 +94,7 @@ CAMLprim value caml_extunix_setpriority(value vwprio, value vprio)
 
 #define RESOURCE_LEN 7
 
-static int resource_map[RESOURCE_LEN] = 
+static int resource_map[RESOURCE_LEN] =
   {
     RLIMIT_CORE,
     RLIMIT_CPU,

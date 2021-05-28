@@ -1,7 +1,7 @@
 /*
  * Binding to posix_fadvise
  *
- * Copyright 2008-2009 Talend, Inc. 
+ * Copyright 2008-2009 Talend, Inc.
  *
  * License LGPL-2.1 with OCaml linking static exception
  *
@@ -39,7 +39,7 @@ CAMLprim value caml_extunix_fadvise64(value vfd, value voff, value vlen, value v
   fd  = Int_val(vfd);
   off = Int64_val(voff);
   len = Int64_val(vlen);
-  advise = caml_advises[Int_val(vadvise)]; 
+  advise = caml_advises[Int_val(vadvise)];
 
   errcode = posix_fadvise64(fd, off, len, advise);
 
@@ -64,7 +64,7 @@ CAMLprim value caml_extunix_fadvise(value vfd, value voff, value vlen, value vad
   fd  = Int_val(vfd);
   off = Long_val(voff);
   len = Long_val(vlen);
-  advise = caml_advises[Int_val(vadvise)]; 
+  advise = caml_advises[Int_val(vadvise)];
 
   errcode = posix_fadvise(fd, off, len, advise);
 

@@ -2,7 +2,7 @@
 /*
  * ftruncate C binding
  *
- * Copyright 2008-2009 Talend, Inc. 
+ * Copyright 2008-2009 Talend, Inc.
  *
  * License LGPL-2.1 with OCaml linking static exception
  *
@@ -30,7 +30,7 @@ static __int64 caml_ftruncate_win32_lseek (HANDLE hFile, __int64 i64Pos, DWORD d
 
   liRes.QuadPart = i64Pos;
   liRes.LowPart  = SetFilePointer(hFile, liRes.LowPart, &liRes.HighPart, dwMoveMethod);
-  if (liRes.LowPart == INVALID_SET_FILE_POINTER && 
+  if (liRes.LowPart == INVALID_SET_FILE_POINTER &&
       GetLastError() != NO_ERROR)
   {
     caml_ftruncate_win32_error();

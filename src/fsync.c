@@ -21,7 +21,7 @@ CAMLprim value caml_extunix_fsync(value v)
    caml_leave_blocking_section();
    if (0 == r)
      uerror("fsync",Nothing);
-   CAMLreturn(Val_unit); 
+   CAMLreturn(Val_unit);
 }
 
 #if defined(EXTUNIX_HAVE_FDATASYNC)

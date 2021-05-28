@@ -1,7 +1,7 @@
 /*
  * posix_fallocate binding
  *
- * Copyright 2008-2009 Talend, Inc. 
+ * Copyright 2008-2009 Talend, Inc.
  *
  * License LGPL-2.1 with OCaml linking static exception
  *
@@ -30,7 +30,7 @@ static __int64 caml_fallocate_lseek (HANDLE hFile, __int64 i64Pos, DWORD dwMoveM
 
   liRes.QuadPart = i64Pos;
   liRes.LowPart  = SetFilePointer(hFile, liRes.LowPart, &liRes.HighPart, dwMoveMethod);
-  if (liRes.LowPart == INVALID_SET_FILE_POINTER && 
+  if (liRes.LowPart == INVALID_SET_FILE_POINTER &&
       GetLastError() != NO_ERROR)
   {
     caml_fallocate_error();
@@ -42,7 +42,7 @@ static __int64 caml_fallocate_lseek (HANDLE hFile, __int64 i64Pos, DWORD dwMoveM
 static void caml_fallocate_do (HANDLE hFile, __int64 i64Off, __int64 i64Len)
 {
   __int64        i64Cur = 0;
-  LARGE_INTEGER  liFileSize; 
+  LARGE_INTEGER  liFileSize;
 
   /* Check that off + len > file size */
   if (!GetFileSizeEx(hFile, &liFileSize))

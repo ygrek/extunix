@@ -120,7 +120,7 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   if (cmsgp == NULL) {
     Store_field(res, 0, Val_none);
   } else {
-    CAMLlocal1(some_fd); 
+    CAMLlocal1(some_fd);
     if (cmsgp->cmsg_len != CMSG_LEN(sizeof recvfd))
       unix_error(EINVAL, "recvmsg", caml_copy_string("wrong descriptor size"));
     if (cmsgp->cmsg_level != SOL_SOCKET || cmsgp->cmsg_type != SCM_RIGHTS)

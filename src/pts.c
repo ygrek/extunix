@@ -20,7 +20,7 @@ CAMLprim value caml_extunix_grantpt(value fd)
 	CAMLparam1(fd);
 	if(grantpt(Int_val(fd)) == -1)
 		uerror("grantpt", Nothing);
-	CAMLreturn(Val_unit); 
+	CAMLreturn(Val_unit);
 }
 
 CAMLprim value caml_extunix_unlockpt(value fd)
@@ -28,7 +28,7 @@ CAMLprim value caml_extunix_unlockpt(value fd)
 	CAMLparam1(fd);
 	if(unlockpt(Int_val(fd)) == -1)
 		uerror("unlockpt", Nothing);
-	CAMLreturn(Val_unit); 
+	CAMLreturn(Val_unit);
 }
 
 CAMLprim value caml_extunix_ptsname(value fd)

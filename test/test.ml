@@ -58,7 +58,7 @@ let test_fallocate () =
 (* Utility function to manipulate test *)
 let rec test_decorate g tst =
   match tst with
-    | TestCase f -> 
+    | TestCase f ->
         TestCase (g f)
     | TestList tst_lst ->
         TestList (List.map (test_decorate g) tst_lst)
@@ -114,7 +114,7 @@ let test_signalfd () =
   require "signalfd";
   let pid = Unix.getpid () in
   let (_:int list) = Unix.sigprocmask Unix.SIG_BLOCK [Sys.sigusr1; Sys.sigusr2] in
-  let fd = signalfd ~sigs:[Sys.sigusr1] ~flags:[] () in 
+  let fd = signalfd ~sigs:[Sys.sigusr1] ~flags:[] () in
   Unix.kill pid Sys.sigusr1;
   let fd = signalfd ~fd ~sigs:[Sys.sigusr1; Sys.sigusr2] ~flags:[] () in
   Unix.set_nonblock fd;
@@ -125,7 +125,7 @@ let test_signalfd () =
   Unix.close fd
 
 let test_resource =
-  let all_resources = 
+  let all_resources =
   [
     RLIMIT_CORE;
     RLIMIT_CPU;

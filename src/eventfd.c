@@ -16,7 +16,7 @@ CAMLprim value caml_extunix_eventfd_read(value v_fd)
 {
   CAMLparam1(v_fd);
   eventfd_t v;
-  if (-1 == eventfd_read(Int_val(v_fd), &v)) 
+  if (-1 == eventfd_read(Int_val(v_fd), &v))
     uerror("eventfd_read",Nothing);
   CAMLreturn(caml_copy_int64(v));
 }
@@ -24,7 +24,7 @@ CAMLprim value caml_extunix_eventfd_read(value v_fd)
 CAMLprim value caml_extunix_eventfd_write(value v_fd, value v_val)
 {
   CAMLparam2(v_fd, v_val);
-  if (-1 == eventfd_write(Int_val(v_fd), Int64_val(v_val))) 
+  if (-1 == eventfd_write(Int_val(v_fd), Int64_val(v_val)))
     uerror("eventfd_write",Nothing);
   CAMLreturn(Val_unit);
 }

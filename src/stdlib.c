@@ -5,7 +5,7 @@
 
 #if defined(EXTUNIX_HAVE_SETENV)
 
-CAMLprim value caml_extunix_setenv(value v_name, value v_val, value v_overwrite) 
+CAMLprim value caml_extunix_setenv(value v_name, value v_val, value v_overwrite)
 {
   CAMLparam3(v_name, v_val, v_overwrite);
 
@@ -17,7 +17,7 @@ CAMLprim value caml_extunix_setenv(value v_name, value v_val, value v_overwrite)
   CAMLreturn(Val_unit);
 }
 
-CAMLprim value caml_extunix_unsetenv(value v_name) 
+CAMLprim value caml_extunix_unsetenv(value v_name)
 {
   CAMLparam1(v_name);
 
@@ -33,7 +33,7 @@ CAMLprim value caml_extunix_unsetenv(value v_name)
 
 #if defined(EXTUNIX_HAVE_CLEARENV)
 
-CAMLprim value caml_extunix_clearenv(value v_unit) 
+CAMLprim value caml_extunix_clearenv(value v_unit)
 {
   UNUSED(v_unit);
   if (0 != clearenv())

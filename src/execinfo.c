@@ -21,7 +21,7 @@ CAMLprim value caml_extunix_backtrace(value unit)
     Store_field(v_ret,j,caml_copy_string(strings[j]));
 
   free(strings);
-  CAMLreturn(v_ret); 
+  CAMLreturn(v_ret);
 }
 
 #endif

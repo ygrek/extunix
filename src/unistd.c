@@ -18,7 +18,7 @@
 
 /*  Copyright © 2010 Stéphane Glondu <steph@glondu.net>                   */
 
-CAMLprim value caml_extunix_ttyname(value v_fd) 
+CAMLprim value caml_extunix_ttyname(value v_fd)
 {
   CAMLparam1(v_fd);
   char *r = ttyname(Int_val(v_fd));
