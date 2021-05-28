@@ -1,12 +1,8 @@
-
 (** Truncate file
     @author Sylvain Le Gall
   *)
 
 (**/**)
-let is_win32 =
-  Sys.os_type = "Win32"
-;;
 
 external win32_ftruncate: Unix.file_descr -> int -> unit =
  "caml_ftruncate_win32"
@@ -14,7 +10,7 @@ external win32_ftruncate: Unix.file_descr -> int -> unit =
 (**/**)
 
 let ftruncate =
-  if is_win32 then
+  if Sys.win32 then
     win32_ftruncate
   else
     Unix.ftruncate
@@ -28,7 +24,7 @@ struct
   (**/**)
 
   let ftruncate =
-    if is_win32 then
+    if Sys.win32 then
       win32_ftruncate
     else
       Unix.LargeFile.ftruncate
