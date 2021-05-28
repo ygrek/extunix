@@ -97,10 +97,17 @@ let test_unistd =
 
 let test_realpath () =
   require "realpath";
-  assert_equal ~printer (Unix.getcwd ()) (realpath ".");
-  assert_equal ~printer (Unix.getcwd ()) (realpath "./././/./");
-  assert_equal ~printer "/" (realpath "///");
-  assert_equal ~printer "/" (realpath "/../../");
+  if Sys.win32 then begin
+    assert_equal ~printer (Unix.getcwd ()) (realpath {|.\|});
+    assert_equal ~printer (Unix.getcwd ()) (realpath {|.\.\.\\.\|});
+    assert_equal ~printer {|C:\|} (realpath {|C:\\\|});
+    assert_equal ~printer {|C:\|} (realpath {|C:\..\..\|})
+  end else begin
+    assert_equal ~printer (Unix.getcwd ()) (realpath ".");
+    assert_equal ~printer (Unix.getcwd ()) (realpath "./././/./");
+    assert_equal ~printer "/" (realpath "///");
+    assert_equal ~printer "/" (realpath "/../../")
+  end;
   ()
 
 let test_signalfd () =

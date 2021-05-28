@@ -316,7 +316,10 @@ let features =
       [fd_int;I "unistd.h"; S "syncfs"];
       [fd_int;DEFINE "EXTUNIX_USE_SYS_SYNCFS"; I "unistd.h"; I "sys/syscall.h"; S"syscall"; V"SYS_syncfs"];
     ];
-    "REALPATH", L[ I "limits.h"; I "stdlib.h"; S "realpath"; ];
+    "REALPATH", ANY[
+      [I "limits.h"; I "stdlib.h"; S "realpath"];
+      [D "WIN32"; DEFINE "CAML_INTERNALS"]
+    ];
     "SIGNALFD", L[ fd_int; I "sys/signalfd.h"; S "signalfd"; I "signal.h"; S "sigemptyset"; S "sigaddset"; ];
     "PTRACE", L[ I "sys/ptrace.h"; S "ptrace"; V "PTRACE_TRACEME"; V "PTRACE_ATTACH"; ];
     "RESOURCE", L[

@@ -1,6 +1,8 @@
 ## unreleased
 * Remove top-level module names, modules should be accessed via
   ExtUnix top-level module.
+* Import realpath from OCaml 4.13
+* Support realpath on Windows
 
 ## v0.3.2 - 09 May 2021
 * Emulate statvfs on Windows

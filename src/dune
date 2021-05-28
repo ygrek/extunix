@@ -50,6 +50,7 @@
    ptrace
    pts
    read_cred
+   realpath
    resource
    sendmsg
    signalfd

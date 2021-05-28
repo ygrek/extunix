@@ -237,6 +237,23 @@ external is_open_descr : Unix.file_descr -> bool = "caml_extunix_is_open_descr"
     @return the canonicalized absolute pathname of [path]
 *)
 external realpath : string -> string = "caml_extunix_realpath"
+
+let realpath p =
+  if not (Sys.win32) then realpath p else
+  let cleanup p = (* Remove any \\?\ prefix. *)
+    if String.length p <= 4 then p else
+      if p.[0] = '\\' && p.[1] = '\\' && p.[2] = '?' && p.[3] = '\\'
+      then (String.sub p 4 (String.length p - 4))
+      else p
+  in
+  try cleanup (realpath p) with
+  | (Unix.Unix_error (EACCES, _, _)) as e ->
+     (* On Windows this can happen on *files* on which you don't have
+         access. POSIX realpath(3) works in this case, we emulate this. *)
+     try
+       let dir = cleanup (realpath (Filename.dirname p)) in
+       Filename.concat dir (Filename.basename p)
+     with _ -> raise e
 ]
 
 
