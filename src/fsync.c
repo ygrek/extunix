@@ -5,7 +5,7 @@
 #define EXTUNIX_WANT_SYNCFS
 #include "config.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 
 #if defined(EXTUNIX_HAVE_FSYNC)
 CAMLprim value caml_extunix_fsync(value v)
@@ -33,7 +33,7 @@ CAMLprim value caml_extunix_fdatasync(value v)
 
 #endif /* EXTUNIX_HAVE_FSYNC */
 
-#else /* WIN32 */
+#else /* _WIN32 */
 
 #if defined(EXTUNIX_HAVE_FSYNC)
 CAMLprim value caml_extunix_fsync(value v_fd)
@@ -92,4 +92,4 @@ CAMLprim value caml_extunix_syncfs(value v_fd)
 }
 #endif
 
-#endif /* !WIN32 */
+#endif /* !_WIN32 */

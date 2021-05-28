@@ -16,7 +16,7 @@
 
 #if defined(EXTUNIX_HAVE_FALLOCATE)
 
-#if defined(WIN32)
+#if defined(_WIN32)
 
 static void caml_fallocate_error (void)
 {
@@ -140,5 +140,5 @@ CAMLprim value caml_extunix_fallocate(value vfd, value voff, value vlen)
   CAMLreturn(Val_unit);
 }
 
-#endif /* WIN32 */
+#endif /* _WIN32 */
 #endif /* EXTUNIX_HAVE_FALLOCATE */

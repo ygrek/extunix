@@ -48,7 +48,7 @@ CAMLprim value caml_extunix_gettid(value v_unit)
 {
   UNUSED(v_unit);
   size_t tid = 0;
-#if defined(WIN32)
+#if defined(_WIN32)
   tid = GetCurrentThreadId();
 #elif defined(EXTUNIX_USE_THREADID)
   pthread_threadid_np(NULL, &tid);
