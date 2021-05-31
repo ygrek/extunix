@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_TTYNAME
 #define EXTUNIX_WANT_CTERMID
 #define EXTUNIX_WANT_PGID
@@ -47,17 +46,20 @@ CAMLprim value caml_extunix_ctermid(value v_unit)
 CAMLprim value caml_extunix_gettid(value v_unit)
 {
   UNUSED(v_unit);
-  size_t tid = 0;
 #if defined(_WIN32)
+  DWORD tid = 0;
   tid = GetCurrentThreadId();
 #elif defined(EXTUNIX_USE_THREADID)
+  uint64_t tid = 0;
   pthread_threadid_np(NULL, &tid);
 #elif defined(EXTUNIX_USE_THREAD_SELFID)
+  pid_t tid = 0;
   tid = syscall(SYS_thread_selfid);
 #else
+  pid_t tid = 0;
   tid = syscall(SYS_gettid);
 #endif
-  return Val_int(tid); /* XXX truncating to int */
+  return Val_int((int)tid); /* XXX truncating to int */
 }
 
 #endif

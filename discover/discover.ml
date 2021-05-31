@@ -299,7 +299,7 @@ let features =
     "CTERMID", L[ I "stdio.h"; S "ctermid"; V "L_ctermid"; ];
     "GETTID", ANY[
       [ D "_WIN32"; S "GetCurrentThreadId" ];
-      [ DEFINE "EXTUNIX_USE_THREADID"; I "pthread.h"; S "pthread_threadid_np" ];
+      [ DEFINE "EXTUNIX_USE_THREADID"; I "pthread.h"; I "stdint.h"; S "pthread_threadid_np" ];
       [ DEFINE "EXTUNIX_USE_THREAD_SELFID"; I "sys/syscall.h"; S "syscall"; V "SYS_thread_selfid"];
       [ I "sys/syscall.h"; S "syscall"; V "SYS_gettid"; ];
     ];
