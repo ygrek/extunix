@@ -35,7 +35,7 @@ CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixle
   int suffixlen = Int_val(v_suffixlen);
   int ret;
 
-  ret = mkstemps(template, suffixlen);
+  ret = mkstemps((char *)template, suffixlen);
   if (ret == -1)
   {
     uerror("mkstemps", v_template);
@@ -62,7 +62,7 @@ CAMLprim value caml_extunix_internal_mkostemps(value v_template, value v_suffixl
   int suffixlen = Int_val(v_suffixlen);
   int ret;
 
-  ret = mkostemps(template, suffixlen, flags);
+  ret = mkostemps((char*) template, suffixlen, flags);
   if (ret == -1)
   {
     uerror("mkostemps", v_template);
