@@ -948,8 +948,9 @@ let getsockopt_int sock opt =
 *)
 type socket_int_option =
 | TCP_KEEPCNT (** The maximum number of keepalive probes TCP should send before dropping the connection *)
-| TCP_KEEPIDLE (** The  time  (in  seconds)  the connection needs to remain idle before TCP starts sending
-                   keepalive probes, if the socket option SO_KEEPALIVE has been set on this socket *)
+| TCP_KEEPIDLE (** The time (in seconds) the connection needs to remain idle before TCP starts sending
+                   keepalive probes, if the socket option [SO_KEEPALIVE] has been set on this socket.
+                   On Apple systems, [TCP_KEEPIDLE] is an alias to [TCP_KEEPALIVE]. *)
 | TCP_KEEPINTVL (** The time (in seconds) between individual keepalive probes *)
 | SO_ATTACH_BPF (** file descriptor returned by the bpf(2), with program of type [BPF_PROG_TYPE_SOCKET_FILTER] *)
 | SO_ATTACH_REUSEPORT_EBPF (** same as for SO_ATTACH_BPF *)

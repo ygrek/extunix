@@ -11,7 +11,11 @@
 #endif
 
 #ifndef TCP_KEEPIDLE
+#if defined(__APPLE__) && defined(TCP_KEEPALIVE)
+#define TCP_KEEPIDLE (TCP_KEEPALIVE)
+#else
 #define TCP_KEEPIDLE (-1)
+#endif
 #endif
 
 #ifndef TCP_KEEPINTVL

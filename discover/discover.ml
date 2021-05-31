@@ -423,6 +423,7 @@ let features =
     "TCP_KEEPIDLE", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPIDLE" ];
       [ I "winsock2.h"; I "ws2tcpip.h"; IF ("!defined(TCP_KEEPIDLE) && defined(__MINGW32__)", "TCP_KEEPIDLE", "0x03") ];
+      [ D "__APPLE__"; I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPALIVE" ];
     ];
     "TCP_KEEPCNT", ANY[
       [ I "netinet/in.h"; I "netinet/tcp.h"; V "TCP_KEEPCNT" ];
