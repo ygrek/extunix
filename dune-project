@@ -7,7 +7,7 @@
  (name extunix)
  (depends
   (ocaml (>= 4.06))
-  (dune-configurator :build)
+  (dune-configurator (and (>= 2.9) :build))
   (ppxlib (and (>= 0.18) :build))
   (ounit2 :with-test)
   base-bytes

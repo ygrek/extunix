@@ -36,7 +36,7 @@ bug-reports: "https://github.com/ygrek/extunix/issues"
 depends: [
   "dune" {>= "2.8"}
   "ocaml" {>= "4.06"}
-  "dune-configurator" {build}
+  "dune-configurator" {>= "2.9" & build}
   "ppxlib" {>= "0.18" & build}
   "ounit2" {with-test}
   "base-bytes"

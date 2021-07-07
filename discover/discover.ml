@@ -107,23 +107,11 @@ let build_code args =
 
 let discover c (name,test) =
   print_string ("checking " ^ name ^ (String.make (20 - String.length name) '.'));
-  (* Workaround for a bug in dune-configurator. To remove when a
-     release of Dune (> 2.8.2) contains
-     https://github.com/ocaml/dune/pull/4088. *)
-  let c_libraries =
-    match C.ocaml_config_var c "native_c_libraries" with
-    | Some c_libraries -> C.Flags.extract_blank_separated_words c_libraries
-    | None ->
-       match C.ocaml_config_var c "bytecomp_c_libraries" with
-       | Some c_libraries -> C.Flags.extract_blank_separated_words c_libraries
-       | None -> []
-  in
   let ccomp_type = C.ocaml_config_var_exn c "ccomp_type" in
   let rec loop args other =
     let code = build_code args in
     let ldlibs = get_ldlibs ccomp_type args in
-    let link_flags = c_libraries @ ldlibs in
-    match C.c_test c ~link_flags code, other with
+    match C.c_test c ~link_flags:ldlibs code, other with
     | false, [] ->
         if !verbose >= 2 then prerr_endline code;
         print_endline "failed"; NO name
