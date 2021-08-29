@@ -1,7 +1,6 @@
 ExtUnix OCaml library
 =====================
 
-[![Build Status](https://travis-ci.com/ygrek/extunix.svg?branch=master)](https://travis-ci.com/ygrek/extunix)
 [![Build status](https://ci.appveyor.com/api/projects/status/66fpgc2qol5fu30g?svg=true)](https://ci.appveyor.com/project/ygrek/extunix/branch/master)
 [![Build status](https://github.com/ygrek/extunix/actions/workflows/main.yml/badge.svg)](https://github.com/ygrek/extunix/actions)
 
