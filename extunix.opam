@@ -30,8 +30,7 @@ authors: [
 ]
 license: "LGPL-2.1-only with OCaml-LGPL-linking-exception"
 tags: ["org:ygrek"]
-homepage: "https://ygrek.org/p/ocaml-extunix"
-doc: "https://ygrek.org/p/ocaml-extunix"
+homepage: "https://github.com/ygrek/extunix"
 bug-reports: "https://github.com/ygrek/extunix/issues"
 depends: [
   "dune" {>= "2.8"}
