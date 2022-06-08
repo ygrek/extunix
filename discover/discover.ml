@@ -80,6 +80,7 @@ let config_includes = [
   "caml/alloc.h";
   "caml/custom.h";
   "caml/bigarray.h";
+  "caml/version.h";
   ]
 
 let build_code args =
