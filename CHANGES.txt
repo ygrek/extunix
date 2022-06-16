@@ -1,4 +1,7 @@
-## v0.4.0
+# unreleased
+* Support OCaml 5 new Unix primitive names
+
+## v0.4.0 - 04 Fev 2022
 * Remove top-level module names, modules should be accessed via
   ExtUnix top-level module.
 * Import realpath from OCaml 4.13
