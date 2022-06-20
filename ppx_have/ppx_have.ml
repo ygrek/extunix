@@ -1,5 +1,4 @@
 let all = ref false
-
 let funcs = Hashtbl.create 16
 
 let args_spec =
