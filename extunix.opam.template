@@ -1,1 +1,1 @@
-depexts: [["libexecinfo-dev"] {os = "alpine"}]
+depexts: [["libexecinfo-dev"] {os = "alpine" & "3.5" <= os-version & os-version < "3.17"}]
