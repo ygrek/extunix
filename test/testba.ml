@@ -1,4 +1,3 @@
-
 open OUnit
 open ExtUnix.All.BA
 module LargeFile = ExtUnix.All.LargeFile.BA
@@ -16,8 +15,6 @@ let require feature =
   match ExtUnix.All.have feature with
   | None -> assert false
   | Some present -> skip_if (not present) (Printf.sprintf "%S is not available" feature)
-
-let printer x = x
 
 let test_endian_bigarray () =
   require "unsafe_get_int8";
@@ -246,4 +243,3 @@ let () =
     "write_bigarray" >:: test_write_bigarray;
   ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
-

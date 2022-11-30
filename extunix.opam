@@ -33,7 +33,7 @@ tags: ["org:ygrek"]
 homepage: "https://github.com/ygrek/extunix"
 bug-reports: "https://github.com/ygrek/extunix/issues"
 depends: [
-  "dune" {>= "2.8"}
+  "dune" {>= "3.0"}
   "ocaml" {>= "4.06"}
   "dune-configurator" {>= "2.9" & build}
   "ppxlib" {>= "0.18" & build}
@@ -44,7 +44,6 @@ depends: [
   "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {dev}
   [
     "dune"
     "build"

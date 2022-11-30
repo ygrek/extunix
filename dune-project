@@ -1,7 +1,7 @@
-(lang dune 2.8)
-(use_standard_c_and_cxx_flags true)
+(lang dune 3.0)
 (name extunix)
 (generate_opam_files true)
+(subst disabled)
 
 (package
  (name extunix)
