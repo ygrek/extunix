@@ -229,6 +229,12 @@ let features =
       D "S_IFREG";
       S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat"; S "linkat"; S "symlinkat"; S "readlinkat"; S "fchownat"; S "fchmodat";
     ];
+    "RENAMEAT2", L[
+      fd_int;
+      DEFINE "_GNU_SOURCE";
+      I "fcntl.h"; I "stdio.h";
+      S "renameat2";
+    ];
     "DIRFD", L[
       fd_int;
       I "sys/types.h";

@@ -211,6 +211,12 @@ external fchownat : Unix.file_descr -> string -> int -> int -> at_flag list -> u
 external fchmodat : Unix.file_descr -> string -> int -> at_flag list -> unit = "caml_extunix_fchmodat"
 ]
 
+[%%have RENAMEAT2
+type rename_flag = RENAME_EXCHANGE | RENAME_NOREPLACE | RENAME_WHITEOUT
+
+external renameat2 : Unix.file_descr -> string -> Unix.file_descr -> string -> rename_flag list -> unit = "caml_extunix_renameat2"
+]
+
 (** @raise Not_available if OS does not represent file descriptors as numbers *)
 let int_of_file_descr : Unix.file_descr -> int =
   if Obj.is_block (Obj.repr Unix.stdin) then
