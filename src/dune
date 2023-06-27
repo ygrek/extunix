@@ -51,6 +51,7 @@
    pts
    read_cred
    realpath
+   rename
    resource
    sendmsg
    signalfd
