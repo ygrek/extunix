@@ -13,6 +13,8 @@ the corresponding man pages and/or system documentation for details.
     [ENOSYS] (Not implemented) error even though the function is available. *)
 exception Not_available of string
 
+let () = Callback.register_exception "ExtUnix.Not_available" (Not_available "")
+
 (** type of bigarray used by BA submodules that read from files into
     bigarrays or write bigarrays into files.  The only constraint here
     is [Bigarray.c_layout].
@@ -212,7 +214,7 @@ external fchmodat : Unix.file_descr -> string -> int -> at_flag list -> unit = "
 ]
 
 [%%have RENAMEAT2
-type rename_flag = RENAME_EXCHANGE | RENAME_NOREPLACE | RENAME_WHITEOUT
+type rename_flag = RENAME_EXCHANGE | RENAME_NOREPLACE | RENAME_WHITEOUT [@have RENAME_WHITEOUT]
 
 external renameat2 : Unix.file_descr -> string -> Unix.file_descr -> string -> rename_flag list -> unit = "caml_extunix_renameat2"
 ]
