@@ -576,6 +576,28 @@ let test_sysinfo () =
   let (_:int) = t.uptime in
   ()
 
+let test_splice () =
+  require "splice";
+  let pipe_out, pipe_in = Unix.pipe () in
+  let name = Filename.temp_file "extunix" "test" in
+  let fd = Unix.openfile name [Unix.O_RDWR; Unix.O_CREAT] 0o666 in
+  Unix.ftruncate fd (4096 * 2);
+  assert_equal (Unix.write_substring fd "test0123456789" 0 14) 14;
+  let n = splice fd (Some 4) pipe_in None 10 [] in
+  assert(n = 10);
+  let n = splice pipe_out None fd (Some 4096) 10 [] in
+  assert(n = 10);
+  let b = Bytes.create 13 in
+  let _ = Unix.lseek fd 4096 SEEK_SET in
+  let n = Unix.read fd b 0 13 in
+  assert(n = 13);
+  assert_equal(Bytes.to_string b) "0123456789\000\000\000";
+  Unix.close fd;
+  Unix.unlink name;
+  Unix.close pipe_out;
+  Unix.close pipe_in;
+  ()
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -610,5 +632,6 @@ let () =
     "sockopt" >:: test_sockopt;
     "sendmsg_bin" >:: test_sendmsg_bin;
     "sysinfo" >:: test_sysinfo;
+    "splice" >:: test_splice;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
