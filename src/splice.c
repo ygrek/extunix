@@ -3,6 +3,7 @@
 #define EXTUNIX_WANT_SPLICE
 #define EXTUNIX_WANT_TEE
 #include "config.h"
+#include "common.h"
 
 #if defined(EXTUNIX_HAVE_SPLICE) | defined(EXTUNIX_HAVE_TEE) | defined(EXTUNIX_HAVE_VMSPLICE)
 static int splice_flags[] =
@@ -30,8 +31,8 @@ CAMLprim value caml_extunix_splice(value v_fd_in, value v_off_in, value v_fd_out
   size_t len = Int_val(v_len);
   ssize_t ret;
 
-  if(!Is_long(v_off_in)) { /* Some */ off_in = Int_val(Field(v_off_in, 0)); off_in_p = &off_in; }
-  if(!Is_long(v_off_out)) { /* Some */ off_out = Int_val(Field(v_off_out, 0)); off_out_p = &off_out; }
+  if(Is_some(v_off_in)) { off_in = Int_val(Some_val(v_off_in)); off_in_p = &off_in; }
+  if(Is_some(v_off_out)) { off_out = Int_val(Some_val(v_off_out)); off_out_p = &off_out; }
 
   caml_enter_blocking_section();
   ret = splice(fd_in, off_in_p, fd_out, off_out_p, len, flags);
