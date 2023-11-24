@@ -28,7 +28,7 @@
 #define O_KEEPEXEC 0
 #endif
 
-static int open_flag_table[] = {
+static const int open_flag_table[] = {
   O_RDONLY, O_WRONLY, O_RDWR, O_NONBLOCK, O_APPEND, O_CREAT, O_TRUNC, O_EXCL,
   O_NOCTTY, O_DSYNC, O_SYNC, O_RSYNC, 0 /* O_SHARE_DELETE */, O_CLOEXEC, O_KEEPEXEC,
 };

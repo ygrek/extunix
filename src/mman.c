@@ -1,15 +1,14 @@
-
 #define EXTUNIX_WANT_MLOCKALL
 #include "config.h"
 
 #if defined(EXTUNIX_HAVE_MLOCKALL)
 
-static int mlockall_flags[] = { MCL_CURRENT, MCL_FUTURE };
+static const int mlockall_flags_table[] = { MCL_CURRENT, MCL_FUTURE };
 
 CAMLprim value caml_extunix_mlockall(value v_flags)
 {
   CAMLparam1(v_flags);
-  int flags = caml_convert_flag_list(v_flags, mlockall_flags);
+  int flags = caml_convert_flag_list(v_flags, mlockall_flags_table);
   int ret = 0;
 
   caml_enter_blocking_section();

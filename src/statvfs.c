@@ -3,7 +3,7 @@
 
 #if defined(EXTUNIX_HAVE_STATVFS) || defined(EXTUNIX_HAVE_FSTATVFS)
 
-static int st_flags_table[] = {
+static const int st_flags_table[] = {
 #if defined(_WIN32)
   FILE_READ_ONLY_VOLUME
 #else

@@ -4,7 +4,7 @@
 
 #if defined(EXTUNIX_HAVE_UNSHARE)
 
-static int umountflags_table[] = {
+static const int umountflags_table[] = {
   CLONE_FS,  CLONE_FILES, CLONE_NEWNS, CLONE_SYSVSEM, CLONE_NEWUTS,
   CLONE_NEWIPC, CLONE_NEWUSER, CLONE_NEWPID, CLONE_NEWNET
 };

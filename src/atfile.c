@@ -6,13 +6,17 @@
 
 /* otherlibs/unix/cst2constr.h */
 #if OCAML_VERSION_MAJOR >= 5
+# if OCAML_VERSION_MAJOR >= 2
+extern value caml_unix_cst_to_constr(int n, const int * tbl, int size, int deflt);
+# else
 extern value caml_unix_cst_to_constr(int n, int * tbl, int size, int deflt);
+# endif
 #else
 extern value cst_to_constr(int n, int * tbl, int size, int deflt);
 #define caml_unix_cst_to_constr cst_to_constr
 #endif
 
-static int file_kind_table[] = {
+static const int file_kind_table[] = {
   S_IFREG, S_IFDIR, S_IFCHR, S_IFBLK, S_IFLNK, S_IFIFO, S_IFSOCK
 };
 
@@ -32,7 +36,7 @@ static int file_kind_table[] = {
 #define AT_NO_AUTOMOUNT 0
 #endif
 
-static int at_flags_table[] = {
+static const int at_flags_table[] = {
     AT_EACCESS, AT_SYMLINK_NOFOLLOW, AT_REMOVEDIR, AT_SYMLINK_FOLLOW, AT_NO_AUTOMOUNT,
 };
 

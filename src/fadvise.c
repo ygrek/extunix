@@ -16,7 +16,7 @@
 
 #if defined(EXTUNIX_HAVE_FADVISE)
 
-static int caml_advises[] =
+static const int fadv_flags_table[] =
   {
     POSIX_FADV_NORMAL,
     POSIX_FADV_SEQUENTIAL,
@@ -39,7 +39,7 @@ CAMLprim value caml_extunix_fadvise64(value vfd, value voff, value vlen, value v
   fd  = Int_val(vfd);
   off = Int64_val(voff);
   len = Int64_val(vlen);
-  advise = caml_advises[Int_val(vadvise)];
+  advise = fadv_flags_table[Int_val(vadvise)];
 
   errcode = posix_fadvise64(fd, off, len, advise);
 
@@ -64,7 +64,7 @@ CAMLprim value caml_extunix_fadvise(value vfd, value voff, value vlen, value vad
   fd  = Int_val(vfd);
   off = Long_val(voff);
   len = Long_val(vlen);
-  advise = caml_advises[Int_val(vadvise)];
+  advise = fadv_flags_table[Int_val(vadvise)];
 
   errcode = posix_fadvise(fd, off, len, advise);
 

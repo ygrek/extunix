@@ -4,7 +4,7 @@
 
 #if defined(EXTUNIX_HAVE_MOUNT)
 
-static int mountflags_table[] = {
+static const int mountflags_table[] = {
   MS_RDONLY, MS_NOSUID, MS_NODEV, MS_NOEXEC, MS_SYNCHRONOUS, MS_REMOUNT,
   MS_MANDLOCK, MS_DIRSYNC, MS_NOATIME, MS_NODIRATIME, MS_BIND, MS_MOVE,
   MS_REC, MS_SILENT, MS_POSIXACL, MS_UNBINDABLE, MS_PRIVATE, MS_SLAVE,
@@ -38,7 +38,7 @@ CAMLprim value caml_extunix_mount(value v_source, value v_target,
   CAMLreturn(Val_unit);
 }
 
-static int umountflags_table[] = {
+static const int umountflags_table[] = {
   MNT_FORCE, MNT_DETACH, MNT_EXPIRE, UMOUNT_NOFOLLOW,
 };
 

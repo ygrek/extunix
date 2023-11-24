@@ -4,7 +4,7 @@
 
 #if defined(EXTUNIX_HAVE_SYSLOG)
 
-static int mask_table[] = {
+static const int mask_table[] = {
   LOG_MASK(LOG_EMERG), LOG_MASK(LOG_ALERT), LOG_MASK(LOG_CRIT),
   LOG_MASK(LOG_ERR), LOG_MASK(LOG_WARNING), LOG_MASK(LOG_NOTICE),
   LOG_MASK(LOG_INFO), LOG_MASK(LOG_DEBUG)
@@ -41,11 +41,11 @@ CAMLprim value caml_extunix_setlogmask(value v_level)
   CAMLreturn(cli);
 }
 
-static int option_table[] = {
+static const int option_table[] = {
   LOG_PID, LOG_CONS, LOG_NDELAY, LOG_ODELAY, LOG_NOWAIT
 };
 
-static int facility_table[] = {
+static const int facility_table[] = {
   LOG_KERN, LOG_USER, LOG_MAIL, LOG_NEWS, LOG_UUCP, LOG_DAEMON, LOG_AUTH,
   LOG_CRON, LOG_LPR, LOG_LOCAL0, LOG_LOCAL1, LOG_LOCAL2, LOG_LOCAL3,
   LOG_LOCAL4, LOG_LOCAL5, LOG_LOCAL6, LOG_LOCAL7
@@ -82,7 +82,7 @@ CAMLprim value caml_extunix_closelog(void)
   CAMLreturn(Val_unit);
 }
 
-static int level_table[] = {
+static const int level_table[] = {
   LOG_EMERG, LOG_ALERT, LOG_CRIT, LOG_ERR, LOG_WARNING, LOG_NOTICE, LOG_INFO,
   LOG_DEBUG
 };

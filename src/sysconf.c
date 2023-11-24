@@ -30,7 +30,7 @@
 #define _SC_NPROCESSORS_ONLN (-1)
 #endif
 
-static int caml_conf_table[] =
+static const int caml_conf_table[] =
   {
     _SC_ARG_MAX,
     _SC_CHILD_MAX,

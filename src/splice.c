@@ -6,7 +6,7 @@
 #include "common.h"
 
 #if defined(EXTUNIX_HAVE_SPLICE) || defined(EXTUNIX_HAVE_TEE) || defined(EXTUNIX_HAVE_VMSPLICE)
-static int splice_flags[] =
+static const int splice_flags_table[] =
   {
     SPLICE_F_MOVE,
     SPLICE_F_NONBLOCK,
@@ -21,7 +21,7 @@ CAMLprim value caml_extunix_splice(value v_fd_in, value v_off_in, value v_fd_out
   CAMLparam5(v_fd_in, v_off_in, v_fd_out, v_off_out, v_len);
   CAMLxparam1(v_flags);
 
-  unsigned int flags = caml_convert_flag_list(v_flags, splice_flags);
+  unsigned int flags = caml_convert_flag_list(v_flags, splice_flags_table);
   int fd_in = Int_val(v_fd_in);
   int fd_out = Int_val(v_fd_out);
   loff_t off_in;
@@ -59,7 +59,7 @@ CAMLprim value caml_extunix_tee(value v_fd_in, value v_fd_out, value v_len, valu
 {
   CAMLparam4(v_fd_in, v_fd_out, v_len, v_flags);
 
-  unsigned int flags = caml_convert_flag_list(v_flags, splice_flags);
+  unsigned int flags = caml_convert_flag_list(v_flags, splice_flags_table);
   int fd_in = Int_val(v_fd_in);
   int fd_out = Int_val(v_fd_out);
   size_t len = Int_val(v_len);
@@ -84,7 +84,7 @@ CAMLprim value caml_extunixba_vmsplice(value v_fd_out, value v_iov, value v_flag
 {
   CAMLparam3(v_fd_out, v_iov, v_flags);
 
-  unsigned int flags = caml_convert_flag_list(v_flags, splice_flags);
+  unsigned int flags = caml_convert_flag_list(v_flags, splice_flags_table);
   int fd_out = Int_val(v_fd_out);
   int size = Wosize_val(v_iov);
   struct iovec* iov = alloca(sizeof(struct iovec) * size);
