@@ -3,6 +3,7 @@
 #define EXTUNIX_WANT_SPLICE
 #define EXTUNIX_WANT_TEE
 #include "config.h"
+#include "common.h"
 
 #if defined(EXTUNIX_HAVE_SPLICE) | defined(EXTUNIX_HAVE_TEE) | defined(EXTUNIX_HAVE_VMSPLICE)
 static int splice_flags[] =
@@ -15,11 +16,6 @@ static int splice_flags[] =
 #endif
 
 #if defined(EXTUNIX_HAVE_SPLICE)
-static loff_t* get_offset(value v_off)
-{
-  return (Is_long(v_off) ? NULL : &(Field(v_off, 0)));
-}
-
 CAMLprim value caml_extunix_splice(value v_fd_in, value v_off_in, value v_fd_out, value v_off_out, value v_len, value v_flags)
 {
   CAMLparam5(v_fd_in, v_off_in, v_fd_out, v_off_out, v_len);
@@ -28,13 +24,18 @@ CAMLprim value caml_extunix_splice(value v_fd_in, value v_off_in, value v_fd_out
   unsigned int flags = caml_convert_flag_list(v_flags, splice_flags);
   int fd_in = Int_val(v_fd_in);
   int fd_out = Int_val(v_fd_out);
-  loff_t* off_in = get_offset(v_off_in);
-  loff_t* off_out = get_offset(v_off_out);
+  loff_t off_in;
+  loff_t off_out;
+  loff_t* off_in_p = NULL;
+  loff_t* off_out_p = NULL;
   size_t len = Int_val(v_len);
   ssize_t ret;
 
+  if(Is_some(v_off_in)) { off_in = Int_val(Some_val(v_off_in)); off_in_p = &off_in; }
+  if(Is_some(v_off_out)) { off_out = Int_val(Some_val(v_off_out)); off_out_p = &off_out; }
+
   caml_enter_blocking_section();
-  ret = splice(fd_in, off_in, fd_out, off_out, len, flags);
+  ret = splice(fd_in, off_in_p, fd_out, off_out_p, len, flags);
   caml_leave_blocking_section();
 
   if (ret == -1)

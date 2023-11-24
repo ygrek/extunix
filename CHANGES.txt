@@ -1,3 +1,6 @@
+## v0.4.2 - ???
+* fix splice
+
 ## v0.4.1 - 20 Jun 2022
 * Support OCaml 5 new Unix primitive names
 
