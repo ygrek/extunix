@@ -578,9 +578,9 @@ let test_sysinfo () =
 
 let test_splice () =
   require "splice";
-  let pipe_out, pipe_in = Unix.pipe () in
+  let pipe_out, pipe_in = Unix.pipe ~cloexec:true () in
   let name = Filename.temp_file "extunix" "test" in
-  let fd = Unix.openfile name [Unix.O_RDWR; Unix.O_CREAT] 0o666 in
+  let fd = Unix.openfile name [O_RDWR; O_CREAT; O_CLOEXEC] 0o666 in
   Unix.ftruncate fd (4096 * 2);
   assert_equal (Unix.write_substring fd "test0123456789" 0 14) 14;
   let n = splice fd (Some 4) pipe_in None 10 [] in
