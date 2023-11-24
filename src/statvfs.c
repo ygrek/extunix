@@ -18,7 +18,7 @@ static value convert_st_flags(unsigned long int f_flag)
   CAMLparam0();
   CAMLlocal2(list, tmp);
 
-  int i;
+  unsigned int i;
 
   list = Val_emptylist;
 
