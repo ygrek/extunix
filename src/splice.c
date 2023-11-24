@@ -5,7 +5,7 @@
 #include "config.h"
 #include "common.h"
 
-#if defined(EXTUNIX_HAVE_SPLICE) | defined(EXTUNIX_HAVE_TEE) | defined(EXTUNIX_HAVE_VMSPLICE)
+#if defined(EXTUNIX_HAVE_SPLICE) || defined(EXTUNIX_HAVE_TEE) || defined(EXTUNIX_HAVE_VMSPLICE)
 static int splice_flags[] =
   {
     SPLICE_F_MOVE,
