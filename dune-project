@@ -1,7 +1,6 @@
 (lang dune 3.0)
 (name extunix)
 (generate_opam_files true)
-(subst disabled)
 
 (package
  (name extunix)
@@ -44,5 +43,4 @@
  )
  (maintainers "ygrek@autistici.org" "Antonin Décimo <antonin@tarides.com>")
  (source (github ygrek/extunix))
- (bug_reports "https://github.com/ygrek/extunix/issues")
  (tags ("org:ygrek")))

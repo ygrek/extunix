@@ -1,8 +1,8 @@
 ExtUnix OCaml library
 =====================
 
-[![Build status](https://ci.appveyor.com/api/projects/status/66fpgc2qol5fu30g?svg=true)](https://ci.appveyor.com/project/ygrek/extunix/branch/master)
 [![Build status](https://github.com/ygrek/extunix/actions/workflows/main.yml/badge.svg)](https://github.com/ygrek/extunix/actions)
+[![OCaml-CI Build Status](https://img.shields.io/endpoint?url=https://ocaml.ci.dev/badge/ygrek/extunix/master&logo=ocaml)](https://ocaml.ci.dev/github/ygrek/extunix)
 
 A collection of thin bindings to various low-level system API.
 
