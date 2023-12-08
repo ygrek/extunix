@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_RENAMEAT2
 #include "config.h"
 
@@ -8,7 +7,7 @@
 #define RENAME_WHITEOUT 0
 #endif
 
-static int rename_flags_table[] = {
+static const int rename_flags_table[] = {
   RENAME_NOREPLACE, /* 0 */
   RENAME_EXCHANGE, /* 1 */
   RENAME_WHITEOUT, /* 2 */
@@ -16,7 +15,7 @@ static int rename_flags_table[] = {
 
 #define RENAME_WHITEOUT_INDEX 2
 
-void caml_check_flag_list(value list)
+static void check_flag_list(value list)
 {
   for (/*nothing*/; list != Val_emptylist; list = Field(list, 1))
   {
@@ -30,7 +29,7 @@ void caml_check_flag_list(value list)
 CAMLprim value caml_extunix_renameat2(value v_oldfd, value v_oldname, value v_newfd, value v_newname, value v_flags)
 {
   CAMLparam5(v_oldfd, v_oldname, v_newfd, v_newname, v_flags);
-  caml_check_flag_list(v_flags);
+  check_flag_list(v_flags);
   int flags = caml_convert_flag_list(v_flags, rename_flags_table);
   caml_enter_blocking_section();
   int ret = renameat2(Int_val(v_oldfd), String_val(v_oldname), Int_val(v_newfd), String_val(v_newname), flags);
