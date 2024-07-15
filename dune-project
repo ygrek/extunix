@@ -38,6 +38,7 @@
   "Roman Vorobets"
   "Stéphane Glondu"
   "Sylvain Le Gall"
+  "Teague Hansen"
   "ygrek"
   "Zhenya Lykhovyd"
  )
