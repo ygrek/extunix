@@ -33,7 +33,7 @@ CAMLprim value caml_extunix_ioctl_##cmd(value v_fd, value v_arg) \
   CAMLreturn(Val_unit); \
 }
 
-CAMLprim value caml_extunix_ioctl_TIOCGWINSZ(value v_fd) 
+CAMLprim value caml_extunix_ioctl_TIOCGWINSZ(value v_fd)
 {
     CAMLparam1(v_fd);
     CAMLlocal1(result);
@@ -45,7 +45,7 @@ CAMLprim value caml_extunix_ioctl_TIOCGWINSZ(value v_fd)
         uerror("ioctl", caml_copy_string("TIOCGWINSZ"));
     }
 
-    result = caml_alloc(4, 0);
+    result = caml_alloc_tuple(4);
     Store_field(result, 0, Val_int(ws.ws_col));
     Store_field(result, 1, Val_int(ws.ws_row));
     Store_field(result, 2, Val_int(ws.ws_xpixel));
@@ -68,4 +68,3 @@ TTY_IOCTL_INT(TIOCMBIC)
 TTY_IOCTL_INT(TIOCMBIS)
 
 #endif
-
