@@ -793,6 +793,9 @@ external tiocmbic : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBI
 (** Set the indicated modem bits. See TIOCMBIS in tty_ioctl(4). *)
 external tiocmbis : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBIS"
 
+(* Get the size of a character device. See TIOCGWINSZ in tty_ioctl(4). *)
+external tiocgwinsz : Unix.file_descr -> (int * int) = "caml_extunix_ioctl_TIOCGWINSZ"
+
 ]
 
 end (* module Ioctl *)
