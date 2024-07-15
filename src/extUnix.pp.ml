@@ -795,7 +795,7 @@ external tiocmbis : Unix.file_descr -> int -> unit = "caml_extunix_ioctl_TIOCMBI
 
 (** [tiocgwinsz fd] returns a tuple [(cols, rows, xpixel, ypixel)] representing
     the size of the character device. [cols] is the number of character columns,
-    [rows] is the number of character rows, [xpixel] is width of the device in 
+    [rows] is the number of character rows, [xpixel] is width of the device in
     pixels, and [ypixel] is the height of the device in pixels. *)
 external tiocgwinsz : Unix.file_descr -> (int * int * int * int) = "caml_extunix_ioctl_TIOCGWINSZ"
 
