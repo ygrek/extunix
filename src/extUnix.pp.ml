@@ -986,8 +986,8 @@ let have_sockopt_int x = have_sockopt_int (make_socket_int_option x)
 
 (** Obsolete, compatibility, use {!have_sockopt_int}.
    @deprecated *)
-let have_sockopt = have_sockopt_int
-  [@@deprecated "Obsolete, compatibility, use have_sockopt_int."]
+let have_sockopt [@deprecated "Obsolete, compatibility, use have_sockopt_int."]
+  = have_sockopt_int
 
 (** Set the option without value on the given socket *)
 let setsockopt_unit sock opt = setsockopt_int sock (make_socket_unit_option opt) 0
