@@ -45,9 +45,11 @@ CAMLprim value caml_extunix_ioctl_TIOCGWINSZ(value v_fd)
         uerror("ioctl", caml_copy_string("TIOCGWINSZ"));
     }
 
-    result = caml_alloc(2, 0);
+    result = caml_alloc(4, 0);
     Store_field(result, 0, Val_int(ws.ws_col));
     Store_field(result, 1, Val_int(ws.ws_row));
+    Store_field(result, 2, Val_int(ws.ws_xpixel));
+    Store_field(result, 3, Val_int(ws.ws_ypixel));
 
     CAMLreturn(result);
 }
