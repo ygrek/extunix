@@ -281,8 +281,9 @@ let features =
     "TTY_IOCTL", L[
       fd_int;
       I "termios.h"; I "sys/ioctl.h";
+      T "struct winsize";
       S "ioctl"; S "tcsetattr"; S "tcgetattr";
-      D "CRTSCTS"; D "TCSANOW"; D "TIOCMGET"; D "TIOCMSET"; D "TIOCMBIC"; D "TIOCMBIS";
+      D "CRTSCTS"; D "TCSANOW"; D "TIOCMGET"; D "TIOCMSET"; D "TIOCMBIC"; D "TIOCMBIS"; D "TIOCGWINSZ"
     ];
     "TTYNAME", L[ fd_int; I "unistd.h"; S "ttyname"; ];
     "CTERMID", L[ I "stdio.h"; S "ctermid"; V "L_ctermid"; ];
