@@ -1,5 +1,8 @@
-## v0.4.2 - ???
-* fix splice
+## v0.4.2 - 10 Aug 2024
+* Add TIOCGWINSZ ioctl
+* Release runtime mutex in all functions in atfile.c
+* Fix splice bindings
+* Minor bug fixes
 
 ## v0.4.1 - 20 Jun 2022
 * Support OCaml 5 new Unix primitive names

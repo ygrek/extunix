@@ -21,7 +21,7 @@
   "\| * Provide common consistent ocaml interface: naming convention, exceptions.
   "\| * Simple to build - no extra dependencies.
  )
- (license "LGPL-2.1-only with OCaml-LGPL-linking-exception")
+ (license "LGPL-2.1-only WITH OCaml-LGPL-linking-exception")
  (authors
   "Andre Nathan"
   "Antonin Décimo"
