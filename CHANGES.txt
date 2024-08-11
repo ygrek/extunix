@@ -1,3 +1,6 @@
+## unreleased
+* Move macros accessing values outside of blocking sections
+
 ## v0.4.2 - 10 Aug 2024
 * Add TIOCGWINSZ ioctl
 * Release runtime mutex in all functions in atfile.c
