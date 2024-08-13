@@ -1,5 +1,6 @@
 ## unreleased
 * Move macros accessing values outside of blocking sections
+* Use caml_stat_* functions instead of malloc/free for heap data
 
 ## v0.4.2 - 10 Aug 2024
 * Add TIOCGWINSZ ioctl
