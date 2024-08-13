@@ -30,9 +30,11 @@ CAMLprim value caml_extunix_renameat2(value v_oldfd, value v_oldname, value v_ne
 {
   CAMLparam5(v_oldfd, v_oldname, v_newfd, v_newname, v_flags);
   check_flag_list(v_flags);
+  int oldfd = Int_val(v_oldfd), newfd = Int_val(v_newfd);
+  const char *oldname = String_val(v_oldname), *newname = String_val(v_newname);
   int flags = caml_convert_flag_list(v_flags, rename_flags_table);
   caml_enter_blocking_section();
-  int ret = renameat2(Int_val(v_oldfd), String_val(v_oldname), Int_val(v_newfd), String_val(v_newname), flags);
+  int ret = renameat2(oldfd, oldname, newfd, newname, flags);
   caml_leave_blocking_section();
   if (ret != 0) uerror("renameat2", v_oldname);
   CAMLreturn(Val_unit);
