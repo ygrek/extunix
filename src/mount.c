@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_MOUNT
 #include "config.h"
 
@@ -18,10 +17,10 @@ CAMLprim value caml_extunix_mount(value v_source, value v_target,
 {
   CAMLparam5(v_source, v_target, v_fstype, v_mountflags, v_data);
   int ret;
-  char* p_source = strdup(String_val(v_source));
-  char* p_target = strdup(String_val(v_target));
-  char* p_fstype = strdup(String_val(v_fstype));
-  char* p_data   = strdup(String_val(v_data));
+  char* p_source = caml_stat_strdup(String_val(v_source));
+  char* p_target = caml_stat_strdup(String_val(v_target));
+  char* p_fstype = caml_stat_strdup(String_val(v_fstype));
+  char* p_data   = caml_stat_strdup(String_val(v_data));
 
   int p_mountflags = caml_convert_flag_list(v_mountflags, mountflags_table);
 
@@ -29,10 +28,10 @@ CAMLprim value caml_extunix_mount(value v_source, value v_target,
   ret = mount(p_source, p_target, p_fstype, p_mountflags, p_data);
   caml_leave_blocking_section();
 
-  free(p_source);
-  free(p_target);
-  free(p_fstype);
-  free(p_data);
+  caml_stat_free(p_source);
+  caml_stat_free(p_target);
+  caml_stat_free(p_fstype);
+  caml_stat_free(p_data);
 
   if (ret != 0) uerror("mount", v_target);
   CAMLreturn(Val_unit);
@@ -46,7 +45,7 @@ CAMLprim value caml_extunix_umount2(value v_target,value v_umountflags)
 {
   CAMLparam2(v_target, v_umountflags);
   int ret;
-  char* p_target = strdup(String_val(v_target));
+  char* p_target = caml_stat_strdup(String_val(v_target));
 
   int p_umountflags = caml_convert_flag_list(v_umountflags, umountflags_table);
 
@@ -54,7 +53,7 @@ CAMLprim value caml_extunix_umount2(value v_target,value v_umountflags)
   ret = umount2(p_target, p_umountflags);
   caml_leave_blocking_section();
 
-  free(p_target);
+  caml_stat_free(p_target);
 
   if (ret != 0) uerror("umount", v_target);
   CAMLreturn(Val_unit);
@@ -62,4 +61,3 @@ CAMLprim value caml_extunix_umount2(value v_target,value v_umountflags)
 
 
 #endif
-

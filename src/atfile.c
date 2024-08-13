@@ -72,14 +72,14 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name, value v_flags)
   int ret;
   int dirfd = Int_val(v_dirfd);
   struct stat buf;
-  char* p = strdup(String_val(v_name));
+  char* p = caml_stat_strdup(String_val(v_name));
   int flags = caml_convert_flag_list(v_flags, at_flags_table);
   flags &= (AT_SYMLINK_NOFOLLOW | AT_NO_AUTOMOUNT); /* only allowed flags here */
 
   caml_enter_blocking_section();
   ret = fstatat(dirfd, p, &buf, flags);
   caml_leave_blocking_section();
-  free(p);
+  caml_stat_free(p);
   if (ret != 0) uerror("fstatat", v_name);
   if (buf.st_size > Max_long && (buf.st_mode & S_IFMT) == S_IFREG)
     unix_error(EOVERFLOW, "fstatat", v_name);
@@ -90,7 +90,7 @@ CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_flags)
 {
   CAMLparam3(v_dirfd, v_name, v_flags);
   int dirfd = Int_val(dirfd);
-  char* p = strdup(String_val(v_name));
+  char* p = caml_stat_strdup(String_val(v_name));
   int ret = 0;
   int flags = caml_convert_flag_list(v_flags, at_flags_table);
   flags &= AT_REMOVEDIR;  /* only allowed flag here */
@@ -98,7 +98,7 @@ CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_flags)
   caml_enter_blocking_section();
   ret = unlinkat(dirfd, p, flags);
   caml_leave_blocking_section();
-  free(p);
+  caml_stat_free(p);
   if (ret != 0) uerror("unlinkat", v_name);
   CAMLreturn(Val_unit);
 }
@@ -192,12 +192,12 @@ CAMLprim value caml_extunix_openat(value v_dirfd, value path, value flags, value
   char * p;
 
   cv_flags = extunix_open_flags(flags);
-  p = strdup(String_val(path));
+  p = caml_stat_strdup(String_val(path));
   /* open on a named FIFO can block (PR#1533) */
   caml_enter_blocking_section();
   ret = openat(dirfd, p, cv_flags, perm);
   caml_leave_blocking_section();
-  free(p);
+  caml_stat_free(p);
   if (ret == -1) uerror("openat", path);
   CAMLreturn (Val_int(ret));
 }
@@ -211,17 +211,17 @@ char *readlinkat_malloc (int dirfd, const char *filename)
 
   while (1)
     {
-      tmp = (char *) realloc (buffer, size);
+      tmp = caml_stat_resize_noexc (buffer, size);
       if (tmp == NULL)
       {
-        free(buffer); /* if failed, dealloc is not performed */
+        caml_stat_free (buffer); /* if failed, dealloc is not performed */
         return NULL;
       }
       buffer = tmp;
       nchars = readlinkat (dirfd, filename, buffer, size);
       if (nchars < 0)
       {
-          free (buffer);
+          caml_stat_free (buffer);
           return NULL;
       }
       if (nchars < size)
@@ -239,15 +239,15 @@ CAMLprim value caml_extunix_readlinkat(value v_dirfd, value v_name)
   CAMLlocal1(v_link);
   int dirfd = Int_val(v_dirfd);
   char* res;
-  char* p = strdup(String_val(v_name));
+  char* p = caml_stat_strdup(String_val(v_name));
 
   caml_enter_blocking_section();
   res = readlinkat_malloc(dirfd, p);
   caml_leave_blocking_section();
-  free(p);
+  caml_stat_free(p);
   if (res == NULL) uerror("readlinkat", v_name);
   v_link = caml_copy_string(res);
-  free(res);
+  caml_stat_free(res);
   CAMLreturn(v_link);
 }
 

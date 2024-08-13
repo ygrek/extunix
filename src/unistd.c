@@ -481,13 +481,13 @@ CAMLprim value caml_extunix_chroot(value v_path)
 {
   CAMLparam1(v_path);
   int ret;
-  char* p_path = strdup(String_val(v_path));
+  char* p_path = caml_stat_strdup(String_val(v_path));
 
   caml_enter_blocking_section();
   ret = chroot(p_path);
   caml_leave_blocking_section();
 
-  free(p_path);
+  caml_stat_free(p_path);
 
   if (ret != 0) uerror("chroot", v_path);
   CAMLreturn(Val_unit);

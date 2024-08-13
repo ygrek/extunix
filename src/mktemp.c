@@ -9,18 +9,18 @@
 CAMLprim value caml_extunix_mkdtemp(value v_path)
 {
   CAMLparam1(v_path);
-  char* path = strdup(String_val(v_path));
+  char* path = caml_stat_strdup(String_val(v_path));
   char *ret;
   caml_enter_blocking_section();
   ret = mkdtemp(path);
   caml_leave_blocking_section();
   if (NULL == ret)
   {
-    free(path);
+    caml_stat_free(path);
     uerror("mkdtemp", v_path);
   }
   v_path = caml_copy_string(ret);
-  free(path);
+  caml_stat_free(path);
   CAMLreturn(v_path);
 }
 
