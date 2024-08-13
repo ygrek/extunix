@@ -92,12 +92,43 @@ let record_external have =
   in
   externals_of#structure_item
 
+let have_constr ~loc =
+  let have_constr =
+    object
+      inherit Ast_traverse.map as super
+
+      method! constructor_declaration x =
+        match super#constructor_declaration x with
+        | {
+            pcd_attributes =
+              [
+                {
+                  attr_name = { txt = "have"; _ };
+                  attr_payload = PStr (cond :: _);
+                  _;
+                };
+              ];
+            _;
+          } as x ->
+            if eval_cond ~loc cond then x
+            else
+              {
+                x with
+                pcd_name =
+                  { x.pcd_name with txt = x.pcd_name.txt ^ "__Not_available" };
+              }
+        | x -> x
+    end
+  in
+  have_constr#structure_item
+
 let have_expand ~ctxt cond items =
   let loc = Expansion_context.Extension.extension_point_loc ctxt in
   let have = eval_cond ~loc cond in
   List.iter (record_external have) items;
   match (have, !all) with
-  | true, _ -> items
+  | true, true -> items
+  | true, false -> List.map (have_constr ~loc) items
   | false, true -> List.map (invalid_external ~loc) items
   | false, false -> []
 

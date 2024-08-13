@@ -78,6 +78,7 @@ let config_includes = [
   "caml/unixsupport.h";
   "caml/signals.h";
   "caml/alloc.h";
+  "caml/callback.h";
   "caml/custom.h";
   "caml/bigarray.h";
   "caml/version.h";
@@ -228,6 +229,16 @@ let features =
       I "unistd.h"; I "stdio.h";
       D "S_IFREG";
       S "fstatat"; S "openat"; S "unlinkat"; S "renameat"; S "mkdirat"; S "linkat"; S "symlinkat"; S "readlinkat"; S "fchownat"; S "fchmodat";
+    ];
+    "RENAMEAT2", L[
+      fd_int;
+      DEFINE "_GNU_SOURCE";
+      I "fcntl.h"; I "stdio.h";
+      S "renameat2";
+    ];
+    "RENAME_WHITEOUT", L[
+      DEFINE "_GNU_SOURCE";
+      D "RENAME_WHITEOUT";
     ];
     "DIRFD", L[
       fd_int;
