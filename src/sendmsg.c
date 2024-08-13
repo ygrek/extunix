@@ -54,9 +54,7 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
   }
 
   datalen = caml_string_length(data_val);
-  buf = malloc(datalen);
-  if (NULL == buf)
-    uerror("sendmsg", Nothing);
+  buf = caml_stat_alloc(datalen);
   memcpy(buf, String_val(data_val), datalen);
 
   iov[0].iov_base = buf;
@@ -68,7 +66,7 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
   ret = sendmsg(fd, &msg, 0);
   caml_leave_blocking_section();
 
-  free(buf);
+  caml_stat_free(buf);
 
   if (ret == -1)
     uerror("sendmsg", Nothing);
