@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_SYSLOG
 #include "config.h"
 
@@ -60,11 +59,11 @@ CAMLprim value caml_extunix_openlog(value v_ident, value v_option, value v_facil
 
   if (NULL != ident)
   {
-    free(ident);
+    caml_stat_free(ident);
     ident = NULL;
   }
 
-  ident = (Val_none == v_ident) ? NULL : strdup(String_val(Some_val(v_ident)));
+  ident = (Val_none == v_ident) ? NULL : caml_stat_strdup(String_val(Some_val(v_ident)));
   option = caml_convert_flag_list(v_option, option_table);
   index_facility = Int_val(v_facility);
   assert(index_facility < (sizeof(facility_table) / sizeof(int)));
@@ -105,16 +104,15 @@ CAMLprim value caml_extunix_syslog(value v_facility, value v_level, value v_stri
   index_level = Int_val(v_level);
   assert(index_level < (sizeof(level_table) / sizeof(int)));
   level = level_table[index_level];
-  str = strdup(String_val(v_string));
+  str = caml_stat_strdup(String_val(v_string));
 
   caml_enter_blocking_section();
   syslog(level | facility, "%s", str);
   caml_leave_blocking_section();
 
-  free(str);
+  caml_stat_free(str);
 
   CAMLreturn(Val_unit);
 }
 
 #endif
-

@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_FSYNC
 #define EXTUNIX_WANT_FDATASYNC
 #define EXTUNIX_WANT_SYNC
@@ -39,9 +38,10 @@ CAMLprim value caml_extunix_fdatasync(value v)
 CAMLprim value caml_extunix_fsync(value v_fd)
 {
     CAMLparam1(v_fd);
+    int fd = Int_val(v_fd);
     int r = 0;
     caml_enter_blocking_section();
-    r = fsync(Int_val(v_fd));
+    r = fsync(fd);
     caml_leave_blocking_section();
     if (0 != r)
       uerror("fsync",Nothing);
@@ -53,9 +53,10 @@ CAMLprim value caml_extunix_fsync(value v_fd)
 CAMLprim value caml_extunix_fdatasync(value v_fd)
 {
     CAMLparam1(v_fd);
+    int fd = Int_val(v_fd);
     int r = 0;
     caml_enter_blocking_section();
-    r = fdatasync(Int_val(v_fd));
+    r = fdatasync(fd);
     caml_leave_blocking_section();
     if (0 != r)
       uerror("fdatasync",Nothing);
@@ -78,12 +79,13 @@ CAMLprim value caml_extunix_sync(value v_unit)
 CAMLprim value caml_extunix_syncfs(value v_fd)
 {
     CAMLparam1(v_fd);
+    int fd = Int_val(v_fd);
     int r = 0;
     caml_enter_blocking_section();
 #if defined(EXTUNIX_USE_SYS_SYNCFS)
-    r = syscall(SYS_syncfs, Int_val(v_fd));
+    r = syscall(SYS_syncfs, fd);
 #else
-    r = syncfs(Int_val(v_fd));
+    r = syncfs(fd);
 #endif
     caml_leave_blocking_section();
     if (0 != r)

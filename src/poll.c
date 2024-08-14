@@ -1,4 +1,3 @@
-
 #define EXTUNIX_WANT_POLL
 #include "config.h"
 
@@ -36,9 +35,7 @@ CAMLprim value caml_extunix_poll(value v_fds, value v_n, value v_ms)
   if (0 == n)
     CAMLreturn(Val_emptylist);
 
-  fd = malloc(n * sizeof(struct pollfd));
-  if (NULL == fd)
-    uerror("malloc",Nothing);
+  fd = caml_stat_alloc(n * sizeof(struct pollfd));
 
   for (i = 0; i < n; i++)
   {
@@ -53,7 +50,7 @@ CAMLprim value caml_extunix_poll(value v_fds, value v_n, value v_ms)
 
   if (result < 0)
   {
-    free(fd);
+    caml_stat_free(fd);
     uerror("poll",Nothing);
   }
 
@@ -72,7 +69,7 @@ CAMLprim value caml_extunix_poll(value v_fds, value v_n, value v_ms)
     }
   }
 
-  free(fd);
+  caml_stat_free(fd);
 
   CAMLreturn(v_l);
 }

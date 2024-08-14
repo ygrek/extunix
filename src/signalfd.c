@@ -56,14 +56,15 @@ static struct custom_operations ssi_ops = {
 #define SSI_SIZE sizeof(struct signalfd_siginfo)
 
 CAMLprim
-value caml_extunix_signalfd_read(value vfd)
+value caml_extunix_signalfd_read(value v_fd)
 {
-  CAMLparam1(vfd);
+  CAMLparam1(v_fd);
   CAMLlocal1(vret);
+  int fd = Int_val(v_fd);
   struct signalfd_siginfo ssi;
   ssize_t nread = 0;
   caml_enter_blocking_section();
-  nread = read(Int_val(vfd), &ssi, SSI_SIZE);
+  nread = read(fd, &ssi, SSI_SIZE);
   caml_leave_blocking_section();
   if (nread != SSI_SIZE)
     unix_error(EINVAL,"signalfd_read",Nothing);
@@ -107,4 +108,3 @@ SSI_GET_FIELD( stime   , caml_copy_int64 )
 SSI_GET_FIELD( addr    , caml_copy_int64 )
 
 #endif /* EXTUNIX_HAVE_SIGNALFD */
-
