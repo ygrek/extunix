@@ -232,7 +232,6 @@ let features =
     ];
     "RENAMEAT2", L[
       fd_int;
-      DEFINE "_GNU_SOURCE";
       I "fcntl.h"; I "stdio.h";
       S "renameat2";
     ];
