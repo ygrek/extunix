@@ -42,14 +42,15 @@ static value alloc_wait4_return(int pid, int status, struct rusage *rusage) {
 
 static const int wait_flag_table[] = {WNOHANG, WUNTRACED};
 
-CAMLprim value caml_extunix_wait4(value wait_flags, value pid_req) {
+CAMLprim value caml_extunix_wait4(value vwait_flags, value vpid_req) {
+  CAMLparam2(vwait_flags, vpid_req);
   int pid, wstatus, options;
-
   struct rusage rusage;
+  int pid_req = Int_val(vpid_req);
 
-  options = caml_convert_flag_list(wait_flags, wait_flag_table);
+  options = caml_convert_flag_list(vwait_flags, wait_flag_table);
   caml_enter_blocking_section();
-  pid = wait4(Int_val(pid_req), &wstatus, options, &rusage);
+  pid = wait4(pid_req, &wstatus, options, &rusage);
   caml_leave_blocking_section();
   if (pid == -1)
     unix_error(errno, "wait4", Nothing);
