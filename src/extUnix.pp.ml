@@ -3004,6 +3004,41 @@ external vmsplice : Unix.file_descr -> 'a iov array -> splice_flag list -> int =
 
 end (* module BA *)
 
+[%%have WAIT4
+
+(**
+  {2 wait4}
+
+  @author Filipe Marques <filipe.s.marques@tecnico.ulisboa.pt>
+*)
+
+(** Resource usage statistics.
+    This type represents resource utilization metrics for a process.
+    Only relevant resource usage fields are included. *)
+type rusage = {
+  ru_utime : float; (** User CPU time in seconds *)
+  ru_stime : float; (** System CPU time in seconds *)
+  ru_maxrss : int64; (** Maximum resident size in kilobytes *)
+}
+
+(** [wait4 flags pid] waits for a child process to change state.
+    It returns a tuple [(pid, status, usage)], where:
+    - [pid] is the process ID of the child.
+    - [status] is the process exit status.
+    - [usage] contains resource usage statistics of the terminated process.
+
+    @param flags A list of wait options (e.g., [Unix.WNOHANG] to return immediately if no child has exited).
+    @param pid The process ID of the child to wait for, or [-1] to wait for any child process.
+    @return A tuple [(pid, status, usage)], where:
+      - [pid] is the terminated child's process ID.
+      - [status] is the exit status of the child process.
+      - [usage] contains CPU and memory usage statistics.
+
+    @raise Unix.Unix_error if the system call fails.
+*)
+external wait4 : Unix.wait_flag list -> int -> int * Unix.process_status * rusage = "caml_extunix_wait4"
+]
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)

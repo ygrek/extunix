@@ -67,4 +67,5 @@
    uname
    unistd
    unshare
+   wait4
    eventfd)))

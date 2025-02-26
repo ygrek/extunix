@@ -441,6 +441,10 @@ let features =
     "UNSHARE", L[ I"sched.h"; S "unshare"; D "CLONE_NEWPID"; D "CLONE_NEWUSER"];
     "CHROOT", L[ I"unistd.h"; S "chroot"; ];
     "SYSLOG", L[I"syslog.h"; S "syslog"; S "openlog"; S "closelog"; S "setlogmask"; D "LOG_PID"; D "LOG_CONS"; D "LOG_NDELAY"; D "LOG_ODELAY"; D "LOG_NOWAIT"; D "LOG_EMERG"; D "LOG_ALERT"; D "LOG_CRIT"; D "LOG_ERR"; D "LOG_WARNING"; D "LOG_NOTICE"; D "LOG_INFO"; D "LOG_DEBUG"];
+    "WAIT4", L[
+      I "sys/resource.h"; I "sys/time.h"; I "sys/types.h"; I "sys/wait.h";
+      DEFINE "CAML_INTERNALS"; S "wait4"
+    ];
   ]
 
 let () =
