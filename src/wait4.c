@@ -53,7 +53,7 @@ CAMLprim value caml_extunix_wait4(value vwait_flags, value vpid_req) {
   pid = wait4(pid_req, &wstatus, options, &rusage);
   caml_leave_blocking_section();
   if (pid == -1)
-    uerror("wait4", Nothing);
+    caml_uerror("wait4", Nothing);
   CAMLreturn(alloc_wait4_return(pid, wstatus, &rusage));
 }
 #endif
