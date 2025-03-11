@@ -1,3 +1,7 @@
+## unreleased
+* #59: Update to ppxlib 0.36.0 and depend on OCaml >= 4.08.
+  (Antonin Décimo)
+
 ## v0.4.3 - 4 Dec 2024
 * Move macros accessing values outside of blocking sections
 * Use caml_stat_* functions instead of malloc/free for heap data
