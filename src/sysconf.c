@@ -69,7 +69,7 @@ CAMLprim value caml_extunix_sysconf(value name)
 
   if (-1 == r)
   {
-    uerror("sysconf", Nothing);
+    caml_uerror("sysconf", Nothing);
   }
 
   CAMLreturn(caml_copy_int64(r));

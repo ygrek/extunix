@@ -40,7 +40,7 @@ CAMLprim value caml_extunix_sysinfo(value v_unit)
 
   if (0 != sysinfo(&s))
   {
-    uerror("sysinfo",Nothing);
+    caml_uerror("sysinfo",Nothing);
   }
 
   CAMLreturn(convert(&s));
@@ -53,7 +53,7 @@ CAMLprim value caml_extunix_uptime(value v_unit)
 
   if (0 != sysinfo(&s))
   {
-    uerror("sysinfo",Nothing);
+    caml_uerror("sysinfo",Nothing);
   }
 
   return Val_int(s.uptime);

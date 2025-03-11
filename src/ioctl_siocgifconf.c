@@ -24,7 +24,7 @@ CAMLprim value caml_extunix_ioctl_siocgifconf(value v_sock)
     ifconf.ifc_len = sizeof(ifreqs);
 
     if (0 != ioctl(Int_val(v_sock), SIOCGIFCONF, (char *)&ifconf))
-      uerror("ioctl(SIOCGIFCONF)", Nothing);
+      caml_uerror("ioctl(SIOCGIFCONF)", Nothing);
 
     for (i = 0; i < ifconf.ifc_len/sizeof(struct ifreq); ++i)
     {
@@ -58,7 +58,7 @@ CAMLprim value caml_extunix_getifaddrs(value v)
     if (0 != getifaddrs(&ifaddrs))
     {
       if (ifaddrs) freeifaddrs(ifaddrs);
-      uerror("getifaddrs", Nothing);
+      caml_uerror("getifaddrs", Nothing);
     }
 
     iter = ifaddrs; /* store head for further free */
@@ -76,12 +76,12 @@ CAMLprim value caml_extunix_getifaddrs(value v)
           if (family == AF_INET)
           {
             if (NULL == inet_ntop(family, &((struct sockaddr_in *)iter->ifa_addr)->sin_addr, addr_str, INET_ADDRSTRLEN))
-              uerror("inet_ntop", Nothing);
+              caml_uerror("inet_ntop", Nothing);
           }
           else
           {
             if (NULL == inet_ntop(family, &((struct sockaddr_in6 *)iter->ifa_addr)->sin6_addr, addr_str, INET6_ADDRSTRLEN))
-              uerror("inet_ntop", Nothing);
+              caml_uerror("inet_ntop", Nothing);
           }
           Store_field(item, 1, caml_copy_string(addr_str));
           Store_field(cons, 0, item); /* head */

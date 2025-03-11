@@ -29,13 +29,13 @@ CAMLprim value caml_extunix_malloc_info(value v_unit)
   FILE* f = open_memstream(&buf,&size);
   UNUSED(v_unit);
   if (NULL == f)
-    uerror("malloc_info", Nothing);
+    caml_uerror("malloc_info", Nothing);
   r = malloc_info(0,f);
   fclose(f);
   if (0 != r)
   {
     free(buf);
-    uerror("malloc_info", Nothing);
+    caml_uerror("malloc_info", Nothing);
   }
   v_s = caml_alloc_string(size);
   memcpy(Bp_val(v_s), buf, size);

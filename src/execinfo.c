@@ -14,7 +14,7 @@ CAMLprim value caml_extunix_backtrace(value unit)
   int j;
   char **strings = backtrace_symbols(buffer, nptrs);
   if (NULL == strings)
-    uerror("backtrace", Nothing);
+    caml_uerror("backtrace", Nothing);
 
   v_ret = caml_alloc_tuple(nptrs);
   for (j = 0; j < nptrs; j++)

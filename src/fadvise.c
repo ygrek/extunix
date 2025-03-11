@@ -45,7 +45,7 @@ CAMLprim value caml_extunix_fadvise64(value vfd, value voff, value vlen, value v
 
   if (errcode != 0)
   {
-    unix_error(errcode, "fadvise64", Nothing);
+    caml_unix_error(errcode, "fadvise64", Nothing);
   };
 
   CAMLreturn(Val_unit);
@@ -70,7 +70,7 @@ CAMLprim value caml_extunix_fadvise(value vfd, value voff, value vlen, value vad
 
   if (errcode != 0)
   {
-    unix_error(errcode, "fadvise", Nothing);
+    caml_unix_error(errcode, "fadvise", Nothing);
   };
 
   CAMLreturn(Val_unit);

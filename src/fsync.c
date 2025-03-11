@@ -19,7 +19,7 @@ CAMLprim value caml_extunix_fsync(value v)
    r = FlushFileBuffers(h);
    caml_leave_blocking_section();
    if (0 == r)
-     uerror("fsync",Nothing);
+     caml_uerror("fsync",Nothing);
    CAMLreturn(Val_unit);
 }
 
@@ -44,7 +44,7 @@ CAMLprim value caml_extunix_fsync(value v_fd)
     r = fsync(fd);
     caml_leave_blocking_section();
     if (0 != r)
-      uerror("fsync",Nothing);
+      caml_uerror("fsync",Nothing);
     CAMLreturn(Val_unit);
 }
 #endif
@@ -59,7 +59,7 @@ CAMLprim value caml_extunix_fdatasync(value v_fd)
     r = fdatasync(fd);
     caml_leave_blocking_section();
     if (0 != r)
-      uerror("fdatasync",Nothing);
+      caml_uerror("fdatasync",Nothing);
     CAMLreturn(Val_unit);
 }
 #endif
@@ -89,7 +89,7 @@ CAMLprim value caml_extunix_syncfs(value v_fd)
 #endif
     caml_leave_blocking_section();
     if (0 != r)
-      uerror("syncfs",Nothing);
+      caml_uerror("syncfs",Nothing);
     CAMLreturn(Val_unit);
 }
 #endif

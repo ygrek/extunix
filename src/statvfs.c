@@ -60,7 +60,7 @@ CAMLprim value caml_extunix_statvfs(value v_path)
 
   if (!rc)
   {
-    uerror("statvfs", v_path);
+    caml_uerror("statvfs", v_path);
   }
 
   bsize = bytesPerSector * sectorsPerCluster;
@@ -117,7 +117,7 @@ CAMLprim value caml_extunix_statvfs(value v_path)
 
   if (0 != statvfs(String_val(v_path), &s))
   {
-    uerror("statvfs",v_path);
+    caml_uerror("statvfs",v_path);
   }
 
   CAMLreturn(convert(&s));
@@ -133,7 +133,7 @@ CAMLprim value caml_extunix_fstatvfs(value v_fd)
 
   if (0 != fstatvfs(Int_val(v_fd), &s))
   {
-    uerror("fstatvfs",Nothing);
+    caml_uerror("fstatvfs",Nothing);
   }
 
   CAMLreturn(convert(&s));

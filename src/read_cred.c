@@ -15,7 +15,7 @@ CAMLprim value caml_extunix_read_credentials(value fd_val)
   int fd = Int_val(fd_val);
 
   if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &crd, &crdlen) == -1)
-    uerror("read_credentials", Nothing);
+    caml_uerror("read_credentials", Nothing);
 
   res = caml_alloc_tuple(3);
   Store_field(res, 0, Val_int(crd.pid));

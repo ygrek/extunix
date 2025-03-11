@@ -20,8 +20,8 @@
 
 static void caml_fallocate_error (void)
 {
-  win32_maperr(GetLastError());
-  uerror("fallocate", Val_unit);
+  caml_win32_maperr(GetLastError());
+  caml_uerror("fallocate", Val_unit);
 }
 
 static __int64 caml_fallocate_lseek (HANDLE hFile, __int64 i64Pos, DWORD dwMoveMethod)
@@ -96,7 +96,7 @@ static void caml_fallocate_error (int errcode)
 {
   if (errcode != 0)
   {
-    unix_error(errcode, "fallocate", Nothing);
+    caml_unix_error(errcode, "fallocate", Nothing);
   };
 }
 
