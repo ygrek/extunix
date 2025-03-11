@@ -1,8 +1,16 @@
 ## unreleased
 * New bindings:
-  * wait4
+  * #58: support wait4 (Filipe Marques)
+* #60: Fix dirfd argument in unlinkat and newfd argument in renameat
+  not being correctl propagated.
+  (Antonin Décimo)
+* #59: Update to ppxlib 0.36.0 and depend on OCaml >= 4.08.
+  (Antonin Décimo)
+
+## v0.4.3 - 4 Dec 2024
 * Move macros accessing values outside of blocking sections
 * Use caml_stat_* functions instead of malloc/free for heap data
+* Support renameat2
 
 ## v0.4.2 - 10 Aug 2024
 * Add TIOCGWINSZ ioctl

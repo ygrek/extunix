@@ -5,9 +5,9 @@
 (package
  (name extunix)
  (depends
-  (ocaml (>= 4.06))
-  (dune-configurator (and (>= 2.9) :build))
-  (ppxlib (and (>= 0.18) :build))
+  (ocaml (>= 4.08))
+  (dune-configurator (and (>= 3.0) :build))
+  (ppxlib (and (>= 0.36.0) :build))
   (ounit2 :with-test)
   base-bytes
   base-bigarray

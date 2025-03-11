@@ -154,7 +154,7 @@ let show_me_the_money_expand ~ctxt doc =
       [ case ~lhs:[%pat? _] ~guard:None ~rhs:[%expr None] ]
   in
   if !all then
-    let expr = pexp_function ~loc (make_have ()) in
+    let expr = pexp_function_cases ~loc (make_have ()) in
     let pat = ppat_var ~loc (Ocaml_common.Location.mknoloc "have") in
     let vb = value_binding ~loc ~pat ~expr in
     let vb = { vb with pvb_attributes = doc :: vb.pvb_attributes } in
