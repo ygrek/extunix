@@ -89,7 +89,7 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name, value v_flags)
 CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_flags)
 {
   CAMLparam3(v_dirfd, v_name, v_flags);
-  int dirfd = Int_val(dirfd);
+  int dirfd = Int_val(v_dirfd);
   char* p = caml_stat_strdup(String_val(v_name));
   int ret = 0;
   int flags = caml_convert_flag_list(v_flags, at_flags_table);
@@ -106,7 +106,7 @@ CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_flags)
 CAMLprim value caml_extunix_renameat(value v_oldfd, value v_oldname, value v_newfd, value v_newname)
 {
   CAMLparam4(v_oldfd, v_oldname, v_newfd, v_newname);
-  int oldfd = Int_val(v_oldfd), newfd = Int_val(newfd);
+  int oldfd = Int_val(v_oldfd), newfd = Int_val(v_newfd);
   char *oldname = caml_stat_strdup(String_val(v_oldname)),
        *newname = caml_stat_strdup(String_val(v_newname));
   caml_enter_blocking_section();

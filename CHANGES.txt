@@ -1,4 +1,7 @@
 ## unreleased
+* #60: Fix dirfd argument in unlinkat and newfd argument in renameat
+  not being correctl propagated.
+  (Antonin Décimo)
 * #59: Update to ppxlib 0.36.0 and depend on OCaml >= 4.08.
   (Antonin Décimo)
 
