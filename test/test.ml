@@ -598,6 +598,17 @@ let test_splice () =
   Unix.close pipe_in;
   ()
 
+let test_wait4 () =
+  require "wait4";
+  let pid = Unix.fork () in
+  if pid = 0 then exit 42
+  else
+    let waited_pid, status, _ = wait4 [] pid in
+    assert (
+      let expect_pid = waited_pid = pid
+      and expect_exit = match status with Unix.WEXITED 42 -> true | _ -> false in
+      expect_pid && expect_exit )
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -633,5 +644,6 @@ let () =
     "sendmsg_bin" >:: test_sendmsg_bin;
     "sysinfo" >:: test_sysinfo;
     "splice" >:: test_splice;
+    "wait4" >:: test_wait4;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))
