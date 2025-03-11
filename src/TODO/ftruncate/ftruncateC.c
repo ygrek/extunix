@@ -20,8 +20,8 @@
 
 static void caml_ftruncate_win32_error (void)
 {
-  win32_maperr(GetLastError());
-  uerror("ftruncate", Val_unit);
+  caml_win32_maperr(GetLastError());
+  caml_uerror("ftruncate", Val_unit);
 };
 
 static __int64 caml_ftruncate_win32_lseek (HANDLE hFile, __int64 i64Pos, DWORD dwMoveMethod)

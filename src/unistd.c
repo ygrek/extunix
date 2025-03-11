@@ -24,7 +24,7 @@ CAMLprim value caml_extunix_ttyname(value v_fd)
   if (r) {
     CAMLreturn(caml_copy_string(r));
   } else {
-    uerror("ttyname", Nothing);
+    caml_uerror("ttyname", Nothing);
   }
 }
 
@@ -70,7 +70,7 @@ CAMLprim value caml_extunix_setpgid(value v_pid, value v_pgid)
 {
   CAMLparam2(v_pid, v_pgid);
   if (0 != setpgid(Int_val(v_pid), Int_val(v_pgid)))
-    uerror("setpgid",Nothing);
+    caml_uerror("setpgid",Nothing);
   CAMLreturn(Val_unit);
 }
 
@@ -79,7 +79,7 @@ CAMLprim value caml_extunix_getpgid(value v_pid)
   CAMLparam1(v_pid);
   int pgid = getpgid(Int_val(v_pid));
   if (pgid < 0)
-    uerror("getpgid",Nothing);
+    caml_uerror("getpgid",Nothing);
   CAMLreturn(Val_int(pgid));
 }
 
@@ -88,7 +88,7 @@ CAMLprim value caml_extunix_getsid(value v_pid)
   CAMLparam1(v_pid);
   int sid = getsid(Int_val(v_pid));
   if (sid < 0)
-    uerror("getsid",Nothing);
+    caml_uerror("getsid",Nothing);
   CAMLreturn(Val_int(sid));
 }
 
@@ -101,7 +101,7 @@ CAMLprim value caml_extunix_setreuid(value v_ruid, value v_euid)
   CAMLparam2(v_ruid,v_euid);
   int r = setreuid(Int_val(v_ruid), Int_val(v_euid));
   if (r < 0)
-    uerror("setreuid", Nothing);
+    caml_uerror("setreuid", Nothing);
   CAMLreturn(Val_unit);
 }
 
@@ -110,7 +110,7 @@ CAMLprim value caml_extunix_setregid(value v_rgid, value v_egid)
   CAMLparam2(v_rgid,v_egid);
   int r = setregid(Int_val(v_rgid), Int_val(v_egid));
   if (r < 0)
-    uerror("setregid", Nothing);
+    caml_uerror("setregid", Nothing);
   CAMLreturn(Val_unit);
 }
 
@@ -126,7 +126,7 @@ CAMLprim value caml_extunix_setresuid(value r, value e, value s)
   uid_t suid = Int_val(s);
 
   if (setresuid(ruid, euid, suid) != 0)
-    uerror("setresuid", Nothing);
+    caml_uerror("setresuid", Nothing);
   CAMLreturn(Val_unit);
 }
 
@@ -138,7 +138,7 @@ CAMLprim value caml_extunix_setresgid(value r, value e, value s)
   gid_t sgid = Int_val(s);
 
   if (setresgid(rgid, egid, sgid) == -1)
-    uerror("setresgid", Nothing);
+    caml_uerror("setresgid", Nothing);
   CAMLreturn(Val_unit);
 }
 
@@ -152,7 +152,7 @@ CAMLprim value caml_extunix_is_open_descr(value v_fd)
     if (-1 == r)
     {
         if (EBADF == errno) return Val_false;
-        uerror("fcntl", Nothing);
+        caml_uerror("fcntl", Nothing);
     };
     return Val_true;
 }
@@ -165,7 +165,7 @@ CAMLprim value caml_extunix_tcgetpgrp(value v_fd)
 {
     int pgid = tcgetpgrp(Int_val(v_fd));
     if (-1 == pgid)
-      uerror("tcgetpgrp", Nothing);
+      caml_uerror("tcgetpgrp", Nothing);
     return Val_int(pgid);
 }
 
@@ -173,7 +173,7 @@ CAMLprim value caml_extunix_tcsetpgrp(value v_fd, value v_pgid)
 {
     int r = tcsetpgrp(Int_val(v_fd), Int_val(v_pgid));
     if (-1 == r)
-      uerror("tcsetpgrp", Nothing);
+      caml_uerror("tcsetpgrp", Nothing);
     return Val_int(r);
 }
 
@@ -210,7 +210,7 @@ CAMLprim value caml_extunix_pread_common(value v_fd, off_t off, value v_buf, val
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("pread", Nothing);
+	    caml_uerror("pread", Nothing);
 	}
 	memcpy(&Byte(v_buf, ofs), iobuf, ret);
 	processed += ret;
@@ -298,7 +298,7 @@ CAMLprim value caml_extunix_pwrite_common(value v_fd, off_t off, value v_buf, va
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("pwrite", Nothing);
+	    caml_uerror("pwrite", Nothing);
 	}
 	processed += ret;
 	off += ret;
@@ -384,7 +384,7 @@ CAMLprim value caml_extunix_read_common(value v_fd, value v_buf, value v_ofs, va
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("read", Nothing);
+	    caml_uerror("read", Nothing);
 	}
 	memcpy(&Byte(v_buf, ofs), iobuf, ret);
 	processed += ret;
@@ -443,7 +443,7 @@ CAMLprim value caml_extunix_write_common(value v_fd, value v_buf, value v_ofs, v
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("write", Nothing);
+	    caml_uerror("write", Nothing);
 	}
 	processed += ret;
 	ofs += ret;
@@ -489,7 +489,7 @@ CAMLprim value caml_extunix_chroot(value v_path)
 
   caml_stat_free(p_path);
 
-  if (ret != 0) uerror("chroot", v_path);
+  if (ret != 0) caml_uerror("chroot", v_path);
   CAMLreturn(Val_unit);
 }
 

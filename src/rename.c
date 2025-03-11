@@ -39,7 +39,7 @@ CAMLprim value caml_extunix_renameat2(value v_oldfd, value v_oldname, value v_ne
   caml_leave_blocking_section();
   caml_stat_free(oldname);
   caml_stat_free(newname);
-  if (ret != 0) uerror("renameat2", v_oldname);
+  if (ret != 0) caml_uerror("renameat2", v_oldname);
   CAMLreturn(Val_unit);
 }
 #endif

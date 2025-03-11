@@ -24,7 +24,7 @@ CAMLprim value caml_extunix_uname(value u)
   }
   else
   {
-    uerror("uname",Nothing);
+    caml_uerror("uname",Nothing);
   }
 
   CAMLreturn(result);

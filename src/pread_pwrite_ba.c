@@ -32,7 +32,7 @@ CAMLprim value caml_extunixba_pread_common(value v_fd, off_t off, value v_buf, i
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("pread", Nothing);
+	    caml_uerror("pread", Nothing);
 	}
 	processed += ret;
 	buf += ret;
@@ -116,7 +116,7 @@ CAMLprim value caml_extunixba_pwrite_common(value v_fd, off_t off, value v_buf, 
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("pwrite", Nothing);
+	    caml_uerror("pwrite", Nothing);
 	}
 	processed += ret;
 	buf += ret;
@@ -200,7 +200,7 @@ CAMLprim value caml_extunixba_read_common(value v_fd, value v_buf, int mode) {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("read", Nothing);
+	    caml_uerror("read", Nothing);
 	}
 	processed += ret;
 	buf += ret;
@@ -255,7 +255,7 @@ CAMLprim value caml_extunixba_write_common(value v_fd, value v_buf, int mode) {
 		if (errno == EAGAIN || errno == EWOULDBLOCK) break;
 		if (mode & BIT_NOERROR) break;
 	    }
-	    uerror("write", Nothing);
+	    caml_uerror("write", Nothing);
 	}
 	processed += ret;
 	buf += ret;

@@ -36,7 +36,7 @@ CAMLprim value caml_extunix_strptime(value v_fmt, value v_s)
 {
   struct tm tm = { 0 };
   if (NULL == strptime(String_val(v_s),String_val(v_fmt),&tm))
-    unix_error(EINVAL, "strptime", v_s);
+    caml_unix_error(EINVAL, "strptime", v_s);
   return alloc_tm(&tm);
 }
 
@@ -75,11 +75,11 @@ CAMLprim value caml_extunix_asctime(value v_t)
   fill_tm(&tm, v_t);
 #if defined(_WIN32)
   if ((0 != (err = _wasctime_s(buf, sizeof(buf)/sizeof(buf[0]), &tm)))) {
-    win32_maperr(err);
+    caml_win32_maperr(err);
 #else
   if (NULL == asctime_r(&tm, buf)) {
 #endif
-    uerror("asctime", Nothing);
+    caml_uerror("asctime", Nothing);
   }
   CAMLreturn(caml_copy_string_of_os(buf));
 }
@@ -103,7 +103,7 @@ CAMLprim value caml_extunix_strftime(value v_fmt, value v_t)
 #else
   if (0 == strftime(buf,sizeof(buf),String_val(v_fmt),&tm))
 #endif
-    unix_error(EINVAL, "strftime", v_fmt);
+    caml_unix_error(EINVAL, "strftime", v_fmt);
 
   CAMLreturn(caml_copy_string_of_os(buf));
 }
@@ -117,11 +117,11 @@ CAMLprim value caml_extunix_tzname(value v_isdst)
   size_t tznameSize;
   _tzset();
   if (0 != _get_tzname(&tznameSize, NULL, 0, i))
-    unix_error(EINVAL, "tzname", Nothing);
+    caml_unix_error(EINVAL, "tzname", Nothing);
   tzname = caml_alloc_string(tznameSize);
   if (0 != _get_tzname(&tznameSize, (char *)String_val(tzname),
                        tznameSize, i))
-    unix_error(EINVAL, "tzname", Nothing);
+    caml_unix_error(EINVAL, "tzname", Nothing);
   CAMLreturn(tzname);
 #else
   tzset();
@@ -143,9 +143,9 @@ CAMLprim value caml_extunix_timezone(value v_unit)
   int daylight;
   _tzset();
   if (0 != _get_timezone(&timezone))
-    unix_error(EINVAL, "timezone", Nothing);
+    caml_unix_error(EINVAL, "timezone", Nothing);
   if (0 != _get_daylight(&daylight))
-    unix_error(EINVAL, "daylight", Nothing);
+    caml_unix_error(EINVAL, "daylight", Nothing);
 #else
   tzset();
 #endif

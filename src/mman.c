@@ -15,7 +15,7 @@ CAMLprim value caml_extunix_mlockall(value v_flags)
   ret = mlockall(flags);
   caml_leave_blocking_section();
 
-  if (ret != 0) uerror("mlockall", Nothing);
+  if (ret != 0) caml_uerror("mlockall", Nothing);
 
   CAMLreturn(Val_unit);
 }
@@ -29,7 +29,7 @@ CAMLprim value caml_extunix_munlockall(value v_unit)
   ret = munlockall();
   caml_leave_blocking_section();
 
-  if (ret != 0) uerror("munlockall", Nothing);
+  if (ret != 0) caml_uerror("munlockall", Nothing);
 
   CAMLreturn(Val_unit);
 }

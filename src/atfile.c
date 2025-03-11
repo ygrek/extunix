@@ -80,9 +80,9 @@ CAMLprim value caml_extunix_fstatat(value v_dirfd, value v_name, value v_flags)
   ret = fstatat(dirfd, p, &buf, flags);
   caml_leave_blocking_section();
   caml_stat_free(p);
-  if (ret != 0) uerror("fstatat", v_name);
+  if (ret != 0) caml_uerror("fstatat", v_name);
   if (buf.st_size > Max_long && (buf.st_mode & S_IFMT) == S_IFREG)
-    unix_error(EOVERFLOW, "fstatat", v_name);
+    caml_unix_error(EOVERFLOW, "fstatat", v_name);
   CAMLreturn(stat_aux(/*0,*/ &buf));
 }
 
@@ -99,7 +99,7 @@ CAMLprim value caml_extunix_unlinkat(value v_dirfd, value v_name, value v_flags)
   ret = unlinkat(dirfd, p, flags);
   caml_leave_blocking_section();
   caml_stat_free(p);
-  if (ret != 0) uerror("unlinkat", v_name);
+  if (ret != 0) caml_uerror("unlinkat", v_name);
   CAMLreturn(Val_unit);
 }
 
@@ -114,7 +114,7 @@ CAMLprim value caml_extunix_renameat(value v_oldfd, value v_oldname, value v_new
   caml_leave_blocking_section();
   caml_stat_free(newname);
   caml_stat_free(oldname);
-  if (ret != 0) uerror("renameat", v_oldname);
+  if (ret != 0) caml_uerror("renameat", v_oldname);
   CAMLreturn(Val_unit);
 }
 
@@ -127,7 +127,7 @@ CAMLprim value caml_extunix_mkdirat(value v_dirfd, value v_name, value v_mode)
   int ret = mkdirat(dirfd, name, mode);
   caml_leave_blocking_section();
   caml_stat_free(name);
-  if (ret != 0) uerror("mkdirat", v_name);
+  if (ret != 0) caml_uerror("mkdirat", v_name);
   CAMLreturn(Val_unit);
 }
 
@@ -145,7 +145,7 @@ CAMLprim value caml_extunix_linkat(value v_olddirfd, value v_oldname, value v_ne
   caml_leave_blocking_section();
   caml_stat_free(newname);
   caml_stat_free(oldname);
-  if (ret != 0) uerror("linkat", v_oldname);
+  if (ret != 0) caml_uerror("linkat", v_oldname);
   CAMLreturn(Val_unit);
 }
 
@@ -161,7 +161,7 @@ CAMLprim value caml_extunix_fchownat(value v_dirfd, value v_name, value v_owner,
   ret = fchownat(dirfd, name, owner, group, flags);
   caml_leave_blocking_section();
   caml_stat_free(name);
-  if (ret != 0) uerror("fchownat", v_name);
+  if (ret != 0) caml_uerror("fchownat", v_name);
   CAMLreturn(Val_unit);
 }
 
@@ -177,7 +177,7 @@ CAMLprim value caml_extunix_fchmodat(value v_dirfd, value v_name, value v_mode, 
   ret = fchmodat(dirfd, name, mode, flags);
   caml_leave_blocking_section();
   caml_stat_free(name);
-  if (ret != 0) uerror("fchmodat", v_name);
+  if (ret != 0) caml_uerror("fchmodat", v_name);
   CAMLreturn(Val_unit);
 }
 
@@ -192,7 +192,7 @@ CAMLprim value caml_extunix_symlinkat(value v_path, value v_newdirfd, value v_ne
   caml_leave_blocking_section();
   caml_stat_free(newname);
   caml_stat_free(path);
-  if (ret != 0) uerror("symlinkat", v_path);
+  if (ret != 0) caml_uerror("symlinkat", v_path);
   CAMLreturn(Val_unit);
 }
 
@@ -209,7 +209,7 @@ CAMLprim value caml_extunix_openat(value v_dirfd, value v_path, value flags, val
   ret = openat(dirfd, path, cv_flags, perm);
   caml_leave_blocking_section();
   caml_stat_free(path);
-  if (ret == -1) uerror("openat", v_path);
+  if (ret == -1) caml_uerror("openat", v_path);
   CAMLreturn (Val_int(ret));
 }
 
@@ -256,7 +256,7 @@ CAMLprim value caml_extunix_readlinkat(value v_dirfd, value v_name)
   res = readlinkat_malloc(dirfd, name);
   caml_leave_blocking_section();
   caml_stat_free(name);
-  if (res == NULL) uerror("readlinkat", v_name);
+  if (res == NULL) caml_uerror("readlinkat", v_name);
   v_link = caml_copy_string(res);
   caml_stat_free(res);
   CAMLreturn(v_link);

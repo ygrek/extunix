@@ -19,7 +19,7 @@ CAMLprim value caml_extunix_crtscts(value mlfd)
     t.c_cflag |= CRTSCTS;
     r = tcsetattr(fd, TCSANOW, &t);
   }
-  if (0 != r) uerror("crtscts",Nothing);
+  if (0 != r) caml_uerror("crtscts",Nothing);
   CAMLreturn(Val_unit);
 }
 
@@ -29,7 +29,7 @@ CAMLprim value caml_extunix_ioctl_##cmd(value v_fd, value v_arg) \
   CAMLparam2(v_fd, v_arg); \
   int arg = Int_val(v_arg); \
   int r = ioctl(Int_val(v_fd), cmd, &arg); \
-  if (r < 0) uerror("ioctl",caml_copy_string(#cmd)); \
+  if (r < 0) caml_uerror("ioctl",caml_copy_string(#cmd)); \
   CAMLreturn(Val_unit); \
 }
 
@@ -42,7 +42,7 @@ CAMLprim value caml_extunix_ioctl_TIOCGWINSZ(value v_fd)
 
     int r = ioctl(Int_val(v_fd), TIOCGWINSZ, &ws);
     if (r < 0) {
-        uerror("ioctl", caml_copy_string("TIOCGWINSZ"));
+        caml_uerror("ioctl", caml_copy_string("TIOCGWINSZ"));
     }
 
     result = caml_alloc_tuple(4);
@@ -59,7 +59,7 @@ CAMLprim value caml_extunix_ioctl_TIOCMGET(value v_fd)
   CAMLparam1(v_fd);
   int arg = 0;
   int r = ioctl(Int_val(v_fd), TIOCMGET, &arg);
-  if (r < 0) uerror("ioctl",caml_copy_string("TIOCMGET"));
+  if (r < 0) caml_uerror("ioctl",caml_copy_string("TIOCMGET"));
   CAMLreturn(Val_int(arg));
 }
 

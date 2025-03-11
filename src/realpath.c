@@ -28,7 +28,7 @@ CAMLprim value caml_extunix_realpath (value p)
 
   // caml_unix_check_path (p, "realpath");
   r = realpath (String_val (p), NULL);
-  if (r == NULL) { uerror ("realpath", p); }
+  if (r == NULL) { caml_uerror ("realpath", p); }
   rp = caml_copy_string (r);
   free (r);
   CAMLreturn (rp);
@@ -56,16 +56,16 @@ CAMLprim value caml_extunix_realpath (value p)
 
   if (h == INVALID_HANDLE_VALUE)
   {
-    win32_maperr (GetLastError ());
-    uerror ("realpath", p);
+    caml_win32_maperr (GetLastError ());
+    caml_uerror ("realpath", p);
   }
 
   wr_len = GetFinalPathNameByHandle (h, NULL, 0, VOLUME_NAME_DOS);
   if (wr_len == 0)
   {
-    win32_maperr (GetLastError ());
+    caml_win32_maperr (GetLastError ());
     CloseHandle (h);
-    uerror ("realpath", p);
+    caml_uerror ("realpath", p);
   }
 
   wr = caml_stat_alloc ((wr_len + 1) * sizeof (wchar_t));
@@ -73,10 +73,10 @@ CAMLprim value caml_extunix_realpath (value p)
 
   if (wr_len == 0)
   {
-    win32_maperr (GetLastError ());
+    caml_win32_maperr (GetLastError ());
     CloseHandle (h);
     caml_stat_free (wr);
-    uerror ("realpath", p);
+    caml_uerror ("realpath", p);
   }
 
   rp = caml_copy_string_of_utf16 (wr);

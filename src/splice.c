@@ -39,7 +39,7 @@ CAMLprim value caml_extunix_splice(value v_fd_in, value v_off_in, value v_fd_out
   caml_leave_blocking_section();
 
   if (ret == -1)
-    uerror("splice", Nothing);
+    caml_uerror("splice", Nothing);
 
   CAMLreturn(Val_long(ret));
 }
@@ -70,7 +70,7 @@ CAMLprim value caml_extunix_tee(value v_fd_in, value v_fd_out, value v_len, valu
   caml_leave_blocking_section();
 
   if (ret == -1)
-    uerror("tee", Nothing);
+    caml_uerror("tee", Nothing);
 
   CAMLreturn(Val_long(ret));
 }
@@ -114,7 +114,7 @@ CAMLprim value caml_extunixba_vmsplice(value v_fd_out, value v_iov, value v_flag
   caml_leave_blocking_section();
 
   if (ret == -1)
-    uerror("vmsplice", Nothing);
+    caml_uerror("vmsplice", Nothing);
 
   CAMLreturn(Val_long(ret));
 }

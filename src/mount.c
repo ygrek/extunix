@@ -33,7 +33,7 @@ CAMLprim value caml_extunix_mount(value v_source, value v_target,
   caml_stat_free(p_fstype);
   caml_stat_free(p_data);
 
-  if (ret != 0) uerror("mount", v_target);
+  if (ret != 0) caml_uerror("mount", v_target);
   CAMLreturn(Val_unit);
 }
 
@@ -55,7 +55,7 @@ CAMLprim value caml_extunix_umount2(value v_target,value v_umountflags)
 
   caml_stat_free(p_target);
 
-  if (ret != 0) uerror("umount", v_target);
+  if (ret != 0) caml_uerror("umount", v_target);
   CAMLreturn(Val_unit);
 }
 

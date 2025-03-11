@@ -35,7 +35,7 @@ CAMLprim value caml_extunix_fexecve(value fd_val, value argv_val, value envp_val
 
   caml_stat_free(argv);
   caml_stat_free(envp);
-  uerror("fexecve", Nothing);
+  caml_uerror("fexecve", Nothing);
 
   CAMLreturn (Val_unit); /* not reached */
 }

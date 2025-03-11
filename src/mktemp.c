@@ -17,7 +17,7 @@ CAMLprim value caml_extunix_mkdtemp(value v_path)
   if (NULL == ret)
   {
     caml_stat_free(path);
-    uerror("mkdtemp", v_path);
+    caml_uerror("mkdtemp", v_path);
   }
   v_path = caml_copy_string(ret);
   caml_stat_free(path);
@@ -38,7 +38,7 @@ CAMLprim value caml_extunix_internal_mkstemps(value v_template, value v_suffixle
   ret = mkstemps((char *)template, suffixlen);
   if (ret == -1)
   {
-    uerror("mkstemps", v_template);
+    caml_uerror("mkstemps", v_template);
   }
   CAMLreturn(Val_int(ret));
 }
@@ -65,7 +65,7 @@ CAMLprim value caml_extunix_internal_mkostemps(value v_template, value v_suffixl
   ret = mkostemps((char*) template, suffixlen, flags);
   if (ret == -1)
   {
-    uerror("mkostemps", v_template);
+    caml_uerror("mkostemps", v_template);
   }
   CAMLreturn(Val_int(ret));
 }
