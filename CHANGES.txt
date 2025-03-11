@@ -1,4 +1,4 @@
-## unreleased
+## v0.4.4 - 11 Mar 2025
 * New bindings:
   * #58: support wait4 (Filipe Marques)
 * #60: Fix dirfd argument in unlinkat and newfd argument in renameat

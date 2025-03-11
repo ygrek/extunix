@@ -10,7 +10,7 @@ doc:
 test:
 	dune runtest
 
-VERSION=0.4.2
+VERSION=0.4.4
 NAME=ocaml-extunix-$(VERSION)
 
 release:
