@@ -104,7 +104,7 @@ let build_code args =
     | V s -> pr "int var_%d = (0 == %s);" (fresh ()) s
     | F (s,f) -> pr "size_t var_%d = (size_t)&((struct %s*)0)->%s;" (fresh ()) s f
     end args;
-  pr "int main() { return 0; }";
+  pr "int main(void) { return 0; }";
   Buffer.contents b
 
 let discover c (name,test) =
