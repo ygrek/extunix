@@ -69,7 +69,7 @@ CAMLprim value caml_extunix_sendmsg(value fd_val, value sendfd_val, value data_v
   caml_stat_free(buf);
 
   if (ret == -1)
-    uerror("sendmsg", Nothing);
+    caml_uerror("sendmsg", Nothing);
   CAMLreturn (Val_unit);
 }
 
@@ -109,7 +109,7 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   caml_leave_blocking_section();
 
   if (len == -1)
-    uerror("recvmsg", Nothing);
+    caml_uerror("recvmsg", Nothing);
 
   res = caml_alloc(2, 0);
 
@@ -120,9 +120,9 @@ CAMLprim value caml_extunix_recvmsg(value fd_val)
   } else {
     CAMLlocal1(some_fd);
     if (cmsgp->cmsg_len != CMSG_LEN(sizeof recvfd))
-      unix_error(EINVAL, "recvmsg", caml_copy_string("wrong descriptor size"));
+      caml_unix_error(EINVAL, "recvmsg", caml_copy_string("wrong descriptor size"));
     if (cmsgp->cmsg_level != SOL_SOCKET || cmsgp->cmsg_type != SCM_RIGHTS)
-      unix_error(EINVAL, "recvmsg", caml_copy_string("invalid protocol"));
+      caml_unix_error(EINVAL, "recvmsg", caml_copy_string("invalid protocol"));
     some_fd = caml_alloc(1, 0);
     Store_field(some_fd, 0, Val_int(*(int *)CMSG_DATA(cmsgp)));
     Store_field(res, 0, some_fd);

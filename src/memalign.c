@@ -33,7 +33,7 @@ CAMLprim value caml_extunix_memalign(value valignment, value vsize)
 
   if (errcode != 0)
   {
-    unix_error(errcode, "memalign", Nothing);
+    caml_unix_error(errcode, "memalign", Nothing);
   };
 
   CAMLreturn(caml_ba_alloc_dims(CAML_BA_UINT8 | CAML_BA_C_LAYOUT | CAML_BA_MANAGED, 1, memptr, size));

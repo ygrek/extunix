@@ -1,8 +1,7 @@
-ExtUnix OCaml library
-=====================
+# ExtUnix OCaml library
 
-[![Build status](https://github.com/ygrek/extunix/actions/workflows/main.yml/badge.svg)](https://github.com/ygrek/extunix/actions)
-[![OCaml-CI Build Status](https://img.shields.io/endpoint?url=https://ocaml.ci.dev/badge/ygrek/extunix/master&logo=ocaml)](https://ocaml.ci.dev/github/ygrek/extunix)
+[![Build Status](https://github.com/ygrek/extunix/actions/workflows/main.yml/badge.svg?branch=master)](https://github.com/ygrek/extunix/actions/workflows/main.yml?branch=master)
+[![OCaml-CI Build Status](https://img.shields.io/endpoint?url=https%3A%2F%2Focaml.ci.dev%2Fbadge%2Fygrek%2Fextunix%2Fmaster&logo=ocaml)](https://ocaml.ci.dev/github/ygrek/extunix)
 
 A collection of thin bindings to various low-level system API.
 
@@ -14,8 +13,7 @@ Our motto: "Be to Unix, what extlib is to stdlib"
 
 Homepage: <https://ygrek.org/p/ocaml-extunix/>
 
-Why?
-----
+## Why?
 
 Most of the system API don't deserve fully fledged library.
 
@@ -23,8 +21,7 @@ The ExtUnix project aims to collect these in one place. Read the
 "[ExtUnix integration requirements](#extunix-integration-requirements)"
 to know what kind of system API we can integrate.
 
-Installation
-------------
+## Installation
 
 Dependencies :
 
@@ -33,29 +30,35 @@ Dependencies :
 
 Build and install:
 
-    make
-    make install
+``` shell
+make
+make install
+```
 
 Alternatively use the underlying Dune build system directly (plain ocaml,
 no sh and make needed):
 
-    dune build @install
-
+``` shell
+dune build @install
+```
 Usage example:
 
-    $ ocaml
-    # #use "topfind";;
-    # #require "extunix";;
-    # module U = ExtUnix.Specific;;
-    # U.ttyname Unix.stdout;;
-    - : string = "/dev/pts/8"
+``` console
+$ ocaml
+# #use "topfind";;
+# #require "extunix";;
+# module U = ExtUnix.Specific;;
+# U.ttyname Unix.stdout;;
+- : string = "/dev/pts/8"
+```
 
 Run unit tests:
 
-    make test
+``` sh
+make test
+```
 
-Guidelines
-----------
+## Guidelines
 
 For OCaml programming style, we follow Unix module:
 
@@ -94,8 +97,7 @@ Build infrastructure:
 [`ppx_have`]: ppx_have/ppx_have.ml
 [`src/extUnix.pp.ml`]: src/extUnix.pp.ml
 
-ExtUnix integration requirements
---------------------------------
+## ExtUnix integration requirements
 
 We can integrate into ExtUnix:
 
@@ -115,8 +117,7 @@ Regarding Win32 portability:
 If there is a sane default to create a portable equivalent of the function on
 Windows, we can consider it. And we will mark it as such in the documentation.
 
-Checklist for adding new bindings
----------------------------------
+## Checklist for adding new bindings
 
 * Add the C code to [`src`][] (follow the code style of existing bindings)
 * Add the required checks to [`discover/discover.ml`][]
@@ -132,18 +133,16 @@ Checklist for adding new bindings
 [`test/test.ml`]: test/test.ml
 [`CHANGES.txt`]: CHANGES.txt
 
-Checklist for release
----------------------
+## Checklist for release
 
 * Review `git log` and update [`CHANGES.txt`][]
 * Increase VERSION in Makefile
 * Commit
 * `make release`
 
-Development
------------
+## Development
 
-Many people contribute to extunix. Please submit your patches and/or feature requests
-to the project bugtracker at <https://github.com/ygrek/extunix/issues>.
+Many people contribute to extunix. Please submit your patches and/or feature
+requests to the project bugtracker at <https://github.com/ygrek/extunix/issues>.
 
 The current maintainer is reachable at <mailto:ygrek@autistici.org>.

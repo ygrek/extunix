@@ -20,7 +20,7 @@ CAMLprim value caml_extunix_unshare(value v_cloneflags)
   ret = unshare(p_cloneflags);
   caml_leave_blocking_section();
 
-  if (ret != 0) uerror("unshare", Nothing);
+  if (ret != 0) caml_uerror("unshare", Nothing);
   CAMLreturn(Val_unit);
 }
 

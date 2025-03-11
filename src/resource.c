@@ -70,7 +70,7 @@ CAMLprim value caml_extunix_getpriority(value vwprio)
   res = getpriority(which, who);
   if (res == -1 && errno != 0)
   {
-    uerror("getpriority", Nothing);
+    caml_uerror("getpriority", Nothing);
   }
 
   CAMLreturn(Val_int(res));
@@ -86,7 +86,7 @@ CAMLprim value caml_extunix_setpriority(value vwprio, value vprio)
 
   if (setpriority(which, who, Int_val(vprio)) != 0)
   {
-    uerror("setpriority", Nothing);
+    caml_uerror("setpriority", Nothing);
   }
 
   CAMLreturn(Val_unit);
@@ -152,7 +152,7 @@ CAMLprim value caml_extunix_getrlimit(value vrsrc)
 
   if (getrlimit(decode_resource(vrsrc), &rlmt) != 0)
   {
-    uerror("getrlimit", Nothing);
+    caml_uerror("getrlimit", Nothing);
   }
 
   vres = caml_alloc(2, 0);
@@ -175,7 +175,7 @@ CAMLprim value caml_extunix_setrlimit(value vrsrc, value vslimit, value vhlimit)
 
   if (setrlimit(decode_resource(vrsrc), &rlmt) != 0)
   {
-    uerror("setrlimit", Nothing);
+    caml_uerror("setrlimit", Nothing);
   }
 
   CAMLreturn(Val_unit);

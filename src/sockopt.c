@@ -107,7 +107,7 @@ CAMLprim value caml_extunix_setsockopt_int(value fd, value k, value v)
       caml_raise_not_found();
       assert(0);
     }
-    uerror("setsockopt_int", Nothing);
+    caml_uerror("setsockopt_int", Nothing);
   }
 
   return Val_unit;
@@ -147,7 +147,7 @@ CAMLprim value caml_extunix_getsockopt_int(value fd, value k)
       caml_raise_not_found();
       assert(0);
     }
-    uerror("getsockopt_int", Nothing);
+    caml_uerror("getsockopt_int", Nothing);
   }
 
   return Val_int(optval);

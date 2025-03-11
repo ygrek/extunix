@@ -146,6 +146,12 @@ let show_c file result =
   end result;
   pr "";
   List.iter (print_include b) config_includes;
+  pr {|#if OCAML_VERSION < 50100
+#define caml_uerror uerror
+#define caml_unix_error unix_error
+#define win32_maperr caml_win32_maperr
+#endif
+|};
   pr "#include \"common.h\"";
   List.iter begin function
     | NO name ->

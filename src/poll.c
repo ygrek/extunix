@@ -51,7 +51,7 @@ CAMLprim value caml_extunix_poll(value v_fds, value v_n, value v_ms)
   if (result < 0)
   {
     caml_stat_free(fd);
-    uerror("poll",Nothing);
+    caml_uerror("poll",Nothing);
   }
 
   v_l = Val_emptylist;

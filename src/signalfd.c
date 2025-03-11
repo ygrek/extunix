@@ -25,7 +25,7 @@ value caml_extunix_signalfd(value vfd, value vsigs, value vflags, value v_unit)
   sigemptyset (&ss);
   while (!Is_long (vsigs)) {
     int sig = caml_convert_signal_number (Int_val (Field (vsigs, 0)));
-    if (sigaddset (&ss, sig) < 0) uerror ("sigaddset", Nothing);
+    if (sigaddset (&ss, sig) < 0) caml_uerror ("sigaddset", Nothing);
     vsigs = Field (vsigs, 1);
   }
   while (!Is_long (vflags)) {
@@ -35,7 +35,7 @@ value caml_extunix_signalfd(value vfd, value vsigs, value vflags, value v_unit)
     vflags = Field (vflags, 1);
   }
   ret = signalfd (fd, &ss, flags);
-  if (ret < 0) uerror ("signalfd", Nothing);
+  if (ret < 0) caml_uerror ("signalfd", Nothing);
   CAMLreturn (Val_int (ret));
 }
 
@@ -67,7 +67,7 @@ value caml_extunix_signalfd_read(value v_fd)
   nread = read(fd, &ssi, SSI_SIZE);
   caml_leave_blocking_section();
   if (nread != SSI_SIZE)
-    unix_error(EINVAL,"signalfd_read",Nothing);
+    caml_unix_error(EINVAL,"signalfd_read",Nothing);
   vret = caml_alloc_custom(&ssi_ops, SSI_SIZE, 0, 1);
   memcpy(Data_custom_val(vret),&ssi,SSI_SIZE);
   CAMLreturn(vret);
