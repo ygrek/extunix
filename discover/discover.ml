@@ -185,7 +185,16 @@ let show_ml file result =
   | NO name -> pr "| `%s -> false" name) result;
   close_out ch
 
-let show_ldlibs_sexp file result =
+let show_c_flags_sexp file c =
+  let cflags =
+    match C.ocaml_config_var c "ccomp_type" with
+    | Some "cc" -> ["-Wall"; "-Wextra"]
+    | Some "msvc" -> ["-W2"]
+    | _ -> []
+  in
+  C.Flags.write_sexp file cflags
+
+let show_link_flags_sexp file result =
   let ch = open_out file in
   let pr fmt = ksprintf (fun s -> output_string ch s) fmt in
   pr "(";
@@ -201,7 +210,8 @@ let main c config =
   let result = List.map (discover c) config in
   show_c "config.h" result;
   show_ml "config.ml" result;
-  show_ldlibs_sexp "ldlibs.sexp" result
+  show_c_flags_sexp "c_flags.sexp" c;
+  show_link_flags_sexp "link_flags.sexp" result
 
 let features =
   let fd_int = ND "Handle_val" in (* marker for bindings code assuming fd is represented as int *)
