@@ -461,6 +461,32 @@ let features =
       I "sys/resource.h"; I "sys/time.h"; I "sys/types.h"; I "sys/wait.h";
       DEFINE "CAML_INTERNALS"; S "wait4"
     ];
+    "NO_NEW_PRIVS", L[
+      I "sys/prctl.h";
+      S "prctl";
+      D "PR_SET_NO_NEW_PRIVS";
+    ];
+    "LANDLOCK", L[
+      fd_int;
+      I "linux/landlock.h";
+      I "sys/syscall.h";
+      I "unistd.h";
+      S "syscall";
+      V "__NR_landlock_create_ruleset";
+      V "__NR_landlock_add_rule";
+      V "__NR_landlock_restrict_self";
+      V "LANDLOCK_CREATE_RULESET_VERSION";
+      T "struct landlock_ruleset_attr";
+      T "struct landlock_path_beneath_attr";
+      D "LANDLOCK_ACCESS_FS_EXECUTE";
+      Z "LANDLOCK_ACCESS_FS_REFER";
+      Z "LANDLOCK_ACCESS_FS_TRUNCATE";
+      Z "LANDLOCK_ACCESS_FS_IOCTL_DEV";
+      Z "LANDLOCK_ACCESS_NET_BIND_TCP";
+      Z "LANDLOCK_ACCESS_NET_CONNECT_TCP";
+      Z "LANDLOCK_SCOPE_ABSTRACT_UNIX_SOCKET";
+      Z "LANDLOCK_SCOPE_SIGNAL";
+    ];
   ]
 
 let () =

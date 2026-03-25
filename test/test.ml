@@ -609,6 +609,30 @@ let test_wait4 () =
       and expect_exit = match status with Unix.WEXITED 42 -> true | _ -> false in
       expect_pid && expect_exit )
 
+let test_landlock () =
+  require "abi_version";
+  require "set_no_new_privs";
+  let abi = Landlock.abi_version () in
+  skip_if (abi = 0) "Landlock not supported on this kernel";
+  let pid = Unix.fork () in
+  if pid = 0 then begin
+    let open Landlock in
+    let ruleset = create_ruleset
+      ~access_fs:[ACCESS_FS_READ_FILE; ACCESS_FS_READ_DIR] () in
+    let parent_fd = Unix.openfile "/tmp" [Unix.O_RDONLY] 0 in
+    add_rule_path_beneath ruleset
+      ~allowed_access:[ACCESS_FS_READ_FILE; ACCESS_FS_READ_DIR] ~parent_fd;
+    Unix.close parent_fd;
+    set_no_new_privs ();
+    restrict_self ruleset;
+    Unix.close ruleset;
+    (try ignore (Unix.openfile "/etc/passwd" [Unix.O_RDONLY] 0); exit 1
+     with Unix.Unix_error (Unix.EACCES, _, _) -> exit 0 | _ -> exit 2)
+  end else
+    let _, status = Unix.waitpid [] pid in
+    assert_equal ~printer:string_of_int 0
+      (match status with Unix.WEXITED n -> n | _ -> 99)
+
 let () =
   let wrap test =
     with_unix_error (fun () -> test (); Gc.compact ())
@@ -645,5 +669,6 @@ let () =
     "sysinfo" >:: test_sysinfo;
     "splice" >:: test_splice;
     "wait4" >:: test_wait4;
+    "landlock" >:: test_landlock;
 ]) in
   ignore (run_test_tt_main (test_decorate wrap tests))

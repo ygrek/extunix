@@ -1,3 +1,8 @@
+## unreleased
+* New bindings:
+  * landlock: `landlock_create_ruleset`, `landlock_add_rule`, `landlock_restrict_self`
+  * set_no_new_privs (prctl PR_SET_NO_NEW_PRIVS)
+
 ## v0.4.4 - 11 Mar 2025
 * New bindings:
   * #58: support wait4 (Filipe Marques)

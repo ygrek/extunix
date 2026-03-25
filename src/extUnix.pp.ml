@@ -3039,6 +3039,152 @@ type rusage = {
 external wait4 : Unix.wait_flag list -> int -> int * Unix.process_status * rusage = "caml_extunix_wait4"
 ]
 
+[%%have NO_NEW_PRIVS
+
+(** {2 prctl} *)
+
+(** [set_no_new_privs ()] sets the calling thread's no_new_privs attribute.
+    With this attribute set, {i execve}(2) will not grant privileges that the
+    thread does not already have. Required before calling
+    {!Landlock.restrict_self}. *)
+external set_no_new_privs : unit -> unit = "caml_extunix_set_no_new_privs"
+
+]
+
+[%%have LANDLOCK
+
+(** {2 Landlock} *)
+
+(** Linux Landlock sandboxing.
+
+    Landlock is an access-control system that enables processes to
+    restrict themselves (and their future children) to a limited set
+    of filesystem and network operations. See {i landlock}(7). *)
+module Landlock : sig
+
+  (** Filesystem access rights. *)
+  type access_fs =
+    | ACCESS_FS_EXECUTE
+    | ACCESS_FS_WRITE_FILE
+    | ACCESS_FS_READ_FILE
+    | ACCESS_FS_READ_DIR
+    | ACCESS_FS_REMOVE_DIR
+    | ACCESS_FS_REMOVE_FILE
+    | ACCESS_FS_MAKE_CHAR
+    | ACCESS_FS_MAKE_DIR
+    | ACCESS_FS_MAKE_REG
+    | ACCESS_FS_MAKE_SOCK
+    | ACCESS_FS_MAKE_FIFO
+    | ACCESS_FS_MAKE_BLOCK
+    | ACCESS_FS_MAKE_SYM
+    | ACCESS_FS_REFER
+    | ACCESS_FS_TRUNCATE
+    | ACCESS_FS_IOCTL_DEV
+
+  (** Network access rights (ABI v4+). *)
+  type access_net =
+    | ACCESS_NET_BIND_TCP
+    | ACCESS_NET_CONNECT_TCP
+
+  (** Scope flags for IPC isolation (ABI v6+). *)
+  type scope =
+    | SCOPE_ABSTRACT_UNIX_SOCKET
+    | SCOPE_SIGNAL
+
+  (** [abi_version ()] returns the highest Landlock ABI version
+      supported by the running kernel, or [0] if not supported. *)
+  val abi_version : unit -> int
+
+  (** [create_ruleset ~access_fs ~access_net ~scoped ()] creates a new
+      Landlock ruleset and returns its file descriptor. The parameters
+      specify which access rights are handled (i.e., denied by default
+      when the ruleset is enforced). Close it with {!Unix.close} when done. *)
+  val create_ruleset :
+    ?access_fs:access_fs list ->
+    ?access_net:access_net list ->
+    ?scoped:scope list ->
+    unit -> Unix.file_descr
+
+  (** [add_rule_path_beneath ruleset_fd ~allowed_access ~parent_fd]
+      adds a filesystem rule to the ruleset. [parent_fd] should be a
+      file descriptor referring to a file hierarchy (e.g. opened with
+      [O_PATH]). [allowed_access] specifies which rights are allowed
+      beneath this path. *)
+  val add_rule_path_beneath :
+    Unix.file_descr -> allowed_access:access_fs list ->
+    parent_fd:Unix.file_descr -> unit
+
+  (** [add_rule_net_port ruleset_fd ~allowed_access ~port]
+      adds a network port rule to the ruleset (ABI v4+).
+      [port] is the TCP port number. *)
+  val add_rule_net_port :
+    Unix.file_descr -> allowed_access:access_net list ->
+    port:int -> unit
+
+  (** [restrict_self ruleset_fd] enforces the ruleset on the calling
+      thread. This is irreversible. Requires {!set_no_new_privs} to
+      have been called first (or [CAP_SYS_ADMIN]). *)
+  val restrict_self : Unix.file_descr -> unit
+
+end = struct
+
+  type access_fs =
+    | ACCESS_FS_EXECUTE
+    | ACCESS_FS_WRITE_FILE
+    | ACCESS_FS_READ_FILE
+    | ACCESS_FS_READ_DIR
+    | ACCESS_FS_REMOVE_DIR
+    | ACCESS_FS_REMOVE_FILE
+    | ACCESS_FS_MAKE_CHAR
+    | ACCESS_FS_MAKE_DIR
+    | ACCESS_FS_MAKE_REG
+    | ACCESS_FS_MAKE_SOCK
+    | ACCESS_FS_MAKE_FIFO
+    | ACCESS_FS_MAKE_BLOCK
+    | ACCESS_FS_MAKE_SYM
+    | ACCESS_FS_REFER
+    | ACCESS_FS_TRUNCATE
+    | ACCESS_FS_IOCTL_DEV
+
+  type access_net =
+    | ACCESS_NET_BIND_TCP
+    | ACCESS_NET_CONNECT_TCP
+
+  type scope =
+    | SCOPE_ABSTRACT_UNIX_SOCKET
+    | SCOPE_SIGNAL
+
+  external abi_version : unit -> int
+    = "caml_extunix_landlock_abi_version"
+
+  external create_ruleset_raw : access_fs list -> access_net list ->
+    scope list -> Unix.file_descr
+    = "caml_extunix_landlock_create_ruleset"
+
+  let create_ruleset ?(access_fs=[]) ?(access_net=[]) ?(scoped=[]) () =
+    create_ruleset_raw access_fs access_net scoped
+
+  external add_rule_path_beneath_raw : Unix.file_descr ->
+    access_fs list -> Unix.file_descr -> unit
+    = "caml_extunix_landlock_add_rule_path_beneath"
+
+  let add_rule_path_beneath fd ~allowed_access ~parent_fd =
+    add_rule_path_beneath_raw fd allowed_access parent_fd
+
+  external add_rule_net_port_raw : Unix.file_descr ->
+    access_net list -> int -> unit
+    = "caml_extunix_landlock_add_rule_net_port"
+
+  let add_rule_net_port fd ~allowed_access ~port =
+    add_rule_net_port_raw fd allowed_access port
+
+  external restrict_self : Unix.file_descr -> unit
+    = "caml_extunix_landlock_restrict_self"
+
+end
+
+]
+
 (* NB Should be after all 'external' definitions *)
 
 (** {2 Meta} *)
