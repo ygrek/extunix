@@ -213,7 +213,7 @@ CAMLprim value caml_extunix_openat(value v_dirfd, value v_path, value flags, val
   CAMLreturn (Val_int(ret));
 }
 
-char *readlinkat_malloc (int dirfd, const char *filename)
+static char *readlinkat_malloc (int dirfd, const char *filename)
 {
   int size = 100;
   int nchars;
