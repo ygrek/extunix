@@ -8,8 +8,9 @@ permissions: read-all
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
+
     strategy:
-      fail-fast: false
       matrix:
         os:
           - ubuntu-latest
@@ -20,12 +21,11 @@ jobs:
         include:
           - os: ubuntu-latest
             ocaml-compiler: '4.08'
-
-    runs-on: ${{ matrix.os }}
+      fail-fast: false
 
     steps:
       - name: Checkout tree
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set-up OCaml
         uses: ocaml/setup-ocaml@v3
@@ -37,3 +37,36 @@ jobs:
       - run: opam exec -- dune build
 
       - run: opam exec -- dune runtest
+
+  lint-doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v6
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-doc@v3
+
+  lint-fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v6
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-fmt@v3
+
+  lint-opam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v6
+      - name: Set-up OCaml
+        uses: ocaml/setup-ocaml@v3
+        with:
+          ocaml-compiler: 5
+      - uses: ocaml/setup-ocaml/lint-opam@v3
