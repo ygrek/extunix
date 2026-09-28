@@ -8,8 +8,8 @@
 #endif
 
 static const int rename_flags_table[] = {
-  RENAME_NOREPLACE, /* 0 */
-  RENAME_EXCHANGE, /* 1 */
+  RENAME_EXCHANGE, /* 0 */
+  RENAME_NOREPLACE, /* 1 */
   RENAME_WHITEOUT, /* 2 */
 };
 
