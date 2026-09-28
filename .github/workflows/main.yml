@@ -20,7 +20,7 @@ jobs:
           - '5'
         include:
           - os: ubuntu-latest
-            ocaml-compiler: '4.11'
+            ocaml-compiler: '4.08'
       fail-fast: false
 
     steps:
