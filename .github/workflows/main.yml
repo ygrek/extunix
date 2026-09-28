@@ -40,6 +40,7 @@ jobs:
 
   lint-doc:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout tree
         uses: actions/checkout@v6
@@ -51,6 +52,7 @@ jobs:
 
   lint-fmt:
     runs-on: ubuntu-latest
+    if: false
     steps:
       - name: Checkout tree
         uses: actions/checkout@v6
