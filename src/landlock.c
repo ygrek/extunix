@@ -12,11 +12,10 @@
 static __u64 convert_flag_list_u64(value list, const __u64 *table, size_t table_len)
 {
     __u64 res = 0;
-    while (list != Val_int(0)) {
+    for (; list != Val_emptylist; list = Field(list,1)) {
         int flag = Int_val(Field(list, 0));
         if (flag >= 0 && (size_t)flag < table_len)
             res |= table[flag];
-        list = Field(list, 1);
     }
     return res;
 }
