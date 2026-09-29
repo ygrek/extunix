@@ -9,37 +9,55 @@ let args_spec =
 module ExtUnixConfig = Config
 open Ppxlib
 
+let errorf ~loc fmt =
+  Format.kasprintf
+    (fun s -> Error [ Location.error_extensionf ~loc "%s" s ])
+    fmt
+
 let check ~loc name =
   match ExtUnixConfig.feature name with
-  | None -> Location.raise_errorf ~loc "Unregistered feature %s" name
-  | Some have -> have
+  | None -> errorf ~loc "Unregistered feature %s" name
+  | Some have -> Ok have
 
 let ident x = Ocaml_common.Location.mknoloc (lident x)
 
 (* Evaluating conditions *)
 
-let atom_of_expr ~loc expr =
-  match expr.pexp_desc with
-  | Pexp_construct ({ txt = Longident.Lident x; _ }, None) -> x
-  | _ -> Location.raise_errorf ~loc "have: atom_of_expr"
+(* Evaluate all results, collecting every error instead of stopping at the
+   first one. *)
+let collect results =
+  List.fold_right
+    (fun r acc ->
+      match (r, acc) with
+      | Ok x, Ok xs -> Ok (x :: xs)
+      | Ok _, (Error _ as e) -> e
+      | Error e, Ok _ -> Error e
+      | Error e, Error es -> Error (e @ es))
+    results (Ok [])
 
-let conj_of_expr ~loc expr =
+let atom_of_expr expr =
   match expr.pexp_desc with
-  | Pexp_construct _ -> [ atom_of_expr ~loc expr ]
-  | Pexp_tuple args -> List.map (atom_of_expr ~loc) args
-  | _ -> Location.raise_errorf ~loc "have: conj_of_expr"
+  | Pexp_construct ({ txt = Longident.Lident x; loc }, None) -> check ~loc x
+  | _ -> errorf ~loc:expr.pexp_loc "have: atom_of_expr"
 
-let disj_of_expr ~loc expr =
+let conj_of_expr expr =
   match expr.pexp_desc with
-  | Pexp_construct _ -> [ [ atom_of_expr ~loc expr ] ]
-  | Pexp_tuple args -> List.map (conj_of_expr ~loc) args
-  | _ -> Location.raise_errorf ~loc "have: disj_of_expr"
+  | Pexp_construct _ -> atom_of_expr expr
+  | Pexp_tuple args ->
+      collect (List.map atom_of_expr args) |> Result.map (List.for_all Fun.id)
+  | _ -> errorf ~loc:expr.pexp_loc "have: conj_of_expr"
 
-let eval_cond ~loc cond =
+let disj_of_expr expr =
+  match expr.pexp_desc with
+  | Pexp_construct _ -> atom_of_expr expr
+  | Pexp_tuple args ->
+      collect (List.map conj_of_expr args) |> Result.map (List.exists Fun.id)
+  | _ -> errorf ~loc:expr.pexp_loc "have: disj_of_expr"
+
+let eval_cond cond =
   match cond.pstr_desc with
-  | Pstr_eval (expr, _attributes) ->
-      List.exists (List.for_all (check ~loc)) (disj_of_expr ~loc expr)
-  | _ -> Location.raise_errorf ~loc "have: eval_cond"
+  | Pstr_eval (expr, _attributes) -> disj_of_expr expr
+  | _ -> errorf ~loc:cond.pstr_loc "have: eval_cond"
 
 (* have rule *)
 
@@ -92,7 +110,7 @@ let record_external have =
   in
   externals_of#structure_item
 
-let have_constr ~loc =
+let have_constr =
   let have_constr =
     object
       inherit Ast_traverse.map as super
@@ -110,13 +128,23 @@ let have_constr ~loc =
               ];
             _;
           } as x ->
-            if eval_cond ~loc cond then x
-            else
-              {
-                x with
-                pcd_name =
-                  { x.pcd_name with txt = x.pcd_name.txt ^ "__Not_available" };
-              }
+            begin match eval_cond cond with
+            | Ok true -> x
+            | Ok false ->
+                {
+                  x with
+                  pcd_name =
+                    { x.pcd_name with txt = x.pcd_name.txt ^ "__Not_available" };
+                }
+            | Error errs ->
+                let loc = x.pcd_loc in
+                {
+                  x with
+                  pcd_args =
+                    Pcstr_tuple
+                      (List.map (Ast_builder.Default.ptyp_extension ~loc) errs);
+                }
+            end
         | x -> x
     end
   in
@@ -124,13 +152,17 @@ let have_constr ~loc =
 
 let have_expand ~ctxt cond items =
   let loc = Expansion_context.Extension.extension_point_loc ctxt in
-  let have = eval_cond ~loc cond in
-  List.iter (record_external have) items;
-  match (have, !all) with
-  | true, true -> items
-  | true, false -> List.map (have_constr ~loc) items
-  | false, true -> List.map (invalid_external ~loc) items
-  | false, false -> []
+  match eval_cond cond with
+  | Error errs ->
+      List.map (fun ext -> Ast_builder.Default.pstr_extension ~loc ext []) errs
+  | Ok have -> begin
+      List.iter (record_external have) items;
+      match (have, !all) with
+      | true, true -> items
+      | true, false -> List.map have_constr items
+      | false, true -> List.map (invalid_external ~loc) items
+      | false, false -> []
+    end
 
 let have_extension =
   Extension.V3.declare_inline "have" Extension.Context.structure_item
