@@ -42,6 +42,6 @@
   "ygrek"
   "Zhenya Lykhovyd"
  )
- (maintainers "ygrek@autistici.org" "Antonin Décimo <antonin@tarides.com>")
+ (maintainers "ygrek@autistici.org" "Antonin Décimo <antonin@gmail.com>")
  (source (github ygrek/extunix))
  (tags ("org:ygrek")))
